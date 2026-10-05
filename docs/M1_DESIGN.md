@@ -1,6 +1,6 @@
 # M1 Design Specification — Single-Modality Structural Core
 
-**Status:** M1.0 + M1.1 implemented; continual validation pending  
+**Status:** M1.0 + M1.1 + M1.2 implemented; fair H1 evaluation pending  
 **Milestone:** M1  
 **Date:** 2026-10-05
 
@@ -625,3 +625,93 @@ These validate mechanism correctness only. The smoke loss values are not researc
 ### Next design step
 
 M1.2 builds the continual evaluation harness and no-growth controls before any adaptive novelty policy is introduced.
+
+
+## 27. M1.2 implementation record
+
+Implemented on 2026-10-05.
+
+### Continual stream contract
+
+M1.2 introduces immutable tensor-backed tasks and ordered streams. Each task declares:
+
+- task id;
+- global class ids;
+- train tensors;
+- evaluation tensors.
+
+The harness is class-incremental by default: labels remain global and no task id is supplied as an inference feature.
+
+Training batches are generated deterministically from explicit seeds and streamed rather than materialized as a list.
+
+### Evaluation matrix
+
+After training stage t, the harness evaluates every seen task j and records:
+
+R[t, j] = accuracy on task j after learning through task t.
+
+Future unseen cells remain NaN by default. An opt-in mode can evaluate future tasks for diagnostics, but standard continual metrics use learned-stage semantics.
+
+Derived metrics currently include:
+
+- average accuracy by stage;
+- final average accuracy;
+- forgetting;
+- backward transfer;
+- diagonal immediate-learning accuracy;
+- late-task immediate-learning accuracy.
+
+The final metric is a proxy only. A stronger loss-of-plasticity claim requires learning-curve/fresh-reference comparisons in later milestones.
+
+### Structural history
+
+For routed models, each training stage records:
+
+- structural version;
+- recruited-node count;
+- active-edge count;
+- mean executed nodes per batch;
+- routing selection entropy;
+- maximum selection share;
+- node selection counts.
+
+The structural state is sampled after the stage boundary action. Selection statistics summarize the batches used to learn that stage.
+
+### Task-boundary convention
+
+By default, task_boundary=True is sent only when another task follows.
+
+This prevents the controlled recruitment policy from adding unused reserve capacity after the final task merely because the experiment ended.
+
+### Controls
+
+M1.2 runs three model modes through the same continual harness:
+
+1. controlled-growth SynapLoom via TrainingEngine;
+2. routed SynapLoom without a structural controller;
+3. DenseControlModel.
+
+The dense model exists to validate common measurement/control flow. It is not yet parameter- or compute-matched; fair matching is an M1.3 requirement.
+
+### Streams and smoke validation
+
+The core package provides a deterministic Gaussian multi-cluster class-incremental stream for offline engineering validation.
+
+A real SplitMNIST adapter is also provided behind an optional torchvision dependency. CI does not download MNIST.
+
+The CI smoke compares growth, no-growth, and dense execution paths without imposing any accuracy threshold. Its purpose is to verify the pipeline and structural trajectory, not to select a winning model.
+
+### Artifact provenance
+
+A saved continual result includes:
+
+- accuracy matrix;
+- evaluation-loss matrix;
+- train-loss history;
+- structural history;
+- global step count;
+- resolved ContinualConfig;
+- task ids/classes and train/eval counts;
+- optional caller metadata.
+
+M1.3 must extend experiment-level provenance with the full model/baseline config and hardware/commit metadata used for scientific runs.
