@@ -57,16 +57,18 @@ Automatic novelty detection remains M2.
 
 ### M1.2 — continual evaluation harness and controls
 
-Implement:
-- [ ] task/stream abstraction
-- [ ] synthetic multi-cluster continual stream
-- [ ] SplitMNIST (or equivalent) functional continual smoke
-- [ ] evaluation matrix after every task
-- [ ] average accuracy / forgetting / late-task-learning metrics
-- [ ] structural histories: recruited/executed nodes, edges, utilization
-- [ ] dense control model using the same harness
-- [ ] fixed-capacity routed control with no structural growth
-- [ ] deterministic run/config artifact recording
+Implemented:
+- [x] task/stream abstraction
+- [x] synthetic multi-cluster continual stream
+- [x] SplitMNIST-equivalent CI smoke plus optional real SplitMNIST adapter/script
+- [x] evaluation matrix after every task
+- [x] average accuracy / forgetting / backward-transfer / late-task-learning metrics
+- [x] structural histories: recruited/executed nodes, edges, routing selection distribution
+- [x] dense control model using the same harness
+- [x] fixed-capacity routed control with no structural growth
+- [x] deterministic run config + task-stream manifest in result artifacts
+
+The M1.2 metrics validate the evaluation machinery. The dense control is not yet a budget-matched scientific baseline, and late-task immediate accuracy is only a proxy for plasticity.
 
 Exit criterion: the measurement pipeline can compare controlled growth against non-growth controls on a continual stream without changing the training/evaluation harness.
 
