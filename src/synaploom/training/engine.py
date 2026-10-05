@@ -9,7 +9,7 @@ from torch import Tensor
 
 from synaploom.core.outputs import ForwardTrace
 from synaploom.model import SynapLoomModel
-from synaploom.plasticity.consolidation import scale_microcircuit_gradients
+from synaploom.plasticity.consolidation import scale_node_owned_gradients
 from synaploom.plasticity.controller import StructuralController
 from synaploom.plasticity.policies import StructuralObservation
 from synaploom.plasticity.statistics import update_node_importance
@@ -61,7 +61,7 @@ class TrainingEngine:
             self.model.graph_state,
             decay=self.importance_decay,
         )
-        scale_microcircuit_gradients(self.model.executor, self.model.graph_state)
+        scale_node_owned_gradients(self.model.executor, self.model.graph_state)
         self.optimizer.step()
 
         self.model.graph_state.update_utilization(
