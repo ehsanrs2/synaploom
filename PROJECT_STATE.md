@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-05  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.1 controlled adaptation implemented in PR; M1.2 next  
-**Research status:** structural execution + controlled recruitment/consolidation implemented; no scientific benchmark results yet
+**Current stage:** M1.2 continual evaluation harness implemented in PR; M1.3 next  
+**Research status:** structural execution, controlled adaptation, and continual measurement pipeline implemented; no scientific benchmark results yet
 
 ## 1. Project objective
 
@@ -174,7 +174,33 @@ Validation on GitHub Actions (Python 3.11, CPU-only PyTorch):
 
 Automatic novelty-driven recruitment remains explicitly outside M1.1.
 
-## 9. No scientific experimental results yet
+## 9. M1.2 implementation status
+
+Implemented in the current milestone PR:
+
+- immutable tensor-backed TensorTask / ContinualStream abstraction
+- deterministic seeded batch iteration
+- deterministic Gaussian class-incremental engineering stream
+- optional real SplitMNIST adapter with lazy torchvision dependency
+- common evaluation-after-each-task accuracy/loss matrix
+- average accuracy, final accuracy, forgetting, backward transfer, diagonal learning accuracy, and late-task learning proxy
+- per-stage structural history: recruited nodes, active edges, executed-node mean, routing selection entropy/share/counts
+- DenseControlModel through the same continual harness
+- routed SynapLoom no-growth control through the same harness
+- controlled-growth SynapLoom through the existing TrainingEngine
+- JSON result artifacts with resolved continual config and task-stream manifest
+- deterministic synthetic continual smoke in CI
+- optional real SplitMNIST functional smoke script
+
+Measurement semantics:
+
+- unseen future tasks are NaN in the standard matrix unless explicitly requested;
+- task_boundary is emitted only between tasks by default, avoiding unused final recruitment;
+- structural snapshots are post-stage/post-boundary state, while routing selection statistics summarize training on that stage;
+- late_task_learning_accuracy is an immediate post-learning accuracy proxy, not by itself a loss-of-plasticity claim;
+- the M1.2 dense control validates pipeline comparability but is not yet parameter/compute matched.
+
+## 10. No scientific experimental results yet
 
 There are currently:
 
@@ -186,25 +212,25 @@ There are currently:
 
 Engineering smoke tests validate mechanics only. Research results must be recorded in docs/EXPERIMENT_LOG.md.
 
-## 10. Immediate next milestone
+## 11. Immediate next milestone
 
-**M1.2 — continual evaluation harness and controls**
+**M1.3 — first fair H1 benchmark**
 
-Planned:
+Current candidate: Split CIFAR-100 class-incremental.
 
-- explicit task/stream abstraction
-- synthetic multi-cluster continual stream
-- SplitMNIST (or equivalent) functional continual smoke
-- evaluation-after-each-task matrix
-- average accuracy / forgetting / late-task learning metrics
-- routing utilization and recruited/executed capacity histories
-- dense control model through the same harness
-- fixed-capacity routed control without growth
-- deterministic experiment seeds/config snapshots
+Before interpreting any performance difference, freeze:
 
-M1.3 will then run the first fair H1 benchmark candidate (currently Split CIFAR-100) with stronger sparse/continual-learning baselines.
+- class/task split and augmentation protocol
+- seed count
+- equal-total-capacity comparison
+- equal-executed-capacity comparison
+- dense / routed-no-growth / fixed-sparse / dynamic-sparse / continual-learning controls
+- measured FLOPs, wall time, and peak VRAM protocol where feasible
+- learning-curve metric for late-task plasticity beyond the M1.2 diagonal-accuracy proxy
 
-## 11. Open design questions
+M1.3 is the first milestone allowed to produce evidence for or against H1.
+
+## 12. Open design questions
 
 Still unresolved:
 
@@ -217,7 +243,7 @@ Still unresolved:
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 12. Documentation rule
+## 13. Documentation rule
 
 For every merged milestone PR:
 
