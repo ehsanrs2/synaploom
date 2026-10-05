@@ -8,6 +8,7 @@ from synaploom.plasticity.policies import (
     ConnectToSelectedTopR,
     FixedScheduleRecruitment,
     NoRecruitment,
+    SeededRandomR,
     StructuralObservation,
     TaskBoundaryRecruitment,
     TaskBoundaryTopImportance,
@@ -116,3 +117,25 @@ def test_task_boundary_consolidates_old_capacity_then_recruits_new_capacity() ->
     assert [event.kind for event in events] == ["consolidate", "recruit"]
     assert state.node_state[0].item() == int(NodeState.CONSOLIDATED)
     assert state.node_state[2].item() == int(NodeState.PLASTIC)
+
+
+def test_seeded_random_edge_policy_is_deterministic_and_bounded() -> None:
+    cfg = GraphConfig(
+        num_nodes=6,
+        initial_recruited=4,
+        top_k=2,
+        q_max=2,
+        d_model=8,
+        d_hidden=16,
+        router_dim=8,
+    )
+    state = GraphState(cfg)
+    observation = _observation(cfg, step=11)
+    policy = SeededRandomR(top_r=5, seed=42)
+
+    first = policy.targets(observation, state, new_node_id=4)
+    second = policy.targets(observation, state, new_node_id=4)
+
+    assert first == second
+    assert len(first) == cfg.q_max
+    assert set(first).issubset({0, 1, 2, 3})
