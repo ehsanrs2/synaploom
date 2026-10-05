@@ -1,6 +1,6 @@
 # M1 Design Specification — Single-Modality Structural Core
 
-**Status:** implementation-ready design  
+**Status:** M1.0 implemented; M1.1 pending  
 **Milestone:** M1  
 **Date:** 2026-10-05
 
@@ -486,3 +486,35 @@ M1 is complete when:
 7. no automatic novelty, multimodal, or biological-extension claims are mixed into the result.
 
 M1 produces trustworthy machinery. M2 asks whether adaptive structural control is actually useful.
+
+
+## 25. M1.0 implementation record
+
+Implemented on 2026-10-05.
+
+The current executor variant is:
+
+1. run each selected microcircuit once on the encoded batch;
+2. for each message round, aggregate mean incoming messages from selected-endpoint edges;
+3. add the aggregate to the current node state;
+4. run the same residual microcircuit again;
+5. aggregate final selected node states using router weights.
+
+This is the allowed full-expert-per-round variant. M1.0 does not use a separate explicit message alpha coefficient.
+
+Validation at implementation time:
+
+- 10 local unit tests passed;
+- tests cover structural transitions, bounded edge slots, recruited-only routing, sparse router gradients, non-execution/non-gradient of unselected microcircuits, selected-endpoint edge execution, consolidation gradient scaling, structural/parameter accounting, checkpoint restoration, and append-only event logs;
+- a GitHub Actions pytest workflow is included for independent PR validation.
+
+Not yet implemented:
+
+- StructuralController;
+- scheduled/task-boundary policy interfaces;
+- controller-integrated event emission;
+- context-imprinted automatic recruitment;
+- end-to-end training engine;
+- automatic novelty/growth detection.
+
+The first four items are M1.1. Automatic novelty remains M2.
