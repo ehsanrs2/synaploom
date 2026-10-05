@@ -110,6 +110,10 @@ See `docs/M1_3_PROTOCOL.md`. The protocol, class order, seeds, model sizes, opti
 
 `python experiments/scripts/m1_3_h1a_benchmark.py --features data/features/cifar100_resnet18_imagenet1k_v1.pt --device cuda`
 
+**Execution integrity**
+
+Before the primary run, follow `docs/H1A_RUNBOOK.md`. The exact frozen feature bundle SHA-256 must be recorded in every run artifact and in the final experiment entry. A failed feature-bundle preflight makes the run invalid.
+
 **Results**
 
 Not run yet.

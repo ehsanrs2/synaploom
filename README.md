@@ -35,6 +35,7 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 - [Architecture](docs/ARCHITECTURE.md) — formal v0.1 architecture and constraints
 - [M1 design](docs/M1_DESIGN.md) — implementation-ready contract for the structural core
 - [M1.3 H1a protocol](docs/M1_3_PROTOCOL.md) — preregistered first scientific reserve-recruitment test
+- [H1a execution runbook](docs/H1A_RUNBOOK.md) — feature extraction, preflight, execution and integrity checks
 - [Theory notes](docs/THEORY.md) — mathematical framing, complexity targets, and open questions
 - [Research hypotheses](docs/RESEARCH_HYPOTHESES.md) — falsifiable hypotheses and baselines
 - [Roadmap](docs/ROADMAP.md) — milestone plan
@@ -61,7 +62,7 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 **M1.3a** is now preregistered as a mechanism-isolation test on frozen CIFAR-100 ResNet-18 features. The primary paired comparison is progressive reserve recruitment vs an all-recruited routed control with the same total capacity and top-k execution.
 
-The next action is to execute the frozen 10-seed H1a protocol and record the result. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 are follow-up validation, not hidden tuning steps.
+The next action is to extract the frozen feature bundle, pass the mandatory H1a preflight, then execute the frozen 10-seed protocol and record the result. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 are follow-up validation, not hidden tuning steps.
 
 ## Prior-work anchors
 

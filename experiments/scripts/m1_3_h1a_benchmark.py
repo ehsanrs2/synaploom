@@ -6,12 +6,14 @@ import platform
 import random
 import statistics
 import subprocess
+from dataclasses import asdict
 from pathlib import Path
 
 import torch
 
 from synaploom.data.features import load_feature_bundle, make_split_feature_stream
 from synaploom.protocols.h1a import H1A_CLASS_ORDER, H1A_VARIANTS, H1AProtocol, build_h1a_variant
+from synaploom.research.preflight import audit_h1a_feature_bundle
 from synaploom.research.budgets import (
     count_trainable_parameters,
     estimate_dense_linear_macs_per_batch,
@@ -105,6 +107,7 @@ def main() -> None:
     if unknown:
         raise ValueError(f"unknown variants: {sorted(unknown)}")
 
+    feature_audit = audit_h1a_feature_bundle(args.features)
     bundle = load_feature_bundle(args.features)
     feature_metadata = dict(bundle.get("metadata", {}))
     stream = make_split_feature_stream(
@@ -166,9 +169,14 @@ def main() -> None:
                     "class_order": list(H1A_CLASS_ORDER),
                     "feature_bundle": str(args.features),
                     "feature_bundle_metadata": feature_metadata,
+                    "feature_bundle_sha256": feature_audit.sha256,
+                    "feature_bundle_audit": feature_audit.to_dict(),
                     "environment": environment,
                     "build": build_meta,
                     "initial_total_parameters": count_trainable_parameters(model),
+                    "initial_budget": (
+                        asdict(initial_budget) if initial_budget is not None else None
+                    ),
                     "initial_linear_macs_per_batch_estimate": initial_macs,
                 },
             )
@@ -222,6 +230,8 @@ def main() -> None:
         "protocol": protocol.as_dict(),
         "class_order": list(H1A_CLASS_ORDER),
         "feature_bundle_metadata": feature_metadata,
+        "feature_bundle_sha256": feature_audit.sha256,
+        "feature_bundle_audit": feature_audit.to_dict(),
         "environment": environment,
         "variants": {
             variant: _aggregate(rows)
