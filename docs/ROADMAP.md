@@ -74,25 +74,37 @@ Exit criterion: the measurement pipeline can compare controlled growth against n
 
 ### M1.3 — first fair H1 benchmark
 
-Current candidate: **Split CIFAR-100 class-incremental**.
+#### M1.3a — controlled reserve recruitment (H1a)
 
-Add stronger controls/baselines:
-- dense under explicit budget matching
-- fixed-capacity routed/no-growth
-- fixed sparse
-- dynamic sparse where feasible
-- standard continual-learning baseline(s)
+Implemented/preregistered:
+- [x] frozen CIFAR-100 ResNet-18 feature pipeline
+- [x] canonical 10-experience / 10-class mechanism-isolation setup
+- [x] explicit frozen class order
+- [x] seen-class logit masking
+- [x] progressive-reserve treatment
+- [x] all-recruited exact routed control
+- [x] fixed-small routed control
+- [x] dense active-parameter proxy
+- [x] dense total-parameter match
+- [x] 10 paired seeds
+- [x] within-task learning curves
+- [x] parameter/MAC/wall-time/VRAM reporting hooks
+- [x] paired bootstrap comparison
+- [x] full run provenance
+- [ ] execute primary 10-seed run
+- [ ] record result in EXPERIMENT_LOG
+- [ ] run batching/class-order sensitivity if effect is small
 
-Report at minimum:
-- equal-total-capacity view
-- equal-executed-capacity view
-- average accuracy
-- forgetting
-- late-task learning speed
-- recruited/executed capacity
-- actual wall time/FLOPs where measured
+#### M1.3b — external sparse/continual controls
 
-Exit criterion: H1 can be evaluated fairly under explicitly reported total-capacity and executed-capacity budgets.
+After the internal causal result:
+- [ ] fixed sparse baseline
+- [ ] RigL-style dynamic sparse baseline where implementation fidelity is acceptable
+- [ ] NISPA-style sparse continual baseline where feasible
+- [ ] replay baseline as a separate replay-enabled resource condition
+- [ ] end-to-end CIFAR-100 replication if H1a is promising
+
+Exit criterion: H1a has a preregistered paired result and H1 can be evaluated against stronger external controls without hiding resource differences.
 
 ## M2 — Adaptive plasticity and stability
 

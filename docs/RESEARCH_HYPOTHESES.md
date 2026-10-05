@@ -8,6 +8,18 @@ SynapLoom should be developed by falsifying hypotheses, not by adding biological
 
 **Hypothesis:** Under a fixed total parameter budget, keeping some capacity dormant and recruiting it only when persistent need is detected improves the stability/plasticity trade-off over always-active dense or fixed-sparse networks.
 
+### H1a — controlled recruitment
+
+M1.3 first isolates the reserve-availability mechanism: progressive recruitment follows a preregistered task-start schedule and is compared primarily with an all-recruited routed model having the same total capacity and top-k execution.
+
+H1a does **not** test whether the network knows when it should grow.
+
+### H1b — adaptive recruitment trigger
+
+M2 tests whether persistent need/novelty can trigger recruitment automatically without task-start scheduling.
+
+Full H1 requires evidence from both the mechanism and the trigger.
+
 **Compare against:**
 - dense network with equal total parameter count
 - dense network with equal active parameter count

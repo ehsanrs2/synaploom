@@ -4,7 +4,7 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **M1.2 continual evaluation harness implemented; first fair H1 benchmark next**. No scientific performance claims yet.
+> Project status: **M1.3 H1a protocol and benchmark machinery ready; primary scientific run pending**. No scientific performance claims yet.
 
 ## Core idea
 
@@ -34,6 +34,7 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 - [Architecture](docs/ARCHITECTURE.md) — formal v0.1 architecture and constraints
 - [M1 design](docs/M1_DESIGN.md) — implementation-ready contract for the structural core
+- [M1.3 H1a protocol](docs/M1_3_PROTOCOL.md) — preregistered first scientific reserve-recruitment test
 - [Theory notes](docs/THEORY.md) — mathematical framing, complexity targets, and open questions
 - [Research hypotheses](docs/RESEARCH_HYPOTHESES.md) — falsifiable hypotheses and baselines
 - [Roadmap](docs/ROADMAP.md) — milestone plan
@@ -58,7 +59,9 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 **M1.2** adds one model-agnostic continual pipeline for controlled growth, routed no-growth, and dense controls: deterministic task streams, the stage-by-task evaluation matrix, continual metrics, structural histories, and JSON artifacts. CI uses a deterministic synthetic class-incremental smoke; a real SplitMNIST adapter is optional.
 
-The next step is **M1.3 — the first fair H1 benchmark**, with explicit total/executed-capacity matching and stronger baselines. M1.2 smoke accuracies are engineering diagnostics only and are not research evidence.
+**M1.3a** is now preregistered as a mechanism-isolation test on frozen CIFAR-100 ResNet-18 features. The primary paired comparison is progressive reserve recruitment vs an all-recruited routed control with the same total capacity and top-k execution.
+
+The next action is to execute the frozen 10-seed H1a protocol and record the result. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 are follow-up validation, not hidden tuning steps.
 
 ## Prior-work anchors
 

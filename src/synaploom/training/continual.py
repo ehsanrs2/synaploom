@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import math
 import random
+import time
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -18,6 +19,7 @@ except ImportError:
 from torch import Tensor, nn
 
 from synaploom.data.streams import ContinualStream, iter_tensor_batches
+from synaploom.training.class_incremental import class_incremental_cross_entropy
 from synaploom.training.continual_metrics import (
     average_accuracy_by_stage,
     average_forgetting,
@@ -40,12 +42,16 @@ class ContinualConfig:
     device: str = "cpu"
     evaluate_future_tasks: bool = False
     apply_final_task_boundary: bool = False
+    restrict_logits_to_seen_classes: bool = False
+    current_task_eval_every_epochs: int = 0
 
     def __post_init__(self) -> None:
         if self.epochs_per_task <= 0:
             raise ValueError("epochs_per_task must be positive")
         if self.batch_size <= 0 or self.eval_batch_size <= 0:
             raise ValueError("batch sizes must be positive")
+        if self.current_task_eval_every_epochs < 0:
+            raise ValueError("current_task_eval_every_epochs must be non-negative")
 
 
 @dataclass(frozen=True)
@@ -72,8 +78,22 @@ class ContinualRunResult:
     run_config: dict[str, Any] = field(default_factory=dict)
     stream_manifest: list[dict[str, Any]] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+    current_task_learning_curves: list[list[dict[str, float | int]]] = field(default_factory=list)
+    train_seconds_by_task: list[float] = field(default_factory=list)
+    eval_seconds_by_stage: list[float] = field(default_factory=list)
+    peak_cuda_memory_bytes: int | None = None
 
     def summary(self) -> dict[str, Any]:
+        curve_means = [
+            (sum(float(point["accuracy"]) for point in curve) / len(curve))
+            for curve in self.current_task_learning_curves
+            if curve
+        ]
+        late_curve_mean = (
+            sum(curve_means[-min(2, len(curve_means)):]) / min(2, len(curve_means))
+            if curve_means
+            else None
+        )
         return {
             "final_average_accuracy": final_average_accuracy(self.accuracy_matrix),
             "average_forgetting": average_forgetting(self.accuracy_matrix),
@@ -87,6 +107,8 @@ class ContinualRunResult:
             "diagonal_learning_accuracy": diagonal_learning_accuracy(
                 self.accuracy_matrix
             ).detach().cpu().tolist(),
+            "within_task_mean_accuracy_by_task": curve_means,
+            "late_task_within_task_mean_accuracy": late_curve_mean,
         }
 
     def to_dict(self) -> dict[str, Any]:
@@ -99,6 +121,10 @@ class ContinualRunResult:
             "run_config": self.run_config,
             "stream_manifest": self.stream_manifest,
             "metadata": self.metadata,
+            "current_task_learning_curves": self.current_task_learning_curves,
+            "train_seconds_by_task": self.train_seconds_by_task,
+            "eval_seconds_by_stage": self.eval_seconds_by_stage,
+            "peak_cuda_memory_bytes": self.peak_cuda_memory_bytes,
             "summary": self.summary(),
         }
 
@@ -200,10 +226,22 @@ def run_continual_experiment(
     eval_loss = torch.full((num_tasks, num_tasks), float("nan"))
     train_loss_by_task: list[float] = []
     structural_history: list[StructuralSnapshot] = []
+    current_task_learning_curves: list[list[dict[str, float | int]]] = []
+    train_seconds_by_task: list[float] = []
+    eval_seconds_by_stage: list[float] = []
     global_step = 0
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
 
+    seen_classes: list[int] = []
     for stage, task in enumerate(stream):
+        seen_classes.extend(int(v) for v in task.classes)
+        allowed_classes = tuple(sorted(set(seen_classes))) if config.restrict_logits_to_seen_classes else None
         losses: list[float] = []
+        task_curve: list[dict[str, float | int]] = []
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        train_started = time.perf_counter()
         selection_counts: Counter[int] = Counter()
         executed_sizes: list[int] = []
 
@@ -228,7 +266,11 @@ def run_continual_experiment(
 
                 if engine is not None:
                     result = engine.train_step(
-                        x, y, step=global_step, task_boundary=boundary
+                        x,
+                        y,
+                        step=global_step,
+                        task_boundary=boundary,
+                        allowed_classes=allowed_classes,
                     )
                     losses.append(result.loss)
                     trace = result.trace
@@ -239,7 +281,11 @@ def run_continual_experiment(
                     output = model(x)
                     logits = logits_from_output(output)
                     aux_loss = getattr(output, "aux_loss", None)
-                    loss = F.cross_entropy(logits, y)
+                    loss = class_incremental_cross_entropy(
+                        logits,
+                        y,
+                        allowed_classes=allowed_classes,
+                    )
                     if isinstance(aux_loss, Tensor):
                         loss = loss + aux_loss
                     loss.backward()
@@ -262,7 +308,31 @@ def run_continual_experiment(
                     executed_sizes.append(len(ids))
                 global_step += 1
 
+            if (
+                config.current_task_eval_every_epochs > 0
+                and (epoch + 1) % config.current_task_eval_every_epochs == 0
+            ):
+                curve_eval = evaluate_task(
+                    model,
+                    task,
+                    batch_size=config.eval_batch_size,
+                    device=device,
+                    allowed_classes=allowed_classes,
+                )
+                task_curve.append(
+                    {
+                        "epoch": int(epoch + 1),
+                        "global_step": int(global_step),
+                        "accuracy": float(curve_eval.accuracy),
+                        "loss": float(curve_eval.loss),
+                    }
+                )
+
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        train_seconds_by_task.append(time.perf_counter() - train_started)
         train_loss_by_task.append(sum(losses) / max(1, len(losses)))
+        current_task_learning_curves.append(task_curve)
         structural_history.append(
             _snapshot(
                 model,
@@ -273,6 +343,9 @@ def run_continual_experiment(
             )
         )
 
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        eval_started = time.perf_counter()
         eval_limit = num_tasks if config.evaluate_future_tasks else stage + 1
         for eval_task_index in range(eval_limit):
             result = evaluate_task(
@@ -280,9 +353,13 @@ def run_continual_experiment(
                 stream[eval_task_index],
                 batch_size=config.eval_batch_size,
                 device=device,
+                allowed_classes=allowed_classes,
             )
             accuracy[stage, eval_task_index] = result.accuracy
             eval_loss[stage, eval_task_index] = result.loss
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        eval_seconds_by_stage.append(time.perf_counter() - eval_started)
 
     stream_manifest = [
         {
@@ -302,4 +379,12 @@ def run_continual_experiment(
         run_config=asdict(config),
         stream_manifest=stream_manifest,
         metadata=dict(metadata or {}),
+        current_task_learning_curves=current_task_learning_curves,
+        train_seconds_by_task=train_seconds_by_task,
+        eval_seconds_by_stage=eval_seconds_by_stage,
+        peak_cuda_memory_bytes=(
+            int(torch.cuda.max_memory_allocated(device))
+            if device.type == "cuda"
+            else None
+        ),
     )

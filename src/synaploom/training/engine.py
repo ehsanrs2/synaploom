@@ -14,6 +14,7 @@ from synaploom.plasticity.controller import StructuralController
 from synaploom.plasticity.policies import StructuralObservation
 from synaploom.plasticity.statistics import update_node_importance
 from synaploom.events import StructuralEvent
+from synaploom.training.class_incremental import class_incremental_cross_entropy
 
 
 @dataclass(frozen=True)
@@ -48,12 +49,21 @@ class TrainingEngine:
         *,
         step: int,
         task_boundary: bool = False,
+        allowed_classes: tuple[int, ...] | list[int] | None = None,
     ) -> TrainStepResult:
         self.model.train()
         self.optimizer.zero_grad(set_to_none=True)
 
         output = self.model(x, update_statistics=False)
-        loss = self.criterion(output.logits, y) + output.aux_loss
+        if allowed_classes is None:
+            loss = self.criterion(output.logits, y)
+        else:
+            loss = class_incremental_cross_entropy(
+                output.logits,
+                y,
+                allowed_classes=allowed_classes,
+            )
+        loss = loss + output.aux_loss
         loss.backward()
 
         update_node_importance(

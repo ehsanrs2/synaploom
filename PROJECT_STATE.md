@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-05  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.2 continual evaluation harness implemented in PR; M1.3 next  
-**Research status:** structural execution, controlled adaptation, and continual measurement pipeline implemented; no scientific benchmark results yet
+**Current stage:** M1.3 H1a protocol and benchmark machinery implemented in PR; scientific execution pending  
+**Research status:** M1.0-M1.2 merged; H1a is preregistered as a controlled reserve-recruitment test; no scientific benchmark result yet
 
 ## 1. Project objective
 
@@ -201,7 +201,44 @@ Measurement semantics:
 - the M1.2 dense control validates pipeline comparability but is not yet parameter/compute matched;
 - because M1 uses batch-level routing, routed predictions are batch-context dependent; evaluation order and eval_batch_size are therefore part of the frozen protocol until sample-level routing is tested.
 
-## 10. No scientific experimental results yet
+## 10. M1.3 H1a protocol status
+
+The first scientific test is now split into H1a and H1b.
+
+H1a asks whether controlled progressive reserve availability helps under equal total capacity and equal top-k expert execution. H1b asks whether the model can detect persistent need for recruitment automatically; H1b remains M2.
+
+H1a is frozen as a mechanism-isolation experiment:
+
+- CIFAR-100 frozen ImageNet ResNet-18 features
+- 10 experiences x 10 classes
+- fixed explicit class order
+- 100-way classifier with unseen logits masked
+- no replay
+- no consolidation
+- q_max=0 and message_rounds=0
+- N=16, initial recruited=4, top-k=4
+- one recruitment after the first optimization step of each new task after task 0
+- 20 epochs/task, SGD lr=0.03, momentum=0.9, weight decay=5e-4
+- 10 paired model seeds
+- fixed eval_batch_size=256 because routing is batch-level
+
+Primary causal comparison:
+
+progressive_reserve vs all_recruited
+
+Both use the same total parameter tensors and the same top-k expert execution count.
+
+Additional controls:
+
+- fixed_small
+- dense_active_proxy
+- dense_total
+
+Outputs include per-seed results, paired bootstrap CIs, full continual matrices, within-task learning curves, structural histories, parameter-budget views, linear-MAC estimates, wall time, peak CUDA memory, commit/environment metadata, and feature-bundle provenance.
+
+See docs/M1_3_PROTOCOL.md.
+
+## 11. No scientific experimental results yet
 
 There are currently:
 
@@ -213,38 +250,34 @@ There are currently:
 
 Engineering smoke tests validate mechanics only. Research results must be recorded in docs/EXPERIMENT_LOG.md.
 
-## 11. Immediate next milestone
+## 12. Immediate next milestone
 
-**M1.3 — first fair H1 benchmark**
+**Execute M1.3a — H1a primary paired run**
 
-Current candidate: Split CIFAR-100 class-incremental.
+1. Extract the frozen CIFAR-100 ResNet-18 feature bundle.
+2. Run the preregistered 10-seed benchmark.
+3. Verify artifacts/provenance and paired comparisons.
+4. Record results in docs/EXPERIMENT_LOG.md.
+5. Only after inspecting the preregistered H1a result, decide whether to:
+   - proceed to H1a sensitivity / end-to-end replication;
+   - add M1.3b external sparse baselines;
+   - revise the mechanism before M2.
 
-Before interpreting any performance difference, freeze:
+No adaptive novelty trigger is allowed into H1a.
 
-- class/task split and augmentation protocol
-- seed count
-- equal-total-capacity comparison
-- equal-executed-capacity comparison
-- dense / routed-no-growth / fixed-sparse / dynamic-sparse / continual-learning controls
-- measured FLOPs, wall time, and peak VRAM protocol where feasible
-- learning-curve metric for late-task plasticity beyond the M1.2 diagonal-accuracy proxy
-
-M1.3 is the first milestone allowed to produce evidence for or against H1.
-
-## 12. Open design questions
+## 13. Open design questions
 
 Still unresolved:
 
 - exact default d, h, N, k, q_max, K
 - exact load-balancing loss
-- whether the initial scientific run should include message passing or first isolate node recruitment
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- exact Split CIFAR-100 stream protocol for M1.3, including fixed evaluation batching and batch-context sensitivity checks
+- class-order and eval-batch-size sensitivity protocol after the primary H1a run
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 13. Documentation rule
+## 14. Documentation rule
 
 For every merged milestone PR:
 

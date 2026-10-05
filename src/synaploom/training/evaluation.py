@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 
 from synaploom.data.streams import TensorTask, iter_tensor_batches
+from synaploom.training.class_incremental import mask_logits_to_classes
 
 
 @dataclass(frozen=True)
@@ -32,6 +33,7 @@ def evaluate_task(
     *,
     batch_size: int,
     device: torch.device | str = "cpu",
+    allowed_classes: tuple[int, ...] | list[int] | None = None,
 ) -> TaskEvaluation:
     model.eval()
     total_loss = 0.0
@@ -42,6 +44,8 @@ def evaluate_task(
     ):
         x, y = x.to(device), y.to(device)
         logits = logits_from_output(model(x))
+        if allowed_classes is not None:
+            logits = mask_logits_to_classes(logits, allowed_classes)
         loss = F.cross_entropy(logits, y, reduction="sum")
         total_loss += float(loss.item())
         total_correct += int((logits.argmax(dim=-1) == y).sum().item())
