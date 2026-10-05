@@ -285,3 +285,37 @@ The first falsifiable question is intentionally narrow:
 > Under a fixed total parameter budget, does reserve-capacity recruitment plus sparse routing and consolidation improve continual-learning plasticity/forgetting trade-offs compared with dense, fixed-sparse, dynamic-sparse, and replay/regularization baselines?
 
 Multimodal claims are tested only after the structural single-modality core is validated.
+
+
+## 20. M1 execution refinement
+
+The M1 implementation distinguishes **recruited structural capacity** from **runtime executed capacity**.
+
+Let:
+
+- R_t be all non-dormant nodes available to routing;
+- X_t be the nodes selected for the current batch.
+
+Then:
+
+X_t subseteq R_t
+
+and M1 keeps |X_t| <= k even as |R_t| grows.
+
+This allows the hypothesis that knowledge capacity can increase through specialization while per-batch expert execution remains bounded.
+
+Dormant nodes are not scored by the normal runtime router. They enter the routing pool only through a slower structural recruitment event.
+
+### Sparse topology representation
+
+The logical supergraph must not imply a materialized dense adjacency matrix.
+
+Implementation uses a fixed number q_max of outgoing edge slots per node. Edge endpoints and enabled state are structural data, while edge transforms are shared/lightweight.
+
+Therefore topology memory targets:
+
+O(N q_max)
+
+rather than O(N^2).
+
+M1 uses batch-level top-k routing and bounded synchronous message passing. Per-example expert dispatch and hierarchical routing are deferred until the core behavior is validated.

@@ -4,21 +4,27 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **M0 / architecture foundation**. No experimental performance claims yet.
+> Project status: **M1 design complete; implementation not started**. No experimental performance claims yet.
 
 ## Core idea
 
-The initial architecture is a **fixed typed supergraph with dynamic active topology**.
+The initial architecture uses fixed total microcircuit capacity with dynamic structural state.
 
-Instead of allocating new neural modules at runtime, SynapLoom starts with active and dormant microcircuits. Learning may:
+SynapLoom distinguishes:
 
-- update weights in active plastic circuits,
+- **dormant capacity** — present but not available to normal routing,
+- **recruited capacity** — available to routing,
+- **executed capacity** — the bounded top-k microcircuits actually run for a batch.
+
+Learning may eventually:
+
+- update weights in executed plastic circuits,
 - recruit dormant circuits,
-- activate or prune allowed connections,
+- activate or prune bounded structural connections,
 - consolidate important capacity,
 - route different inputs and modalities through different sparse pathways.
 
-The first implementation deliberately uses ordinary backpropagation through the active path. Dendritic computation, predictive/local learning, neuromodulation, replay, and spiking are later research extensions rather than requirements of the MVP.
+The first implementation deliberately uses ordinary backpropagation through the executed path. Dendritic computation, predictive/local learning, neuromodulation, replay, and spiking are later research extensions.
 
 ## Research question
 
@@ -27,6 +33,8 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — formal v0.1 architecture and constraints
+- [M1 design](docs/M1_DESIGN.md) — implementation-ready contract for the structural core
+- [Theory notes](docs/THEORY.md) — mathematical framing, complexity targets, and open questions
 - [Research hypotheses](docs/RESEARCH_HYPOTHESES.md) — falsifiable hypotheses and baselines
 - [Roadmap](docs/ROADMAP.md) — milestone plan
 - [Experiment log](docs/EXPERIMENT_LOG.md) — reproducible experimental record
@@ -40,15 +48,24 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 4. Match budgets fairly when comparing models.
 5. Measure forgetting and loss of plasticity separately.
 6. Do not equate multimodal co-occurrence with semantic association.
-7. The repository is the source of truth for project state.
+7. Separate recruited capacity from executed compute.
+8. Avoid dense topology materialization.
+9. The repository is the source of truth for project state.
 
 ## Current milestone
 
-**M0 — Foundation**
+The next implementation step is **M1.0 — execution and state machinery**:
 
-The architecture and hypotheses are being frozen before code implementation.
-
-Next milestone: **M1 — single-modality structural core**, including the fixed supergraph, microcircuits, sparse router, structural plasticity controller, consolidation manager, checkpointing, and structural metrics.
+- package/config scaffold
+- GraphState
+- MicroCircuit
+- batch-level SparseRouter
+- bounded edge slots
+- GraphExecutor
+- ForwardTrace
+- event logging
+- checkpoint/restore
+- invariant tests
 
 ## Prior-work anchors
 
