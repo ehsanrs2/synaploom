@@ -717,3 +717,40 @@ A saved continual result includes:
 - optional caller metadata.
 
 M1.3 must extend experiment-level provenance with the full model/baseline config and hardware/commit metadata used for scientific runs.
+
+
+## 28. M1.3a benchmark-design record
+
+M1.3a deliberately isolates **reserve recruitment** before testing the full structural graph.
+
+Primary experimental mechanisms disabled:
+
+- message passing;
+- structural edge creation;
+- consolidation;
+- replay;
+- stochastic augmentation.
+
+The growth condition starts with two recruited nodes and recruits one node at each of the first nine task boundaries. With N=12, it ends with 11 recruited nodes and leaves one node dormant.
+
+Two routed controls are required:
+
+- **routed_no_growth:** only the initial two nodes remain recruitable;
+- **routed_all_recruited:** all N nodes are available from the beginning while top-k execution remains fixed.
+
+This distinction is essential. A growth advantage over no-growth but not over all-recruited would indicate a capacity-availability effect rather than evidence for staged developmental recruitment.
+
+Dense controls are constructed under two numerical parameter targets:
+
+- total SynapLoom parameter capacity;
+- estimated per-batch executed SynapLoom parameter footprint.
+
+Pre-task accuracy is now captured for each task. The benchmark reports:
+
+learning_gain_t = post_learning_accuracy_t - pre_learning_accuracy_t
+
+and a late-task mean of this quantity.
+
+This is a stronger engineering plasticity measure than diagonal accuracy alone, although it still does not establish a theoretical loss-of-plasticity result.
+
+The complete frozen protocol is in docs/M1_3_PROTOCOL.md.
