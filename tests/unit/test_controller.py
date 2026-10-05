@@ -9,6 +9,7 @@ from synaploom.plasticity.policies import (
     FixedScheduleRecruitment,
     NoRecruitment,
     StructuralObservation,
+    TaskBoundaryRecruitment,
     TaskBoundaryTopImportance,
 )
 
@@ -86,3 +87,32 @@ def test_task_boundary_consolidates_highest_importance_plastic_node() -> None:
     events = controller.apply(state, plan)
     assert [event.kind for event in events] == ["consolidate"]
     assert state.node_state[1].item() == int(NodeState.CONSOLIDATED)
+
+
+def test_task_boundary_consolidates_old_capacity_then_recruits_new_capacity() -> None:
+    cfg = GraphConfig(
+        num_nodes=4,
+        initial_recruited=2,
+        top_k=2,
+        q_max=1,
+        d_model=8,
+        d_hidden=16,
+        router_dim=8,
+    )
+    state = GraphState(cfg)
+    state.node_importance_ema[:] = torch.tensor([0.8, 0.2, 0.0, 0.0])
+
+    controller = StructuralController(
+        recruitment_policy=TaskBoundaryRecruitment(),
+        consolidation_policy=TaskBoundaryTopImportance(top_n=1),
+    )
+    controller.observe(_observation(cfg, step=7, boundary=True))
+    plan = controller.propose(state)
+
+    assert plan.consolidate_node_ids == (0,)
+    assert plan.recruit_node_id == 2
+
+    events = controller.apply(state, plan)
+    assert [event.kind for event in events] == ["consolidate", "recruit"]
+    assert state.node_state[0].item() == int(NodeState.CONSOLIDATED)
+    assert state.node_state[2].item() == int(NodeState.PLASTIC)
