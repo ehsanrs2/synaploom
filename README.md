@@ -62,6 +62,7 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 - [M1 design](docs/M1_DESIGN.md) — implementation-ready contract for the structural core
 - [M1.3 H1a protocol](docs/M1_3_PROTOCOL.md) — preregistered first scientific reserve-recruitment test
 - [H1a execution runbook](docs/H1A_RUNBOOK.md) — feature extraction, preflight, execution and integrity checks
+- [uv workflow](docs/UV_WORKFLOW.md) — environment, dependency and CI conventions
 - [Theory notes](docs/THEORY.md) — mathematical framing, complexity targets, and open questions
 - [Research hypotheses](docs/RESEARCH_HYPOTHESES.md) — falsifiable hypotheses and baselines
 - [Roadmap](docs/ROADMAP.md) — milestone plan
