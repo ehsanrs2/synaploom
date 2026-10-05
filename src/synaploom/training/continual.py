@@ -80,6 +80,16 @@ class ContinualRunResult:
     current_task_learning_curves: list[list[dict[str, float | int]]] = field(default_factory=list)
 
     def summary(self) -> dict[str, Any]:
+        curve_means = [
+            (sum(float(point["accuracy"]) for point in curve) / len(curve))
+            for curve in self.current_task_learning_curves
+            if curve
+        ]
+        late_curve_mean = (
+            sum(curve_means[-min(2, len(curve_means)):]) / min(2, len(curve_means))
+            if curve_means
+            else None
+        )
         return {
             "final_average_accuracy": final_average_accuracy(self.accuracy_matrix),
             "average_forgetting": average_forgetting(self.accuracy_matrix),
@@ -93,6 +103,8 @@ class ContinualRunResult:
             "diagonal_learning_accuracy": diagonal_learning_accuracy(
                 self.accuracy_matrix
             ).detach().cpu().tolist(),
+            "within_task_mean_accuracy_by_task": curve_means,
+            "late_task_within_task_mean_accuracy": late_curve_mean,
         }
 
     def to_dict(self) -> dict[str, Any]:
