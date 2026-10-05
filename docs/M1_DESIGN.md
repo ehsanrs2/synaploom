@@ -652,6 +652,8 @@ R[t, j] = accuracy on task j after learning through task t.
 
 Future unseen cells remain NaN by default. An opt-in mode can evaluate future tasks for diagnostics, but standard continual metrics use learned-stage semantics.
 
+Because the M1 router is batch-level, predictions can depend on the other examples in the evaluation batch. M1.2 therefore makes evaluation order deterministic and records eval_batch_size in the run config. M1.3 must freeze this batching protocol and should include a sensitivity check before interpreting small accuracy differences.
+
 Derived metrics currently include:
 
 - average accuracy by stage;
