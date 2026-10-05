@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import statistics
 from pathlib import Path
 
@@ -33,6 +34,35 @@ def _aggregate(rows: list[dict[str, float]]) -> dict[str, dict[str, float]]:
     return out
 
 
+def _paired_bootstrap(
+    left: dict[int, dict[str, float]],
+    right: dict[int, dict[str, float]],
+    *,
+    metric: str,
+    samples: int = 10_000,
+    seed: int = 1337,
+) -> dict[str, object]:
+    shared = sorted(set(left).intersection(right))
+    deltas = [float(left[s][metric] - right[s][metric]) for s in shared if metric in left[s] and metric in right[s]]
+    if not deltas:
+        return {"metric": metric, "n": 0, "mean_delta": None, "ci95": None, "per_seed": {}}
+    rng = random.Random(seed)
+    means = []
+    for _ in range(samples):
+        draw = [deltas[rng.randrange(len(deltas))] for _ in deltas]
+        means.append(statistics.fmean(draw))
+    means.sort()
+    lo = means[int(0.025 * (samples - 1))]
+    hi = means[int(0.975 * (samples - 1))]
+    return {
+        "metric": metric,
+        "n": len(deltas),
+        "mean_delta": statistics.fmean(deltas),
+        "ci95": [lo, hi],
+        "per_seed": {str(s): float(left[s][metric] - right[s][metric]) for s in shared if metric in left[s] and metric in right[s]},
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="M1.3 H1a mechanism-isolation benchmark.")
     parser.add_argument("--features", type=Path, required=True)
@@ -57,6 +87,7 @@ def main() -> None:
     args.output.mkdir(parents=True, exist_ok=True)
 
     aggregate_rows: dict[str, list[dict[str, float]]] = {variant: [] for variant in variants}
+    by_seed: dict[str, dict[int, dict[str, float]]] = {variant: {} for variant in variants}
 
     for seed in seeds:
         for variant in variants:
@@ -123,12 +154,30 @@ def main() -> None:
                 if isinstance(value, (int, float)) and value is not None
             }
             aggregate_rows[variant].append(scalar_summary)
+            by_seed[variant][seed] = scalar_summary
             print(json.dumps({
                 "variant": variant,
                 "seed": seed,
                 "result": str(path),
                 "summary": scalar_summary,
             }, sort_keys=True))
+
+    comparisons = {}
+    if "progressive_reserve" in by_seed and "all_recruited" in by_seed:
+        primary_metrics = (
+            "final_average_accuracy",
+            "late_task_within_task_mean_accuracy",
+            "average_forgetting",
+            "backward_transfer",
+        )
+        comparisons["progressive_minus_all_recruited"] = {
+            metric: _paired_bootstrap(
+                by_seed["progressive_reserve"],
+                by_seed["all_recruited"],
+                metric=metric,
+            )
+            for metric in primary_metrics
+        }
 
     aggregate = {
         "milestone": "M1.3",
@@ -139,6 +188,7 @@ def main() -> None:
             variant: _aggregate(rows)
             for variant, rows in aggregate_rows.items()
         },
+        "paired_comparisons": comparisons,
     }
     aggregate_path = args.output / "aggregate.json"
     aggregate_path.write_text(json.dumps(aggregate, indent=2, sort_keys=True), encoding="utf-8")
