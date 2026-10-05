@@ -24,8 +24,15 @@ jobs:
       - name: Resolve lockfile
         run: uv lock
 
+      - name: Upload generated lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: uv-lock
+          path: uv.lock
+          if-no-files-found: error
+
       - name: Sync project (CPU PyTorch)
-        run: uv sync --locked --torch-backend cpu
+        run: uv sync --locked --extra cpu
 
       - name: Run test suite
         run: uv run --locked --no-sync pytest
