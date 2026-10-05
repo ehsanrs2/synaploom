@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import random
 import statistics
+import subprocess
 from pathlib import Path
 
 import torch
 
-from synaploom.data.features import make_split_feature_stream
+from synaploom.data.features import load_feature_bundle, make_split_feature_stream
 from synaploom.protocols.h1a import H1A_CLASS_ORDER, H1A_VARIANTS, H1AProtocol, build_h1a_variant
 from synaploom.research.budgets import (
     count_trainable_parameters,
@@ -17,6 +19,30 @@ from synaploom.research.budgets import (
     synaploom_budget,
 )
 from synaploom.training.continual import run_continual_experiment, save_continual_result
+
+
+def _git_commit() -> str | None:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        return None
+
+
+def _environment(device: str) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "python": platform.python_version(),
+        "torch": torch.__version__,
+        "requested_device": device,
+        "git_commit": _git_commit(),
+    }
+    if torch.cuda.is_available():
+        payload["cuda"] = torch.version.cuda
+        payload["gpu"] = torch.cuda.get_device_name(torch.device(device) if device.startswith("cuda") else 0)
+    return payload
 
 
 def _aggregate(rows: list[dict[str, float]]) -> dict[str, dict[str, float]]:
@@ -79,11 +105,20 @@ def main() -> None:
     if unknown:
         raise ValueError(f"unknown variants: {sorted(unknown)}")
 
+    bundle = load_feature_bundle(args.features)
+    feature_metadata = dict(bundle.get("metadata", {}))
     stream = make_split_feature_stream(
         args.features,
         class_order=H1A_CLASS_ORDER,
         classes_per_task=protocol.classes_per_task,
     )
+    if tuple(stream.feature_shape) != (protocol.feature_dim,):
+        raise ValueError(
+            f"feature dimension mismatch: stream={tuple(stream.feature_shape)} protocol={(protocol.feature_dim,)}"
+        )
+    if len(stream) != 10 or stream.num_classes != protocol.num_classes:
+        raise ValueError("H1a primary stream must contain 10 tasks and 100 classes")
+    environment = _environment(args.device)
     args.output.mkdir(parents=True, exist_ok=True)
 
     aggregate_rows: dict[str, list[dict[str, float]]] = {variant: [] for variant in variants}
@@ -130,6 +165,8 @@ def main() -> None:
                     "protocol": protocol.as_dict(),
                     "class_order": list(H1A_CLASS_ORDER),
                     "feature_bundle": str(args.features),
+                    "feature_bundle_metadata": feature_metadata,
+                    "environment": environment,
                     "build": build_meta,
                     "initial_total_parameters": count_trainable_parameters(model),
                     "initial_linear_macs_per_batch_estimate": initial_macs,
@@ -184,6 +221,8 @@ def main() -> None:
         "hypothesis": "H1a-controlled-reserve-recruitment",
         "protocol": protocol.as_dict(),
         "class_order": list(H1A_CLASS_ORDER),
+        "feature_bundle_metadata": feature_metadata,
+        "environment": environment,
         "variants": {
             variant: _aggregate(rows)
             for variant, rows in aggregate_rows.items()
