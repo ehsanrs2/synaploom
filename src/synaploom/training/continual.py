@@ -18,6 +18,7 @@ except ImportError:
 from torch import Tensor, nn
 
 from synaploom.data.streams import ContinualStream, iter_tensor_batches
+from synaploom.training.class_incremental import class_incremental_cross_entropy
 from synaploom.training.continual_metrics import (
     average_accuracy_by_stage,
     average_forgetting,
@@ -40,6 +41,7 @@ class ContinualConfig:
     device: str = "cpu"
     evaluate_future_tasks: bool = False
     apply_final_task_boundary: bool = False
+    restrict_logits_to_seen_classes: bool = False
 
     def __post_init__(self) -> None:
         if self.epochs_per_task <= 0:
@@ -202,7 +204,10 @@ def run_continual_experiment(
     structural_history: list[StructuralSnapshot] = []
     global_step = 0
 
+    seen_classes: list[int] = []
     for stage, task in enumerate(stream):
+        seen_classes.extend(int(v) for v in task.classes)
+        allowed_classes = tuple(sorted(set(seen_classes))) if config.restrict_logits_to_seen_classes else None
         losses: list[float] = []
         selection_counts: Counter[int] = Counter()
         executed_sizes: list[int] = []
@@ -228,7 +233,11 @@ def run_continual_experiment(
 
                 if engine is not None:
                     result = engine.train_step(
-                        x, y, step=global_step, task_boundary=boundary
+                        x,
+                        y,
+                        step=global_step,
+                        task_boundary=boundary,
+                        allowed_classes=allowed_classes,
                     )
                     losses.append(result.loss)
                     trace = result.trace
@@ -239,7 +248,11 @@ def run_continual_experiment(
                     output = model(x)
                     logits = logits_from_output(output)
                     aux_loss = getattr(output, "aux_loss", None)
-                    loss = F.cross_entropy(logits, y)
+                    loss = class_incremental_cross_entropy(
+                        logits,
+                        y,
+                        allowed_classes=allowed_classes,
+                    )
                     if isinstance(aux_loss, Tensor):
                         loss = loss + aux_loss
                     loss.backward()
@@ -280,6 +293,7 @@ def run_continual_experiment(
                 stream[eval_task_index],
                 batch_size=config.eval_batch_size,
                 device=device,
+                allowed_classes=allowed_classes,
             )
             accuracy[stage, eval_task_index] = result.accuracy
             eval_loss[stage, eval_task_index] = result.loss
