@@ -4,7 +4,7 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **M1.0 structural execution core implemented; M1.1 controlled adaptation next**. No experimental performance claims yet.
+> Project status: **M1.1 controlled structural adaptation implemented; continual evaluation harness next**. No experimental performance claims yet.
 
 ## Core idea
 
@@ -54,17 +54,17 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 ## Current milestone
 
-**M1.0 — execution and state machinery** is implemented and locally passes 10 unit tests.
+**M1.0** provides the fixed-capacity sparse execution machinery. **M1.1** adds controlled structural adaptation: scheduled/task-boundary recruitment, norm-calibrated context imprinting, bounded edge initialization, consolidation policies, importance statistics, controller checkpointing, and a mutation-safe training engine.
 
-The next step is **M1.1 — controlled structural adaptation**:
+The next step is **M1.2 — continual evaluation harness and controls**:
 
-- StructuralController
-- scheduled/task-boundary recruitment
-- context-imprinted routing keys
-- bounded edge initialization
-- controller-driven event logging
-- optional task-boundary consolidation
-- first end-to-end scheduled recruitment smoke run
+- explicit continual task streams,
+- evaluation after each task,
+- forgetting / late-task-learning metrics,
+- dense and fixed-routed no-growth controls,
+- structural-capacity/utilization histories.
+
+No scientific performance result is claimed from the M1.1 engineering smoke tests.
 
 ## Prior-work anchors
 
