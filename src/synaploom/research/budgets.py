@@ -123,3 +123,50 @@ def dense_hidden_width_for_target(
         num_classes=num_classes,
     )
     return best_width, count
+
+
+def estimate_synaploom_linear_macs_per_batch(
+    model: SynapLoomModel,
+    *,
+    batch_size: int,
+) -> int:
+    """Estimate linear-layer MACs for M1.3 (message_rounds=0).
+
+    Excludes LayerNorm/GELU/softmax and data movement. Router key scoring is
+    batch-level, so its candidate cost is paid once per batch.
+    """
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive")
+    cfg = model.graph_state.config
+    if cfg.message_rounds != 0:
+        raise ValueError("M1.3 MAC estimator currently assumes message_rounds=0")
+
+    input_dim = model.config.input_dim
+    d = cfg.d_model
+    h = cfg.d_hidden
+    r = cfg.router_dim
+    classes = model.config.num_classes
+    recruited = model.graph_state.recruited_count()
+
+    encoder = 0 if input_dim == d else batch_size * input_dim * d
+    query = batch_size * d * r
+    router_scores = recruited * r
+    experts = batch_size * cfg.top_k * (d * h + h * d)
+    head = batch_size * d * classes
+    return int(encoder + query + router_scores + experts + head)
+
+
+def estimate_dense_linear_macs_per_batch(
+    *,
+    input_dim: int,
+    d_model: int,
+    d_hidden: int,
+    num_classes: int,
+    batch_size: int,
+) -> int:
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive")
+    encoder = 0 if input_dim == d_model else batch_size * input_dim * d_model
+    body = batch_size * (d_model * d_hidden + d_hidden * d_model)
+    head = batch_size * d_model * num_classes
+    return int(encoder + body + head)
