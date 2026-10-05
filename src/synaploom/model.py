@@ -12,11 +12,11 @@ from synaploom.core.router import SparseRouter
 class SynapLoomModel(nn.Module):
     """M1 single-modality structural core."""
 
-    def __init__(self, config: ModelConfig) -> None:
+    def __init__(self, config: ModelConfig, *, encoder: nn.Module | None = None) -> None:
         super().__init__()
         self.config = config
         g = config.graph
-        self.encoder = (
+        self.encoder = encoder or (
             nn.Identity() if config.input_dim == g.d_model else nn.Linear(config.input_dim, g.d_model)
         )
         self.graph_state = GraphState(g)
