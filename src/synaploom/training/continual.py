@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import math
 import random
+import time
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -78,6 +79,9 @@ class ContinualRunResult:
     stream_manifest: list[dict[str, Any]] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
     current_task_learning_curves: list[list[dict[str, float | int]]] = field(default_factory=list)
+    train_seconds_by_task: list[float] = field(default_factory=list)
+    eval_seconds_by_stage: list[float] = field(default_factory=list)
+    peak_cuda_memory_bytes: int | None = None
 
     def summary(self) -> dict[str, Any]:
         curve_means = [
@@ -118,6 +122,9 @@ class ContinualRunResult:
             "stream_manifest": self.stream_manifest,
             "metadata": self.metadata,
             "current_task_learning_curves": self.current_task_learning_curves,
+            "train_seconds_by_task": self.train_seconds_by_task,
+            "eval_seconds_by_stage": self.eval_seconds_by_stage,
+            "peak_cuda_memory_bytes": self.peak_cuda_memory_bytes,
             "summary": self.summary(),
         }
 
@@ -220,7 +227,11 @@ def run_continual_experiment(
     train_loss_by_task: list[float] = []
     structural_history: list[StructuralSnapshot] = []
     current_task_learning_curves: list[list[dict[str, float | int]]] = []
+    train_seconds_by_task: list[float] = []
+    eval_seconds_by_stage: list[float] = []
     global_step = 0
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
 
     seen_classes: list[int] = []
     for stage, task in enumerate(stream):
@@ -228,6 +239,9 @@ def run_continual_experiment(
         allowed_classes = tuple(sorted(set(seen_classes))) if config.restrict_logits_to_seen_classes else None
         losses: list[float] = []
         task_curve: list[dict[str, float | int]] = []
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        train_started = time.perf_counter()
         selection_counts: Counter[int] = Counter()
         executed_sizes: list[int] = []
 
@@ -314,6 +328,9 @@ def run_continual_experiment(
                     }
                 )
 
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        train_seconds_by_task.append(time.perf_counter() - train_started)
         train_loss_by_task.append(sum(losses) / max(1, len(losses)))
         current_task_learning_curves.append(task_curve)
         structural_history.append(
@@ -326,6 +343,9 @@ def run_continual_experiment(
             )
         )
 
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        eval_started = time.perf_counter()
         eval_limit = num_tasks if config.evaluate_future_tasks else stage + 1
         for eval_task_index in range(eval_limit):
             result = evaluate_task(
@@ -337,6 +357,9 @@ def run_continual_experiment(
             )
             accuracy[stage, eval_task_index] = result.accuracy
             eval_loss[stage, eval_task_index] = result.loss
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        eval_seconds_by_stage.append(time.perf_counter() - eval_started)
 
     stream_manifest = [
         {
@@ -357,4 +380,11 @@ def run_continual_experiment(
         stream_manifest=stream_manifest,
         metadata=dict(metadata or {}),
         current_task_learning_curves=current_task_learning_curves,
+        train_seconds_by_task=train_seconds_by_task,
+        eval_seconds_by_stage=eval_seconds_by_stage,
+        peak_cuda_memory_bytes=(
+            int(torch.cuda.max_memory_allocated(device))
+            if device.type == "cuda"
+            else None
+        ),
     )
