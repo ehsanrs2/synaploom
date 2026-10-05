@@ -254,11 +254,21 @@ Engineering smoke tests validate mechanics only. Research results must be record
 
 **Execute M1.3a — H1a primary paired run**
 
+Execution safeguards are now specified in `docs/H1A_RUNBOOK.md`:
+
+- feature extraction writes SHA-256 provenance;
+- a mandatory preflight validates dimensions, finiteness, class ids/counts and metadata;
+- the benchmark independently reruns the same audit before any seed;
+- every run records the exact feature-bundle SHA-256.
+
+Next actions:
+
 1. Extract the frozen CIFAR-100 ResNet-18 feature bundle.
-2. Run the preregistered 10-seed benchmark.
-3. Verify artifacts/provenance and paired comparisons.
-4. Record results in docs/EXPERIMENT_LOG.md.
-5. Only after inspecting the preregistered H1a result, decide whether to:
+2. Run the mandatory H1a preflight and preserve its output.
+3. Run the preregistered 10-seed benchmark.
+4. Verify all expected artifacts/provenance and paired comparisons.
+5. Record results in docs/EXPERIMENT_LOG.md.
+6. Only after inspecting the preregistered H1a result, decide whether to:
    - proceed to H1a sensitivity / end-to-end replication;
    - add M1.3b external sparse baselines;
    - revise the mechanism before M2.
