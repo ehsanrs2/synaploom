@@ -74,25 +74,35 @@ Exit criterion: the measurement pipeline can compare controlled growth against n
 
 ### M1.3 — first fair H1 benchmark
 
-Current candidate: **Split CIFAR-100 class-incremental**.
+#### M1.3a — recruitment-only primary test
 
-Add stronger controls/baselines:
-- dense under explicit budget matching
-- fixed-capacity routed/no-growth
-- fixed sparse
-- dynamic sparse where feasible
-- standard continual-learning baseline(s)
+Implemented:
+- [x] freeze Split CIFAR-100 10x10 class-incremental protocol
+- [x] freeze 5 model seeds and deterministic class order
+- [x] disable replay, graph edges, message passing, consolidation and augmentation for the primary mechanism test
+- [x] common CIFAR encoder family
+- [x] synaploom_growth condition
+- [x] routed_no_growth condition
+- [x] routed_all_recruited condition
+- [x] dense total-parameter matcher
+- [x] dense executed-parameter matcher
+- [x] pre-task accuracy and learning-gain metrics
+- [x] multi-seed aggregation
+- [x] wall-clock and peak CUDA memory recording
+- [x] dry-run CI validation
+- [ ] execute the 5-seed CIFAR-100 suite
+- [ ] record scientific results in EXPERIMENT_LOG
+- [ ] perform batch-composition sensitivity check if effects are small
 
-Report at minimum:
-- equal-total-capacity view
-- equal-executed-capacity view
-- average accuracy
-- forgetting
-- late-task learning speed
-- recruited/executed capacity
-- actual wall time/FLOPs where measured
+#### M1.3b — stronger reference tracks, only after H1a
 
-Exit criterion: H1 can be evaluated fairly under explicitly reported total-capacity and executed-capacity budgets.
+Potential additions:
+- [ ] fixed sparse control
+- [ ] RigL-style/dynamic sparse reference where feasible
+- [ ] ER/DER++ replay reference with replay memory reported separately
+- [ ] measured FLOP profiling
+
+Exit criterion: H1a has a multi-seed result under transparent total/executed capacity reporting, and any extension baseline is clearly separated by resource assumptions.
 
 ## M2 — Adaptive plasticity and stability
 
