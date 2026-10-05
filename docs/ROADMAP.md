@@ -38,23 +38,57 @@ Local M1.0 validation: **10/10 unit tests passed** on 2026-10-05.
 
 ### M1.1 — controlled structural adaptation
 
+Implemented:
+- [x] StructuralController with observe / propose / apply
+- [x] fixed-schedule recruitment
+- [x] task-boundary recruitment
+- [x] norm-calibrated context-imprinted routing keys
+- [x] bounded context-linked edge initialization
+- [x] deterministic random edge-init baseline
+- [x] task-boundary top-importance consolidation
+- [x] node-owned gradient protection for consolidated capacity
+- [x] node-importance statistics
+- [x] controller checkpoint state
+- [x] mutation-safe training engine
+- [x] controller event emission
+- [x] integration test and standalone controlled-growth smoke script
+
+Automatic novelty detection remains M2.
+
+### M1.2 — continual evaluation harness and controls
+
 Implement:
-- scheduled/task-boundary recruitment policies
-- context-imprinted routing key for recruited nodes
-- bounded edge initialization
-- optional task-boundary consolidation
-- structural event log
+- [ ] task/stream abstraction
+- [ ] synthetic multi-cluster continual stream
+- [ ] SplitMNIST (or equivalent) functional continual smoke
+- [ ] evaluation matrix after every task
+- [ ] average accuracy / forgetting / late-task-learning metrics
+- [ ] structural histories: recruited/executed nodes, edges, utilization
+- [ ] dense control model using the same harness
+- [ ] fixed-capacity routed control with no structural growth
+- [ ] deterministic run/config artifact recording
 
-Smoke-test on synthetic data and a simple continual stream.
+Exit criterion: the measurement pipeline can compare controlled growth against non-growth controls on a continual stream without changing the training/evaluation harness.
 
-Candidate first scientific benchmark: Split CIFAR-100 class-incremental.
+### M1.3 — first fair H1 benchmark
 
-Required controls/baselines:
-- dense
-- fixed-capacity routed model without growth
+Current candidate: **Split CIFAR-100 class-incremental**.
+
+Add stronger controls/baselines:
+- dense under explicit budget matching
+- fixed-capacity routed/no-growth
 - fixed sparse
 - dynamic sparse where feasible
 - standard continual-learning baseline(s)
+
+Report at minimum:
+- equal-total-capacity view
+- equal-executed-capacity view
+- average accuracy
+- forgetting
+- late-task learning speed
+- recruited/executed capacity
+- actual wall time/FLOPs where measured
 
 Exit criterion: H1 can be evaluated fairly under explicitly reported total-capacity and executed-capacity budgets.
 
