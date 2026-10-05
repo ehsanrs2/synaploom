@@ -6,6 +6,32 @@ SynapLoom is a research project exploring whether a neural system can learn cont
 
 > Project status: **M1.3 H1a protocol and benchmark machinery ready; primary scientific run pending**. No scientific performance claims yet.
 
+## Development environment
+
+SynapLoom uses **uv** as the project package and environment manager.
+
+```bash
+# Create/sync .venv from pyproject.toml + uv.lock
+uv sync
+
+# Run the test suite in the managed environment
+uv run pytest
+
+# Install the optional vision stack used by CIFAR-100 feature extraction
+uv sync --extra vision
+```
+
+The normal workflow does not require manually activating `.venv`; prefer `uv run ...`.
+
+Dependency changes should go through uv so `pyproject.toml` and `uv.lock` remain synchronized:
+
+```bash
+uv add <package>
+uv add --dev <package>
+uv add --optional vision <package>
+uv lock
+```
+
 ## Core idea
 
 The initial architecture uses fixed total microcircuit capacity with dynamic structural state.
@@ -53,6 +79,7 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 7. Separate recruited capacity from executed compute.
 8. Avoid dense topology materialization.
 9. The repository is the source of truth for project state.
+10. uv + uv.lock are the source of truth for the Python environment.
 
 ## Current milestone
 
