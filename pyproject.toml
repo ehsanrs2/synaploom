@@ -17,6 +17,9 @@ dev = [
   "numpy>=1.26",
   "pytest>=8",
 ]
+vision = [
+  "torchvision>=0.17",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
