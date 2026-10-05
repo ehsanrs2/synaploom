@@ -1,6 +1,6 @@
 # M1 Design Specification — Single-Modality Structural Core
 
-**Status:** M1.0 implemented; M1.1 pending  
+**Status:** M1.0 + M1.1 implemented; continual validation pending  
 **Milestone:** M1  
 **Date:** 2026-10-05
 
@@ -518,3 +518,102 @@ Not yet implemented:
 - automatic novelty/growth detection.
 
 The first four items are M1.1. Automatic novelty remains M2.
+
+
+## 26. M1.1 implementation record
+
+Implemented on 2026-10-05 in the controlled-adaptation milestone.
+
+### Controller boundary
+
+The implemented control flow is:
+
+forward
+-> task loss
+-> backward
+-> node-importance update
+-> node-owned consolidation gradient scaling
+-> optimizer.step
+-> utilization update
+-> StructuralObservation
+-> StructuralController.observe
+-> propose StructuralPlan
+-> apply plan under no_grad
+
+Structural mutation never occurs during forward/backward.
+
+### Recruitment policies
+
+Implemented:
+
+- NoRecruitment
+- FixedScheduleRecruitment
+- TaskBoundaryRecruitment
+
+The controller deterministically chooses the lowest-ID dormant node when recruitment is requested.
+
+### Context imprinting
+
+The new node's routing key uses the direction of the triggering batch routing context. Its norm is rescaled to the median norm of currently recruited routing keys.
+
+This avoids a raw context vector winning routing simply because of scale. Optional seeded noise can be added and re-normalized.
+
+### Edge initialization
+
+Implemented:
+
+- NoEdges
+- ConnectToSelectedTopR
+- SeededRandomR
+
+All policies respect q_max. SeededRandomR derives its deterministic permutation from seed, structural step, and new node id.
+
+### Consolidation
+
+Implemented:
+
+- NoConsolidation
+- TaskBoundaryTopImportance
+
+Node importance is an EMA of mean |parameter * gradient| over parameters owned by the node.
+
+Consolidation scales gradients for:
+
+- the node microcircuit;
+- the node routing-key row;
+- the node outgoing edge-gate row.
+
+Shared relation projections remain globally shared/plastic in M1 because assigning their gradient to one node would be ambiguous.
+
+### Task-boundary semantics
+
+For TrainingEngine, task_boundary=True means the current training step is the final step of the current task.
+
+At that boundary:
+
+1. the step is trained normally;
+2. importance/utilization are updated;
+3. selected old capacity may be consolidated;
+4. new dormant capacity may then be recruited for the following task.
+
+Therefore a newly recruited node is not immediately consolidated at the same boundary.
+
+### Checkpointing
+
+Controller state currently stores the last applied structural step. M1.1 policies are otherwise deterministic/stateless from their explicit configuration, so this prevents duplicate structural mutation after resume.
+
+### Import architecture
+
+StructuralEvent and JsonlEventLogger live in synaploom.events. synaploom.training.events remains a compatibility re-export.
+
+This keeps the structural controller independent from the training package and avoids a controller -> training -> engine -> controller import cycle.
+
+### Validation scope
+
+The milestone includes unit/integration tests and an end-to-end scheduled-growth smoke script in CI.
+
+These validate mechanism correctness only. They are not continual-learning evidence and do not support accuracy, forgetting, transfer, or compute claims.
+
+### Next design step
+
+M1.2 builds the continual evaluation harness and no-growth controls before any adaptive novelty policy is introduced.
