@@ -60,6 +60,10 @@ def test_no_growth_and_controlled_growth_are_distinguishable() -> None:
         fixed_model, _stream(), fixed_optimizer, config=run_config
     )
     assert [s.recruited_nodes for s in fixed_result.structural_history] == [2, 2]
+    assert any(
+        value > 0
+        for value in fixed_result.structural_history[-1].node_utilization_ema.values()
+    )
 
     torch.manual_seed(4)
     growth_model = make_no_growth_routed_control(config)
