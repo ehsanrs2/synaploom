@@ -18,6 +18,7 @@ class ForwardTrace:
     recruited_node_ids: Tensor
     selected_node_ids: Tensor
     router_weights: Tensor
+    routing_context: Tensor
     executed_edge_count: int
     structural_version: int
 
@@ -26,6 +27,7 @@ class ForwardTrace:
             recruited_node_ids=self.recruited_node_ids.detach().cpu(),
             selected_node_ids=self.selected_node_ids.detach().cpu(),
             router_weights=self.router_weights.detach().cpu(),
+            routing_context=self.routing_context.detach().cpu(),
             executed_edge_count=self.executed_edge_count,
             structural_version=self.structural_version,
         )
