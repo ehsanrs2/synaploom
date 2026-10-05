@@ -30,3 +30,5 @@ def test_continual_result_serializes_nan_as_null(tmp_path) -> None:
     payload = json.loads(path.read_text())
     assert payload["accuracy_matrix"][0][1] is None
     assert "average_forgetting" in payload["summary"]
+    assert payload["run_config"] == {}
+    assert payload["stream_manifest"] == []
