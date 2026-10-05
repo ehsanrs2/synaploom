@@ -13,7 +13,7 @@ from synaploom.plasticity.consolidation import scale_microcircuit_gradients
 from synaploom.plasticity.controller import StructuralController
 from synaploom.plasticity.policies import StructuralObservation
 from synaploom.plasticity.statistics import update_node_importance
-from synaploom.training.events import StructuralEvent
+from synaploom.events import StructuralEvent
 
 
 @dataclass(frozen=True)
