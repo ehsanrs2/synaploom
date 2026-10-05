@@ -66,6 +66,7 @@ class StructuralSnapshot:
 class ContinualRunResult:
     accuracy_matrix: Tensor
     eval_loss_matrix: Tensor
+    pre_task_accuracy: Tensor
     train_loss_by_task: list[float]
     structural_history: list[StructuralSnapshot]
     global_steps: int
@@ -81,6 +82,15 @@ class ContinualRunResult:
             "late_task_learning_accuracy": late_task_learning_accuracy(
                 self.accuracy_matrix, last_n=min(2, self.accuracy_matrix.shape[0])
             ),
+            "learning_gain_by_task": (
+                diagonal_learning_accuracy(self.accuracy_matrix) - self.pre_task_accuracy
+            ).detach().cpu().tolist(),
+            "late_task_learning_gain": float(
+                (
+                    diagonal_learning_accuracy(self.accuracy_matrix)[-min(2, self.accuracy_matrix.shape[0]):]
+                    - self.pre_task_accuracy[-min(2, self.accuracy_matrix.shape[0]):]
+                ).mean().item()
+            ),
             "average_accuracy_by_stage": average_accuracy_by_stage(
                 self.accuracy_matrix
             ).detach().cpu().tolist(),
@@ -93,6 +103,7 @@ class ContinualRunResult:
         return {
             "accuracy_matrix": matrix_to_jsonable(self.accuracy_matrix),
             "eval_loss_matrix": matrix_to_jsonable(self.eval_loss_matrix),
+            "pre_task_accuracy": [float(v) for v in self.pre_task_accuracy.detach().cpu().tolist()],
             "train_loss_by_task": [float(v) for v in self.train_loss_by_task],
             "structural_history": [asdict(item) for item in self.structural_history],
             "global_steps": int(self.global_steps),
@@ -198,11 +209,20 @@ def run_continual_experiment(
     num_tasks = len(stream)
     accuracy = torch.full((num_tasks, num_tasks), float("nan"))
     eval_loss = torch.full((num_tasks, num_tasks), float("nan"))
+    pre_task_accuracy = torch.full((num_tasks,), float("nan"))
     train_loss_by_task: list[float] = []
     structural_history: list[StructuralSnapshot] = []
     global_step = 0
 
     for stage, task in enumerate(stream):
+        pre_eval = evaluate_task(
+            model,
+            task,
+            batch_size=config.eval_batch_size,
+            device=device,
+        )
+        pre_task_accuracy[stage] = pre_eval.accuracy
+
         losses: list[float] = []
         selection_counts: Counter[int] = Counter()
         executed_sizes: list[int] = []
@@ -296,6 +316,7 @@ def run_continual_experiment(
     return ContinualRunResult(
         accuracy_matrix=accuracy,
         eval_loss_matrix=eval_loss,
+        pre_task_accuracy=pre_task_accuracy,
         train_loss_by_task=train_loss_by_task,
         structural_history=structural_history,
         global_steps=global_step,
