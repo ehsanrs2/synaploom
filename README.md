@@ -4,7 +4,7 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **M1 design complete; implementation not started**. No experimental performance claims yet.
+> Project status: **M1.0 structural execution core implemented; M1.1 controlled adaptation next**. No experimental performance claims yet.
 
 ## Core idea
 
@@ -54,18 +54,17 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 ## Current milestone
 
-The next implementation step is **M1.0 — execution and state machinery**:
+**M1.0 — execution and state machinery** is implemented and locally passes 10 unit tests.
 
-- package/config scaffold
-- GraphState
-- MicroCircuit
-- batch-level SparseRouter
-- bounded edge slots
-- GraphExecutor
-- ForwardTrace
-- event logging
-- checkpoint/restore
-- invariant tests
+The next step is **M1.1 — controlled structural adaptation**:
+
+- StructuralController
+- scheduled/task-boundary recruitment
+- context-imprinted routing keys
+- bounded edge initialization
+- controller-driven event logging
+- optional task-boundary consolidation
+- first end-to-end scheduled recruitment smoke run
 
 ## Prior-work anchors
 

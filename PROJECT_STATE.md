@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-05  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1 design complete; implementation not started  
-**Research status:** M0 merged; M1 implementation specification prepared; no experimental results yet
+**Current stage:** M1.0 core implemented; M1.1 next  
+**Research status:** structural execution machinery implemented and invariant-tested; no training/benchmark results yet
 
 ## 1. Project objective
 
@@ -104,7 +104,43 @@ Total microcircuit parameter memory remains approximately O(N d h); dormant capa
 
 See docs/THEORY.md for assumptions and open questions.
 
-## 7. No experimental results yet
+## 7. M1.0 implementation status
+
+Implemented:
+
+- typed GraphConfig / ModelConfig
+- fixed-capacity GraphState with registered structural buffers
+- DORMANT / PLASTIC / CONSOLIDATED state transitions
+- trainable routing keys
+- batch-level top-k SparseRouter over recruited nodes only
+- residual MicroCircuit experts
+- bounded q_max edge slots
+- scalar edge gates + shared relation projections
+- bounded synchronous message passing
+- ModelOutput / ForwardTrace
+- structural utilization tracking
+- consolidation gradient scaling for microcircuits
+- total/recruited/executed capacity accounting
+- checkpoint/restore for model, optimizer, step, extra metadata, and RNG state
+- append-only JSONL structural event logger
+- pytest package configuration and GitHub Actions test workflow
+
+Implementation choice recorded for message passing:
+
+- one initial expert pass;
+- each message-passing round adds mean incoming messages to the node state;
+- the same residual microcircuit is then applied again;
+- no explicit message alpha parameter is used in M1.0.
+
+Local validation on 2026-10-05:
+
+- 10 unit tests passed
+- PyTorch 2.10.0+cpu
+- pytest 9.0.2
+
+The GitHub CI workflow will independently validate the repository branch/PR.
+
+## 8. No experimental results yet
 
 There are currently:
 
@@ -116,26 +152,22 @@ There are currently:
 
 Future results must be recorded in docs/EXPERIMENT_LOG.md.
 
-## 8. Immediate next milestone
+## 9. Immediate next milestone
 
-**Implement M1.0 — execution and state machinery**
+**Implement M1.1 — controlled structural adaptation**
 
 Required components:
 
-- package/config scaffold
-- GraphState with registered structural buffers
-- MicroCircuit
-- batch-level SparseRouter
-- bounded edge-slot representation
-- GraphExecutor
-- typed ModelOutput / ForwardTrace
-- event logger
-- exact checkpoint contract
-- invariant unit tests
+- StructuralController with observe / propose / apply separation
+- deterministic free-node recruitment
+- context-imprinted routing keys
+- FixedScheduleRecruitment and TaskBoundaryRecruitment policies
+- bounded edge initialization policy
+- structural event emission wired into controller actions
+- optional task-boundary consolidation
+- end-to-end scheduled-recruitment smoke run
 
-Then M1.1 adds controlled scheduled recruitment and optional task-boundary consolidation.
-
-## 9. Open design questions
+## 10. Open design questions
 
 Still unresolved:
 
@@ -149,7 +181,7 @@ Still unresolved:
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 10. Documentation rule
+## 11. Documentation rule
 
 For every merged milestone PR:
 

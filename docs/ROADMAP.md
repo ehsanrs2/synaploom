@@ -21,16 +21,20 @@ Exit criterion: another researcher can read the repository and explain the exact
 
 ### M1.0 — execution/state machinery
 
-Implement:
-- fixed total microcircuit capacity
-- DORMANT / PLASTIC / CONSOLIDATED states
-- recruited-vs-executed distinction
-- batch-level sparse router
-- bounded O(N q_max) edge-slot representation
-- graph executor / bounded message passing
-- trace and structural accounting
-- exact checkpoint/restore
-- invariant unit tests
+Implemented:
+- [x] fixed total microcircuit capacity
+- [x] DORMANT / PLASTIC / CONSOLIDATED states
+- [x] recruited-vs-executed distinction
+- [x] batch-level sparse router
+- [x] bounded O(N q_max) edge-slot representation
+- [x] graph executor / bounded message passing
+- [x] trace and structural accounting
+- [x] checkpoint/restore of model, optimizer, structural tensors, and RNG state
+- [x] invariant unit tests
+- [x] append-only structural event logger
+- [x] pull-request test workflow
+
+Local M1.0 validation: **10/10 unit tests passed** on 2026-10-05.
 
 ### M1.1 — controlled structural adaptation
 
