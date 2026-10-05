@@ -167,7 +167,6 @@ def build_h1a_variant(
         raise AssertionError("unreachable")
 
     optimizer = _optimizer(model, protocol)
-    engine: TrainingEngine | None = None
     if variant == "progressive_reserve":
         controller = StructuralController(
             recruitment_policy=FixedScheduleRecruitment(
@@ -176,7 +175,14 @@ def build_h1a_variant(
             edge_init_policy=NoEdges(),
             consolidation_policy=NoConsolidation(),
         )
-        engine = TrainingEngine(model, optimizer, controller=controller)
+        engine: TrainingEngine | None = TrainingEngine(
+            model,
+            optimizer,
+            controller=controller,
+        )
+    else:
+        # Routed controls deliberately use the exact same trainer path.
+        engine = TrainingEngine(model, optimizer, controller=None)
 
     budget = synaploom_budget(model)
     return model, optimizer, engine, {
