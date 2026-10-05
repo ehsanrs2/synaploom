@@ -9,18 +9,21 @@ This runbook does not change the preregistered protocol. It only fixes the execu
 
 Use a clean environment with the repository checked out at the execution commit.
 
-Install the package plus the optional vision dependencies:
+Sync the locked project environment plus the optional vision dependencies:
 
 ```bash
-pip install -e ".[vision]"
+uv sync --locked --extra vision
 ```
+
+SynapLoom uses uv; do not create a parallel pip-managed experiment environment.
 
 Record:
 
 ```bash
 git rev-parse HEAD
-python --version
-python -c "import torch, torchvision; print(torch.__version__, torchvision.__version__); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'cpu')"
+uv --version
+uv run --locked python --version
+uv run --locked python -c "import torch, torchvision; print(torch.__version__, torchvision.__version__); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'cpu')"
 ```
 
 The benchmark runner also records Git/PyTorch/GPU metadata automatically.
@@ -28,7 +31,7 @@ The benchmark runner also records Git/PyTorch/GPU metadata automatically.
 ## 2. Extract the frozen feature artifact
 
 ```bash
-python experiments/scripts/extract_cifar100_resnet18_features.py \
+uv run --locked python experiments/scripts/extract_cifar100_resnet18_features.py \
   --root data/cifar100 \
   --output data/features/cifar100_resnet18_imagenet1k_v1.pt \
   --download \
@@ -48,7 +51,7 @@ Do not regenerate the feature file between variants or seeds.
 Run:
 
 ```bash
-python experiments/scripts/m1_3_h1a_preflight.py \
+uv run --locked python experiments/scripts/m1_3_h1a_preflight.py \
   --features data/features/cifar100_resnet18_imagenet1k_v1.pt
 ```
 
@@ -74,7 +77,7 @@ Save the preflight stdout with the run artifacts.
 Run all preregistered variants and seeds:
 
 ```bash
-python experiments/scripts/m1_3_h1a_benchmark.py \
+uv run --locked python experiments/scripts/m1_3_h1a_benchmark.py \
   --features data/features/cifar100_resnet18_imagenet1k_v1.pt \
   --output runs/m1_3_h1a \
   --device cuda \
