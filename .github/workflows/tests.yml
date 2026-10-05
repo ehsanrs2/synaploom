@@ -24,3 +24,4 @@ jobs:
       - run: pip install -e . --no-deps
       - run: pytest
       - run: python experiments/scripts/m1_1_smoke.py
+      - run: python experiments/scripts/m1_2_synthetic_smoke.py
