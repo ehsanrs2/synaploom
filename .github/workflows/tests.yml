@@ -14,15 +14,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
           python-version: "3.11"
-          cache: pip
-      - run: python -m pip install --upgrade pip
-      - run: pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2"
-      - run: pip install "numpy>=1.26" "pytest>=8"
-      - run: pip install -e . --no-deps
-      - run: pytest
-      - run: python experiments/scripts/m1_1_smoke.py
-      - run: python experiments/scripts/m1_2_synthetic_smoke.py
-      - run: python experiments/scripts/m1_3_protocol_smoke.py
+          enable-cache: true
+
+      - name: Verify committed lockfile
+        run: uv lock --check
+
+      # The project lock is hardware-neutral. CI builds a CPU-only torch
+      # environment with uv so GitHub runners do not download CUDA wheels.
+      - name: Create CI environment
+        run: uv venv --python 3.11
+
+      - name: Install locked dev dependencies
+        run: |
+          uv export --locked --only-group dev --no-hashes --output-file /tmp/dev-requirements.txt
+          uv pip install --python .venv/bin/python -r /tmp/dev-requirements.txt
+
+      - name: Install lock-matched CPU PyTorch
+        shell: bash
+        run: |
+          TORCH_VERSION="$(awk '
+            $0 == "name = \"torch\"" { found=1; next }
+            found && $1 == "version" { gsub(/\"/, "", $3); print $3; exit }
+          ' uv.lock)"
+          test -n "$TORCH_VERSION"
+          echo "Installing CPU torch for locked public version: $TORCH_VERSION"
+          uv pip install --python .venv/bin/python --torch-backend cpu "torch==$TORCH_VERSION"
+
+      - name: Install SynapLoom
+        run: uv pip install --python .venv/bin/python --editable . --no-deps
+
+      - name: Run test suite
+        run: uv run --no-sync pytest
+
+      - name: Run M1.1 smoke
+        run: uv run --no-sync python experiments/scripts/m1_1_smoke.py
+
+      - name: Run M1.2 smoke
+        run: uv run --no-sync python experiments/scripts/m1_2_synthetic_smoke.py
+
+      - name: Run M1.3 protocol smoke
+        run: uv run --no-sync python experiments/scripts/m1_3_protocol_smoke.py
