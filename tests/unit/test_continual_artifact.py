@@ -9,6 +9,7 @@ def test_continual_result_serializes_nan_as_null(tmp_path) -> None:
     result = ContinualRunResult(
         accuracy_matrix=torch.tensor([[0.5, float("nan")], [0.4, 0.6]]),
         eval_loss_matrix=torch.tensor([[1.0, float("nan")], [1.1, 0.9]]),
+        pre_task_accuracy=torch.tensor([0.1, 0.2]),
         train_loss_by_task=[1.2, 1.0],
         structural_history=[
             StructuralSnapshot(
@@ -30,5 +31,6 @@ def test_continual_result_serializes_nan_as_null(tmp_path) -> None:
     payload = json.loads(path.read_text())
     assert payload["accuracy_matrix"][0][1] is None
     assert "average_forgetting" in payload["summary"]
+    assert payload["summary"]["learning_gain_by_task"] == [0.4, 0.4]
     assert payload["run_config"] == {}
     assert payload["stream_manifest"] == []
