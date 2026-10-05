@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: write
+
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -14,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Install uv and Python
         uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
@@ -24,12 +29,16 @@ jobs:
       - name: Resolve lockfile
         run: uv lock
 
-      - name: Upload generated lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: uv-lock
-          path: uv.lock
-          if-no-files-found: error
+      - name: Bootstrap uv.lock on this migration branch
+        if: github.event_name == 'pull_request' && github.head_ref == 'build/uv-migration'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uv.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "build: add uv lockfile"
+            git push origin HEAD:build/uv-migration
+          fi
 
       # The committed lock stays hardware-neutral. CI builds a CPU-only torch
       # environment with uv so GitHub runners do not download CUDA wheels.
