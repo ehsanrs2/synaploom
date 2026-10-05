@@ -287,7 +287,20 @@ Still unresolved:
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 14. Documentation rule
+## 14. Environment and dependency management
+
+Accepted project tooling:
+
+- uv is the official Python package/environment manager.
+- `pyproject.toml` declares project, optional and development dependencies.
+- `uv.lock` is committed and is the reproducible dependency resolution.
+- `.python-version` pins the default development interpreter.
+- use `uv sync` / `uv sync --locked` instead of pip-based project installation;
+- use `uv run` for tests, smoke scripts and experiments;
+- dependency changes should use `uv add` / `uv remove` and update `uv.lock`;
+- CI uses `astral-sh/setup-uv`.
+
+## 15. Documentation rule
 
 For every merged milestone PR:
 
