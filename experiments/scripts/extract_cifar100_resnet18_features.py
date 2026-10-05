@@ -5,10 +5,13 @@ import json
 from pathlib import Path
 
 import torch
+import torchvision
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR100
 from torchvision.models import ResNet18_Weights, resnet18
+
+from synaploom.research.preflight import sha256_file
 
 
 def _extract(loader: DataLoader, model: nn.Module, device: torch.device) -> tuple[torch.Tensor, torch.Tensor]:
@@ -61,10 +64,20 @@ def main() -> None:
             "train_examples": int(train_features.shape[0]),
             "eval_examples": int(eval_features.shape[0]),
             "torch_version": torch.__version__,
+            "torchvision_version": torchvision.__version__,
+            "transform": repr(transform),
         },
     }
     torch.save(payload, args.output)
-    print(json.dumps(payload["metadata"], indent=2, sort_keys=True))
+    checksum = sha256_file(args.output)
+    checksum_path = args.output.with_suffix(args.output.suffix + ".sha256")
+    checksum_path.write_text(checksum + "  " + args.output.name + "\n", encoding="utf-8")
+    print(json.dumps({
+        **payload["metadata"],
+        "artifact": str(args.output),
+        "sha256": checksum,
+        "sha256_file": str(checksum_path),
+    }, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
