@@ -31,17 +31,30 @@ jobs:
           path: uv.lock
           if-no-files-found: error
 
-      - name: Sync project (CPU PyTorch)
-        run: uv sync --locked --extra cpu
+      # The committed lock stays hardware-neutral. CI builds a CPU-only torch
+      # environment with uv so GitHub runners do not download CUDA wheels.
+      - name: Create CI environment
+        run: uv venv --python 3.11
+
+      - name: Install locked dev dependencies
+        run: |
+          uv export --locked --only-group dev --no-hashes --output-file /tmp/dev-requirements.txt
+          uv pip install --python .venv/bin/python -r /tmp/dev-requirements.txt
+
+      - name: Install CPU PyTorch
+        run: uv pip install --python .venv/bin/python --torch-backend cpu "torch>=2.2"
+
+      - name: Install SynapLoom
+        run: uv pip install --python .venv/bin/python --editable . --no-deps
 
       - name: Run test suite
-        run: uv run --locked --no-sync pytest
+        run: uv run --no-sync pytest
 
       - name: Run M1.1 smoke
-        run: uv run --locked --no-sync python experiments/scripts/m1_1_smoke.py
+        run: uv run --no-sync python experiments/scripts/m1_1_smoke.py
 
       - name: Run M1.2 smoke
-        run: uv run --locked --no-sync python experiments/scripts/m1_2_synthetic_smoke.py
+        run: uv run --no-sync python experiments/scripts/m1_2_synthetic_smoke.py
 
       - name: Run M1.3 protocol smoke
-        run: uv run --locked --no-sync python experiments/scripts/m1_3_protocol_smoke.py
+        run: uv run --no-sync python experiments/scripts/m1_3_protocol_smoke.py
