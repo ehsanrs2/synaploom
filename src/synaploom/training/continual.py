@@ -179,20 +179,19 @@ def run_continual_experiment(
         executed_sizes: list[int] = []
 
         for epoch in range(config.epochs_per_task):
-            batches = list(
-                iter_tensor_batches(
-                    task.train_x,
-                    task.train_y,
-                    batch_size=config.batch_size,
-                    shuffle=True,
-                    seed=config.seed + stage * 10007 + epoch,
-                )
+            num_batches = (int(task.train_x.shape[0]) + config.batch_size - 1) // config.batch_size
+            batches = iter_tensor_batches(
+                task.train_x,
+                task.train_y,
+                batch_size=config.batch_size,
+                shuffle=True,
+                seed=config.seed + stage * 10007 + epoch,
             )
             for batch_index, (x, y) in enumerate(batches):
                 x, y = x.to(device), y.to(device)
                 is_last_batch = (
                     epoch == config.epochs_per_task - 1
-                    and batch_index == len(batches) - 1
+                    and batch_index == num_batches - 1
                 )
                 boundary = is_last_batch and (
                     stage < num_tasks - 1 or config.apply_final_task_boundary
