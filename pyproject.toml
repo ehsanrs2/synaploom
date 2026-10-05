@@ -14,6 +14,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+  "numpy>=1.26",
   "pytest>=8",
 ]
 
