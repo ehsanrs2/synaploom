@@ -16,9 +16,6 @@ dependencies = [
 vision = [
   "torchvision>=0.17",
 ]
-cpu = [
-  "torch>=2.2",
-]
 
 [dependency-groups]
 dev = [
@@ -28,16 +25,6 @@ dev = [
 
 [tool.uv]
 required-version = ">=0.12.0,<0.13"
-
-[tool.uv.sources]
-torch = [
-  { index = "pytorch-cpu", extra = "cpu" },
-]
-
-[[tool.uv.index]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-explicit = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
