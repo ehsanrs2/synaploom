@@ -150,8 +150,12 @@ class TaskBoundaryTopImportance:
         if plastic.numel() == 0:
             return ()
 
-        scores = graph_state.node_importance_ema.index_select(0, plastic)
-        n = min(self.top_n, int(plastic.numel()))
-        _, local_ids = torch.topk(scores, k=n)
-        selected = plastic.index_select(0, local_ids)
-        return tuple(int(v) for v in selected.tolist())
+        ranked = sorted(
+            (
+                (float(graph_state.node_importance_ema[node_id].item()), int(node_id))
+                for node_id in plastic.tolist()
+            ),
+            key=lambda item: (-item[0], item[1]),
+        )
+        n = min(self.top_n, len(ranked))
+        return tuple(node_id for _, node_id in ranked[:n])
