@@ -30,7 +30,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 
 | ID | Date | Commit | Hypothesis | Dataset | Seeds | Status | Main result |
 |---|---|---|---|---|---:|---|---|
-| — | — | — | — | — | — | No experiments yet | — |
+| EXP-H1A-001 | 2026-10-05 | pending | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 | preregistered / not run | protocol frozen; no result yet |
 
 ## Template
 
@@ -76,3 +76,44 @@ State what the experiment supports or falsifies.
 **Caveats**
 
 List confounds and follow-up tests.
+
+
+### EXP-H1A-001 — Controlled reserve recruitment on frozen CIFAR-100 features
+
+**Date:** 2026-10-05  
+**Commit:** pending merge/execution commit  
+**Hypothesis:** H1a — controlled reserve recruitment  
+**Status:** preregistered / not run
+
+**Protocol**
+
+See `docs/M1_3_PROTOCOL.md`. The protocol, class order, seeds, model sizes, optimizer, metrics and paired comparison are frozen before inspecting primary scientific results.
+
+**Primary comparison**
+
+`progressive_reserve - all_recruited` on identical seeds.
+
+**Co-primary metrics**
+
+- final average accuracy
+- late-task within-task mean accuracy
+
+**Secondary metrics**
+
+- forgetting
+- backward transfer
+- diagonal task accuracy
+- structural/routing histories
+- parameter/MAC/wall-time/VRAM views
+
+**Command**
+
+`python experiments/scripts/m1_3_h1a_benchmark.py --features data/features/cifar100_resnet18_imagenet1k_v1.pt --device cuda`
+
+**Results**
+
+Not run yet.
+
+**Conclusion**
+
+None. Engineering/CI smoke outputs are not scientific results.
