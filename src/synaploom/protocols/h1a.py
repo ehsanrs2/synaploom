@@ -57,7 +57,7 @@ class H1AProtocol:
     learning_rate: float = 0.03
     momentum: float = 0.9
     weight_decay: float = 5e-4
-    seeds: tuple[int, ...] = (0, 1, 2, 3, 4)
+    seeds: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
     current_task_eval_every_epochs: int = 1
 
     def graph_config(self, *, all_recruited: bool = False) -> GraphConfig:
