@@ -108,6 +108,36 @@ class ConnectToSelectedTopR:
         return tuple(node_id for node_id, _ in pairs if node_id != new_node_id)[:limit]
 
 
+@dataclass(frozen=True)
+class SeededRandomR:
+    top_r: int = 1
+    seed: int = 0
+
+    def __post_init__(self) -> None:
+        if self.top_r < 0:
+            raise ValueError("top_r must be non-negative")
+
+    def targets(
+        self,
+        observation: StructuralObservation,
+        graph_state: GraphState,
+        new_node_id: int,
+    ) -> tuple[int, ...]:
+        candidates = [
+            int(node_id)
+            for node_id in graph_state.recruited_ids().tolist()
+            if int(node_id) != new_node_id
+        ]
+        if not candidates or self.top_r == 0:
+            return ()
+
+        generator = torch.Generator(device="cpu")
+        generator.manual_seed(self.seed + observation.step * 1009 + new_node_id * 9176)
+        order = torch.randperm(len(candidates), generator=generator).tolist()
+        limit = min(self.top_r, graph_state.config.q_max, len(candidates))
+        return tuple(candidates[index] for index in order[:limit])
+
+
 class ConsolidationPolicy(Protocol):
     def node_ids(
         self,
