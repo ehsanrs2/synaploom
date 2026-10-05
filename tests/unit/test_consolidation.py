@@ -21,6 +21,8 @@ def test_consolidated_node_gradient_scaling() -> None:
     for module in model.executor.microcircuits:
         for parameter in module.parameters():
             parameter.grad = torch.ones_like(parameter)
+    model.graph_state.routing_keys.grad = torch.ones_like(model.graph_state.routing_keys)
+    model.graph_state.edge_gate.grad = torch.ones_like(model.graph_state.edge_gate)
 
     scale_microcircuit_gradients(model.executor, model.graph_state)
 
@@ -30,3 +32,17 @@ def test_consolidated_node_gradient_scaling() -> None:
         assert torch.allclose(parameter.grad, torch.ones_like(parameter.grad))
     for parameter in model.executor.microcircuits[2].parameters():
         assert torch.count_nonzero(parameter.grad).item() == 0
+
+    assert torch.allclose(
+        model.graph_state.routing_keys.grad[0],
+        torch.full_like(model.graph_state.routing_keys.grad[0], 0.2),
+    )
+    assert torch.allclose(
+        model.graph_state.edge_gate.grad[0],
+        torch.full_like(model.graph_state.edge_gate.grad[0], 0.2),
+    )
+    assert torch.allclose(
+        model.graph_state.routing_keys.grad[1],
+        torch.ones_like(model.graph_state.routing_keys.grad[1]),
+    )
+    assert torch.count_nonzero(model.graph_state.routing_keys.grad[2]).item() == 0
