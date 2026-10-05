@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-05  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.0 core implemented; M1.1 next  
-**Research status:** structural execution machinery implemented and invariant-tested; no training/benchmark results yet
+**Current stage:** M1.1 controlled adaptation implemented in PR; M1.2 next  
+**Research status:** structural execution + controlled recruitment/consolidation implemented; no scientific benchmark results yet
 
 ## 1. Project objective
 
@@ -80,10 +80,13 @@ All are empirical/theoretical questions.
 9. Use synchronous bounded message-passing rounds.
 10. Mutate structural state only after optimizer.step under no_grad.
 11. Implement policy interfaces with scheduled/task-boundary policies before adaptive novelty policies.
-12. Apply consolidation with per-node gradient scaling rather than dynamic optimizer groups.
+12. Apply consolidation with per-node gradient scaling rather than dynamic optimizer groups; node-owned parameters include the microcircuit, routing-key row, and outgoing edge gates. Shared relation projections remain shared/plastic.
 13. Use typed Python dataclasses as canonical configuration; YAML may supply run configs.
 14. Use a src/ package layout with unit/integration tests.
 15. Treat Split CIFAR-100 class-incremental as the current first scientific benchmark candidate after toy/smoke tests.
+16. Context-imprinted routing keys preserve the triggering context direction but are norm-calibrated to the median recruited-key norm.
+17. `task_boundary=True` means the task ends after the current train step: old capacity is consolidated first, then new capacity may be recruited for the following task.
+18. Structural events live in a neutral module so the controller/control plane does not depend on the training package import graph.
 
 ## 6. Mathematical/computational position
 
@@ -140,48 +143,81 @@ Local validation on 2026-10-05:
 
 The GitHub CI workflow will independently validate the repository branch/PR.
 
-## 8. No experimental results yet
+## 8. M1.1 implementation status
+
+Implemented in the current milestone PR:
+
+- StructuralController with observe / propose / apply separation
+- deterministic lowest-free-node recruitment
+- FixedScheduleRecruitment and TaskBoundaryRecruitment
+- NoRecruitment control policy
+- context-imprinted routing keys with norm calibration
+- bounded ConnectToSelectedTopR edge initialization
+- deterministic SeededRandomR edge-init baseline
+- NoEdges control policy
+- TaskBoundaryTopImportance consolidation
+- NoConsolidation control policy
+- node-importance EMA from mean |parameter * gradient| over node-owned parameters
+- node-owned consolidation for microcircuit parameters, routing keys, and outgoing edge gates
+- mutation-safe TrainingEngine
+- controller checkpoint/restore state
+- controller-integrated structural event logging
+- end-to-end controlled-growth integration test
+- standalone controlled-growth smoke script executed by CI
+
+Validation on GitHub Actions (Python 3.11, CPU-only PyTorch):
+
+- 17 pytest tests passed
+- controlled-growth smoke passed
+- smoke structural outcome: recruited nodes 2 -> 5, active edges 0 -> 3, structural version 0 -> 6
+- smoke loss values are engineering diagnostics only and are not interpreted as research results
+
+Automatic novelty-driven recruitment remains explicitly outside M1.1.
+
+## 9. No scientific experimental results yet
 
 There are currently:
 
-- no training runs
-- no benchmark results
-- no accuracy claims
-- no compute claims
-- no ablation results
+- no continual-learning benchmark results
+- no accuracy/forgetting claims
+- no compute-efficiency claims
+- no ablation conclusions
+- no evidence yet that controlled growth improves learning
 
-Future results must be recorded in docs/EXPERIMENT_LOG.md.
+Engineering smoke tests validate mechanics only. Research results must be recorded in docs/EXPERIMENT_LOG.md.
 
-## 9. Immediate next milestone
+## 10. Immediate next milestone
 
-**Implement M1.1 — controlled structural adaptation**
+**M1.2 — continual evaluation harness and controls**
 
-Required components:
+Planned:
 
-- StructuralController with observe / propose / apply separation
-- deterministic free-node recruitment
-- context-imprinted routing keys
-- FixedScheduleRecruitment and TaskBoundaryRecruitment policies
-- bounded edge initialization policy
-- structural event emission wired into controller actions
-- optional task-boundary consolidation
-- end-to-end scheduled-recruitment smoke run
+- explicit task/stream abstraction
+- synthetic multi-cluster continual stream
+- SplitMNIST (or equivalent) functional continual smoke
+- evaluation-after-each-task matrix
+- average accuracy / forgetting / late-task learning metrics
+- routing utilization and recruited/executed capacity histories
+- dense control model through the same harness
+- fixed-capacity routed control without growth
+- deterministic experiment seeds/config snapshots
 
-## 10. Open design questions
+M1.3 will then run the first fair H1 benchmark candidate (currently Split CIFAR-100) with stronger sparse/continual-learning baselines.
+
+## 11. Open design questions
 
 Still unresolved:
 
 - exact default d, h, N, k, q_max, K
 - exact load-balancing loss
 - whether the initial scientific run should include message passing or first isolate node recruitment
-- exact structural schedule for the controlled M1.1 experiment
 - consolidation coefficient and importance EMA hyperparameters
-- first fair dynamic-sparse baseline implementation
-- exact Split CIFAR-100 stream protocol
+- first fair dynamic-sparse baseline implementation for M1.3
+- exact Split CIFAR-100 stream protocol for M1.3
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 11. Documentation rule
+## 12. Documentation rule
 
 For every merged milestone PR:
 

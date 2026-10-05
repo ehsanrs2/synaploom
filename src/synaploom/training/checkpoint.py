@@ -41,6 +41,7 @@ def save_checkpoint(
     optimizer: torch.optim.Optimizer | None = None,
     global_step: int = 0,
     extra: dict[str, Any] | None = None,
+    controller: Any | None = None,
 ) -> None:
     payload: dict[str, Any] = {
         "model": model.state_dict(),
@@ -50,6 +51,8 @@ def save_checkpoint(
     }
     if optimizer is not None:
         payload["optimizer"] = optimizer.state_dict()
+    if controller is not None:
+        payload["controller"] = controller.state_dict()
     torch.save(payload, Path(path))
 
 
@@ -59,11 +62,14 @@ def load_checkpoint(
     *,
     optimizer: torch.optim.Optimizer | None = None,
     restore_rng: bool = True,
+    controller: Any | None = None,
 ) -> dict[str, Any]:
     payload = torch.load(Path(path), map_location="cpu", weights_only=False)
     model.load_state_dict(payload["model"])
     if optimizer is not None and "optimizer" in payload:
         optimizer.load_state_dict(payload["optimizer"])
+    if controller is not None and "controller" in payload:
+        controller.load_state_dict(payload["controller"])
     if restore_rng:
         restore_rng_state(payload["rng_state"])
     return {

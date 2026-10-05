@@ -10,7 +10,7 @@ from synaploom.core.router import SparseRouter
 
 
 class SynapLoomModel(nn.Module):
-    """M1.0 single-modality structural core."""
+    """M1 single-modality structural core."""
 
     def __init__(self, config: ModelConfig) -> None:
         super().__init__()
@@ -42,6 +42,7 @@ class SynapLoomModel(nn.Module):
             recruited_node_ids=self.graph_state.recruited_ids(),
             selected_node_ids=routed.selected_node_ids,
             router_weights=routed.weights,
+            routing_context=routed.batch_query,
             executed_edge_count=executed_edges,
             structural_version=int(self.graph_state.structural_version.item()),
         )
