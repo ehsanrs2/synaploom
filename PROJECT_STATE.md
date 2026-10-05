@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-05  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.2 continual evaluation harness implemented in PR; M1.3 next  
-**Research status:** structural execution, controlled adaptation, and continual measurement pipeline implemented; no scientific benchmark results yet
+**Current stage:** M1.3a H1 benchmark protocol/runner implemented; scientific runs pending  
+**Research status:** first recruitment-only scientific protocol frozen; no M1.3 CIFAR-100 result has been executed or accepted yet
 
 ## 1. Project objective
 
@@ -201,7 +201,44 @@ Measurement semantics:
 - the M1.2 dense control validates pipeline comparability but is not yet parameter/compute matched;
 - because M1 uses batch-level routing, routed predictions are batch-context dependent; evaluation order and eval_batch_size are therefore part of the frozen protocol until sample-level routing is tested.
 
-## 10. No scientific experimental results yet
+## 10. M1.3a protocol and runner status
+
+Frozen/implemented:
+
+- primary H1a question isolates reserve recruitment only
+- Split CIFAR-100: 10 tasks x 10 classes, global 100-class output
+- deterministic class order shared across model seeds
+- 5 model seeds
+- 10 epochs per task
+- trainable shared-family CIFAR convolutional encoder
+- message passing disabled
+- no edge creation
+- no consolidation
+- no replay
+- no stochastic augmentation in protocol v1
+- pre-task accuracy and per-task learning-gain measurement
+- conditions:
+  - synaploom_growth
+  - routed_no_growth
+  - routed_all_recruited
+  - dense_total_match
+  - dense_executed_match
+- numerical dense parameter-budget matcher
+- wall-clock and peak CUDA memory recording
+- aggregate mean/std reporting across seeds
+- dry-run protocol/budget validation in CI
+
+Important fairness interpretation:
+
+- routed_no_growth asks whether extra recruited capacity helps;
+- routed_all_recruited asks whether *staged recruitment* helps beyond exposing all capacity from the start;
+- dense_total_match and dense_executed_match provide two different capacity views;
+- replay methods are not mixed into the primary H1a track because replay memory is an additional resource;
+- batch-level routing remains a protocol sensitivity that must be checked when interpreting small differences.
+
+See docs/M1_3_PROTOCOL.md.
+
+## 11. No scientific experimental results yet
 
 There are currently:
 
@@ -213,25 +250,22 @@ There are currently:
 
 Engineering smoke tests validate mechanics only. Research results must be recorded in docs/EXPERIMENT_LOG.md.
 
-## 11. Immediate next milestone
+## 12. Immediate next milestone
 
-**M1.3 — first fair H1 benchmark**
+**Execute M1.3a H1 runs**
 
-Current candidate: Split CIFAR-100 class-incremental.
+After this PR merges:
 
-Before interpreting any performance difference, freeze:
+1. dry-run and inspect the frozen protocol/budget report;
+2. execute all five seeds on CIFAR-100;
+3. save the full JSON artifact;
+4. record commit, hardware, commands, per-seed results, mean/std, runtime and memory in docs/EXPERIMENT_LOG.md;
+5. inspect routing collapse and batch-context sensitivity before accepting any small effect;
+6. decide whether H1a is supported, falsified, or inconclusive.
 
-- class/task split and augmentation protocol
-- seed count
-- equal-total-capacity comparison
-- equal-executed-capacity comparison
-- dense / routed-no-growth / fixed-sparse / dynamic-sparse / continual-learning controls
-- measured FLOPs, wall time, and peak VRAM protocol where feasible
-- learning-curve metric for late-task plasticity beyond the M1.2 diagonal-accuracy proxy
+Only after the recruitment-only result should M1.3b add fixed/dynamic sparse or replay reference tracks.
 
-M1.3 is the first milestone allowed to produce evidence for or against H1.
-
-## 12. Open design questions
+## 13. Open design questions
 
 Still unresolved:
 
@@ -244,7 +278,7 @@ Still unresolved:
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 13. Documentation rule
+## 14. Documentation rule
 
 For every merged milestone PR:
 
