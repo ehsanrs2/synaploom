@@ -4,7 +4,7 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **M1.2 continual evaluation harness implemented; first fair H1 benchmark next**. No scientific performance claims yet.
+> Project status: **M1.3a recruitment-only H1 benchmark protocol and runner implemented; CIFAR-100 runs pending**. No scientific performance claim yet.
 
 ## Core idea
 
@@ -58,7 +58,9 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 **M1.2** adds one model-agnostic continual pipeline for controlled growth, routed no-growth, and dense controls: deterministic task streams, the stage-by-task evaluation matrix, continual metrics, structural histories, and JSON artifacts. CI uses a deterministic synthetic class-incremental smoke; a real SplitMNIST adapter is optional.
 
-The next step is **M1.3 — the first fair H1 benchmark**, with explicit total/executed-capacity matching and stronger baselines. M1.2 smoke accuracies are engineering diagnostics only and are not research evidence.
+M1.3a freezes the first scientific test: Split CIFAR-100 (10 tasks x 10 classes), five seeds, recruitment-only SynapLoom, routed no-growth/all-recruited controls, and dense total/executed-parameter matches. Message passing, consolidation, replay and augmentation are disabled so the first result isolates reserve recruitment. See [M1.3 protocol](docs/M1_3_PROTOCOL.md).
+
+The next action after merge is to execute the five-seed suite and record the result in the experiment log. No CIFAR-100 H1 result has been accepted yet.
 
 ## Prior-work anchors
 
