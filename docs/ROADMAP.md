@@ -10,44 +10,60 @@ Goal: make the project reproducible before implementation.
 - [x] Research hypotheses formalized
 - [x] Project-state memory established
 - [x] Experiment log template established
-- [ ] Merge foundation documentation
-- [ ] Decide Python/PyTorch package skeleton and configuration system
+- [x] Merge foundation documentation
+- [x] Decide Python/PyTorch package skeleton and configuration approach
+- [x] Record mathematical/complexity framing
+- [x] Freeze M1 implementation specification
 
-Exit criterion: another researcher can read the repository and explain the exact v0.1 hypothesis, non-goals, and evaluation plan.
+Exit criterion: another researcher can read the repository and explain the exact v0.1 hypothesis, non-goals, evaluation plan, and M1 implementation contract.
 
 ## M1 — Single-modality structural core
 
-Build the smallest system capable of testing reserve structural recruitment.
+### M1.0 — execution/state machinery
 
-Components:
-- fixed supergraph
-- MicroCircuit
-- node state
-- sparse router
-- graph execution
-- structural controller
-- consolidation manager
-- event logging/checkpointing
+Implement:
+- fixed total microcircuit capacity
+- DORMANT / PLASTIC / CONSOLIDATED states
+- recruited-vs-executed distinction
+- batch-level sparse router
+- bounded O(N q_max) edge-slot representation
+- graph executor / bounded message passing
+- trace and structural accounting
+- exact checkpoint/restore
+- invariant unit tests
 
-Start with synthetic/debug datasets, then a non-trivial continual benchmark.
+### M1.1 — controlled structural adaptation
 
-Required baselines:
+Implement:
+- scheduled/task-boundary recruitment policies
+- context-imprinted routing key for recruited nodes
+- bounded edge initialization
+- optional task-boundary consolidation
+- structural event log
+
+Smoke-test on synthetic data and a simple continual stream.
+
+Candidate first scientific benchmark: Split CIFAR-100 class-incremental.
+
+Required controls/baselines:
 - dense
+- fixed-capacity routed model without growth
 - fixed sparse
-- dynamic sparse
+- dynamic sparse where feasible
 - standard continual-learning baseline(s)
 
-Exit criterion: H1 can be evaluated fairly under matched parameter/compute budgets.
+Exit criterion: H1 can be evaluated fairly under explicitly reported total-capacity and executed-capacity budgets.
 
-## M2 — Plasticity and stability
+## M2 — Adaptive plasticity and stability
 
 Add:
-- calibrated growth triggers
+- calibrated automatic growth triggers
 - pruning/recycling
 - consolidation ablations
 - explicit loss-of-plasticity evaluation
+- candidate-search policies if needed
 
-Exit criterion: determine whether structural adaptation improves late-task learnability and/or forgetting.
+Exit criterion: determine whether adaptive structural control improves late-task learnability and/or forgetting.
 
 ## M3 — Multimodal pathways
 
@@ -77,7 +93,7 @@ Exit criterion: H5/H7 tested without assuming that co-occurrence equals semantic
 
 ## M5 — Stronger continual multimodal evaluation
 
-Move to realistic audio-visual or multimodal continual-learning benchmarks such as CavRL-like settings and modality/task-shift scenarios.
+Move to realistic audio-visual or multimodal continual-learning benchmarks.
 
 Measure:
 - average accuracy
@@ -85,7 +101,7 @@ Measure:
 - forward/backward transfer
 - late-task plasticity
 - compute
-- active capacity
+- active/recruited capacity
 - modality reliance/grounding where possible
 
 Exit criterion: architecture survives a realistic continual multimodal setting.
