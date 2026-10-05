@@ -15,7 +15,7 @@ from synaploom.plasticity.policies import (
     RecruitmentPolicy,
     StructuralObservation,
 )
-from synaploom.training.events import JsonlEventLogger, StructuralEvent
+from synaploom.events import JsonlEventLogger, StructuralEvent
 
 
 @dataclass(frozen=True)
