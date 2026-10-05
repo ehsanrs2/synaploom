@@ -34,8 +34,9 @@ def forgetting_per_task(matrix: Tensor) -> Tensor:
     result = torch.full((num_tasks,), float("nan"))
     final = matrix[-1]
     for task in range(num_tasks - 1):
-        history = matrix[task:, task]
-        best = torch.nanmax(history[:-1]) if history.numel() > 1 else history[0]
+        history = matrix[task:-1, task]
+        valid = history[~torch.isnan(history)]
+        best = valid.max() if valid.numel() > 0 else matrix[task, task]
         result[task] = best - final[task]
     return result
 
