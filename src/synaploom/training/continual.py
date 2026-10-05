@@ -42,12 +42,15 @@ class ContinualConfig:
     evaluate_future_tasks: bool = False
     apply_final_task_boundary: bool = False
     restrict_logits_to_seen_classes: bool = False
+    current_task_eval_every_epochs: int = 0
 
     def __post_init__(self) -> None:
         if self.epochs_per_task <= 0:
             raise ValueError("epochs_per_task must be positive")
         if self.batch_size <= 0 or self.eval_batch_size <= 0:
             raise ValueError("batch sizes must be positive")
+        if self.current_task_eval_every_epochs < 0:
+            raise ValueError("current_task_eval_every_epochs must be non-negative")
 
 
 @dataclass(frozen=True)
@@ -74,6 +77,7 @@ class ContinualRunResult:
     run_config: dict[str, Any] = field(default_factory=dict)
     stream_manifest: list[dict[str, Any]] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+    current_task_learning_curves: list[list[dict[str, float | int]]] = field(default_factory=list)
 
     def summary(self) -> dict[str, Any]:
         return {
@@ -101,6 +105,7 @@ class ContinualRunResult:
             "run_config": self.run_config,
             "stream_manifest": self.stream_manifest,
             "metadata": self.metadata,
+            "current_task_learning_curves": self.current_task_learning_curves,
             "summary": self.summary(),
         }
 
@@ -202,6 +207,7 @@ def run_continual_experiment(
     eval_loss = torch.full((num_tasks, num_tasks), float("nan"))
     train_loss_by_task: list[float] = []
     structural_history: list[StructuralSnapshot] = []
+    current_task_learning_curves: list[list[dict[str, float | int]]] = []
     global_step = 0
 
     seen_classes: list[int] = []
@@ -209,6 +215,7 @@ def run_continual_experiment(
         seen_classes.extend(int(v) for v in task.classes)
         allowed_classes = tuple(sorted(set(seen_classes))) if config.restrict_logits_to_seen_classes else None
         losses: list[float] = []
+        task_curve: list[dict[str, float | int]] = []
         selection_counts: Counter[int] = Counter()
         executed_sizes: list[int] = []
 
@@ -275,7 +282,28 @@ def run_continual_experiment(
                     executed_sizes.append(len(ids))
                 global_step += 1
 
+            if (
+                config.current_task_eval_every_epochs > 0
+                and (epoch + 1) % config.current_task_eval_every_epochs == 0
+            ):
+                curve_eval = evaluate_task(
+                    model,
+                    task,
+                    batch_size=config.eval_batch_size,
+                    device=device,
+                    allowed_classes=allowed_classes,
+                )
+                task_curve.append(
+                    {
+                        "epoch": int(epoch + 1),
+                        "global_step": int(global_step),
+                        "accuracy": float(curve_eval.accuracy),
+                        "loss": float(curve_eval.loss),
+                    }
+                )
+
         train_loss_by_task.append(sum(losses) / max(1, len(losses)))
+        current_task_learning_curves.append(task_curve)
         structural_history.append(
             _snapshot(
                 model,
@@ -316,4 +344,5 @@ def run_continual_experiment(
         run_config=asdict(config),
         stream_manifest=stream_manifest,
         metadata=dict(metadata or {}),
+        current_task_learning_curves=current_task_learning_curves,
     )
