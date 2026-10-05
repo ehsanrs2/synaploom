@@ -20,9 +20,19 @@ class DenseControlModel(nn.Module):
     M1.2 does not claim parameter matching. Fair matched baselines are an M1.3 task.
     """
 
-    def __init__(self, *, input_dim: int, d_model: int, d_hidden: int, num_classes: int) -> None:
+    def __init__(
+        self,
+        *,
+        input_dim: int,
+        d_model: int,
+        d_hidden: int,
+        num_classes: int,
+        encoder: nn.Module | None = None,
+    ) -> None:
         super().__init__()
-        self.encoder = nn.Identity() if input_dim == d_model else nn.Linear(input_dim, d_model)
+        self.encoder = encoder or (
+            nn.Identity() if input_dim == d_model else nn.Linear(input_dim, d_model)
+        )
         self.norm = nn.LayerNorm(d_model)
         self.body = nn.Sequential(
             nn.Linear(d_model, d_hidden),
