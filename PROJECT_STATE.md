@@ -165,6 +165,13 @@ Implemented in the current milestone PR:
 - end-to-end controlled-growth integration test
 - standalone controlled-growth smoke script executed by CI
 
+Validation on GitHub Actions (Python 3.11, CPU-only PyTorch):
+
+- 17 pytest tests passed
+- controlled-growth smoke passed
+- smoke structural outcome: recruited nodes 2 -> 5, active edges 0 -> 3, structural version 0 -> 6
+- smoke loss values are engineering diagnostics only and are not interpreted as research results
+
 Automatic novelty-driven recruitment remains explicitly outside M1.1.
 
 ## 9. No scientific experimental results yet
