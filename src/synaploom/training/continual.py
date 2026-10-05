@@ -10,6 +10,11 @@ from typing import Any
 
 import torch
 import torch.nn.functional as F
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 from torch import Tensor, nn
 
 from synaploom.data.streams import ContinualStream, iter_tensor_batches
@@ -54,6 +59,7 @@ class StructuralSnapshot:
     selection_entropy: float | None
     max_selection_share: float | None
     node_selection_counts: dict[int, int]
+    node_utilization_ema: dict[int, float] = field(default_factory=dict)
 
 
 @dataclass
@@ -106,6 +112,10 @@ def save_continual_result(result: ContinualRunResult, path: str | Path) -> None:
 def _set_seed(seed: int) -> None:
     random.seed(seed)
     torch.manual_seed(seed)
+    if np is not None:
+        np.random.seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 
 def _selection_stats(
@@ -144,7 +154,10 @@ def _snapshot(
             selection_entropy=entropy,
             max_selection_share=max_share,
             node_selection_counts=dict(sorted(counts.items())),
+            node_utilization_ema={},
         )
+    recruited_ids = graph_state.recruited_ids().detach().cpu().tolist()
+    utilization = graph_state.node_utilization_ema.detach().cpu()
     return StructuralSnapshot(
         stage=stage,
         task_id=task_id,
@@ -155,6 +168,10 @@ def _snapshot(
         selection_entropy=entropy,
         max_selection_share=max_share,
         node_selection_counts=dict(sorted(counts.items())),
+        node_utilization_ema={
+            int(node_id): float(utilization[node_id].item())
+            for node_id in recruited_ids
+        },
     )
 
 
@@ -221,11 +238,19 @@ def run_continual_experiment(
                     optimizer.zero_grad(set_to_none=True)
                     output = model(x)
                     logits = logits_from_output(output)
+                    aux_loss = getattr(output, "aux_loss", None)
                     loss = F.cross_entropy(logits, y)
+                    if isinstance(aux_loss, Tensor):
+                        loss = loss + aux_loss
                     loss.backward()
                     optimizer.step()
                     losses.append(float(loss.detach().item()))
                     trace = getattr(output, "trace", None)
+                    if trace is not None and hasattr(model, "graph_state"):
+                        model.graph_state.update_utilization(
+                            trace.selected_node_ids,
+                            trace.router_weights,
+                        )
                     ids = (
                         [int(v) for v in trace.selected_node_ids.detach().cpu().tolist()]
                         if trace is not None
