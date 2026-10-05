@@ -4,7 +4,7 @@ import json
 import math
 import random
 from collections import Counter
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -63,6 +63,9 @@ class ContinualRunResult:
     train_loss_by_task: list[float]
     structural_history: list[StructuralSnapshot]
     global_steps: int
+    run_config: dict[str, Any] = field(default_factory=dict)
+    stream_manifest: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def summary(self) -> dict[str, Any]:
         return {
@@ -87,6 +90,9 @@ class ContinualRunResult:
             "train_loss_by_task": [float(v) for v in self.train_loss_by_task],
             "structural_history": [asdict(item) for item in self.structural_history],
             "global_steps": int(self.global_steps),
+            "run_config": self.run_config,
+            "stream_manifest": self.stream_manifest,
+            "metadata": self.metadata,
             "summary": self.summary(),
         }
 
@@ -159,12 +165,18 @@ def run_continual_experiment(
     *,
     config: ContinualConfig | None = None,
     engine: TrainingEngine | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> ContinualRunResult:
     """Train sequentially and evaluate the standard stage-by-task matrix."""
     config = config or ContinualConfig()
     _set_seed(config.seed)
     device = torch.device(config.device)
     model.to(device)
+    if engine is not None:
+        if engine.model is not model:
+            raise ValueError("engine.model must be the model passed to run_continual_experiment")
+        if engine.optimizer is not optimizer:
+            raise ValueError("engine.optimizer must be the optimizer passed to run_continual_experiment")
 
     num_tasks = len(stream)
     accuracy = torch.full((num_tasks, num_tasks), float("nan"))
@@ -247,10 +259,22 @@ def run_continual_experiment(
             accuracy[stage, eval_task_index] = result.accuracy
             eval_loss[stage, eval_task_index] = result.loss
 
+    stream_manifest = [
+        {
+            "task_id": int(task.task_id),
+            "classes": [int(v) for v in task.classes],
+            "train_examples": int(task.train_y.numel()),
+            "eval_examples": int(task.eval_y.numel()),
+        }
+        for task in stream
+    ]
     return ContinualRunResult(
         accuracy_matrix=accuracy,
         eval_loss_matrix=eval_loss,
         train_loss_by_task=train_loss_by_task,
         structural_history=structural_history,
         global_steps=global_step,
+        run_config=asdict(config),
+        stream_manifest=stream_manifest,
+        metadata=dict(metadata or {}),
     )
