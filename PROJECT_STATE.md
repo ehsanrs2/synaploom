@@ -198,7 +198,8 @@ Measurement semantics:
 - task_boundary is emitted only between tasks by default, avoiding unused final recruitment;
 - structural snapshots are post-stage/post-boundary state, while routing selection statistics summarize training on that stage;
 - late_task_learning_accuracy is an immediate post-learning accuracy proxy, not by itself a loss-of-plasticity claim;
-- the M1.2 dense control validates pipeline comparability but is not yet parameter/compute matched.
+- the M1.2 dense control validates pipeline comparability but is not yet parameter/compute matched;
+- because M1 uses batch-level routing, routed predictions are batch-context dependent; evaluation order and eval_batch_size are therefore part of the frozen protocol until sample-level routing is tested.
 
 ## 10. No scientific experimental results yet
 
@@ -239,7 +240,7 @@ Still unresolved:
 - whether the initial scientific run should include message passing or first isolate node recruitment
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- exact Split CIFAR-100 stream protocol for M1.3
+- exact Split CIFAR-100 stream protocol for M1.3, including fixed evaluation batching and batch-context sensitivity checks
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
