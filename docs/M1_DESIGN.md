@@ -612,7 +612,15 @@ This keeps the structural controller independent from the training package and a
 
 The milestone includes unit/integration tests and an end-to-end scheduled-growth smoke script in CI.
 
-These validate mechanism correctness only. They are not continual-learning evidence and do not support accuracy, forgetting, transfer, or compute claims.
+Final M1.1 CI validation:
+
+- 17 pytest tests passed;
+- scheduled smoke recruited nodes 2 -> 5 at steps 3, 6, and 9;
+- three bounded structural edges were added;
+- structural version advanced from 0 to 6;
+- pytest and the standalone smoke script both completed successfully.
+
+These validate mechanism correctness only. The smoke loss values are not research metrics and do not support accuracy, forgetting, transfer, or compute claims.
 
 ### Next design step
 
