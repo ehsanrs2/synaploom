@@ -4,7 +4,7 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **EXP-H1A-001 executed but invalidated by numerical instability; H1a remains NOT_EVALUATED. Numerical stability calibration is next.**
+> Project status: **EXP-H1A-STABILITY-001 selected lr=0.01 with 15/15 stable calibration runs. EXP-H1A-002 is preregistered; H1a remains NOT_EVALUATED until that fresh scientific run completes.**
 
 ## Development environment
 
@@ -62,7 +62,8 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 - [M1 design](docs/M1_DESIGN.md) — implementation-ready contract for the structural core
 - [M1.3 H1a protocol](docs/M1_3_PROTOCOL.md) — preregistered first scientific reserve-recruitment test
 - [H1a execution runbook](docs/H1A_RUNBOOK.md) — historical EXP-H1A-001 execution procedure
-- [H1a stability protocol](docs/H1A_STABILITY_PROTOCOL.md) — preregistered numerical calibration after the invalid primary run
+- [H1a stability protocol](docs/H1A_STABILITY_PROTOCOL.md) — numerical calibration after the invalid primary run
+- [EXP-H1A-002 protocol](docs/H1A_002_PROTOCOL.md) — fresh scientific H1a rerun after stability calibration
 - [Theory notes](docs/THEORY.md) — mathematical framing, complexity targets, and open questions
 - [Research hypotheses](docs/RESEARCH_HYPOTHESES.md) — falsifiable hypotheses and baselines
 - [Roadmap](docs/ROADMAP.md) — milestone plan
@@ -92,7 +93,9 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 EXP-H1A-001 produced all expected artifacts but 39/50 runs developed NaN/Inf, including 10/10 all-recruited controls. The result is therefore INVALID_NUMERICAL_INSTABILITY and cannot support or reject H1a.
 
-The next action is EXP-H1A-STABILITY-001: use independent seeds and numerical validity only to select a shared learning rate before preregistering a fresh scientific run. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 remain later validation, not hidden tuning steps.
+EXP-H1A-STABILITY-001 selected lr=0.01 strictly from numerical validity: 0.03 passed 1/15 runs, while 0.01 passed 15/15; 0.003 was not run because the preregistered stop rule had already selected the first fully stable candidate.
+
+The next action is EXP-H1A-002 on fresh paired seeds 201..210 with all other scientific settings frozen. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 remain later validation, not hidden tuning steps.
 
 ## Prior-work anchors
 

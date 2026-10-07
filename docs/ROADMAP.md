@@ -94,8 +94,9 @@ Implemented/preregistered:
 - [x] execute primary 10-seed run — invalidated by numerical instability
 - [x] record invalid result in EXPERIMENT_LOG
 - [x] add numerical fail-fast diagnostics
-- [ ] run EXP-H1A-STABILITY-001 on independent calibration seeds
-- [ ] preregister and execute EXP-H1A-002 if a stable optimizer setting is found
+- [x] run EXP-H1A-STABILITY-001 on independent calibration seeds — lr=0.01 selected with 15/15 finite runs
+- [x] preregister EXP-H1A-002 with fresh seeds and calibrated lr=0.01
+- [ ] execute EXP-H1A-002 and record the paired scientific result
 - [ ] run batching/class-order sensitivity only after a numerically valid H1a result
 
 #### M1.3b — external sparse/continual controls

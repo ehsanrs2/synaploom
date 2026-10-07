@@ -2,10 +2,10 @@
 
 > This file is the authoritative project memory. Update it in every PR that changes architecture, experiment status, accepted assumptions, or the next milestone.
 
-**Last updated:** 2026-10-05  
+**Last updated:** 2026-10-07  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.3 H1a numerical-stability calibration after invalid primary execution  
-**Research status:** EXP-H1A-001 executed but invalidated by widespread NaN/Inf divergence; H1a remains NOT_EVALUATED
+**Current stage:** M1.3 H1a scientific rerun preregistration  
+**Research status:** EXP-H1A-STABILITY-001 selected lr=0.01 by numerical validity only; EXP-H1A-002 is preregistered with fresh seeds; H1a remains NOT_EVALUATED
 
 ## 1. Project objective
 
@@ -259,26 +259,37 @@ H1a = NOT_EVALUATED
 
 Do not interpret the aggregate accuracy/forgetting deltas from that run.
 
-## 12. Immediate next milestone
+## 12. EXP-H1A-STABILITY-001 result
 
-**EXP-H1A-STABILITY-001 — numerical calibration only**
+Calibration completed at commit `7d8622fdb47bdb79fce109c64066b854711bafb2`.
 
-Implemented/preregistered safeguards:
+- lr=0.03: 1/15 stable
+- lr=0.01: 15/15 stable
+- lr=0.003: not run because the stop rule selected the first fully stable candidate
+- selected learning rate: **0.01**
 
-- fail immediately on non-finite logits, loss, gradients, parameters, routing state or evaluation values;
-- failure payload records stage/task/epoch/batch/global-step and offending parameter when applicable;
-- record per-task maximum gradient norm and parameter magnitude;
-- use independent calibration seeds 101,102,103;
-- test shared learning rates 0.03, 0.01, 0.003 in descending order;
-- evaluate all five H1a variants;
-- select the highest rate only if all 15 seed x variant runs are finite;
-- ignore accuracy and all scientific metrics for selection.
+Selection used numerical validity only. Scientific metrics from the calibration were not used.
 
-If no candidate is stable, do not add clipping in-place; open a separate calibration experiment.
+## 13. Immediate next milestone
 
-If calibration succeeds, preregister **EXP-H1A-002** with fresh primary seeds before evaluating H1a again.
+**EXP-H1A-002 — fresh scientific H1a rerun**
 
-## 13. Open design questions
+Frozen:
+
+- same feature artifact and SHA-256;
+- same class order;
+- same five variants;
+- same model/budget protocol;
+- same 20 epochs/task and batch sizes;
+- SGD momentum=0.9, weight decay=5e-4;
+- learning rate=**0.01**;
+- fresh paired seeds: **201..210**;
+- fail-fast numerical validity gate remains active;
+- same two co-primary outcomes and paired bootstrap reporting.
+
+Overall H1a verdict is FAVORABLE only if both co-primary metric CIs are strictly above zero, UNFAVORABLE only if both are strictly below zero, INCONCLUSIVE otherwise, and INVALID if numerical/artifact validity fails.
+
+## 14. Open design questions
 
 Still unresolved:
 
@@ -290,7 +301,7 @@ Still unresolved:
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 14. Environment and dependency management
+## 15. Environment and dependency management
 
 Accepted project tooling:
 
@@ -303,7 +314,7 @@ Accepted project tooling:
 - dependency changes should use `uv add` / `uv remove` and update `uv.lock`;
 - CI uses `astral-sh/setup-uv`.
 
-## 15. Documentation rule
+## 16. Documentation rule
 
 For every merged milestone PR:
 
