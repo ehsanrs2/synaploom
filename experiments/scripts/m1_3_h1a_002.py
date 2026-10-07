@@ -158,9 +158,35 @@ def main() -> None:
         "--device",
         default="cuda" if torch.cuda.is_available() else "cpu",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the frozen protocol without reading data or training.",
+    )
     args = parser.parse_args()
 
     protocol = h1a2_protocol()
+    if args.dry_run:
+        print(
+            json.dumps(
+                {
+                    "experiment_id": H1A2_EXPERIMENT_ID,
+                    "protocol": protocol.as_dict(),
+                    "feature_sha256": H1A2_FEATURE_SHA256,
+                    "variants": list(H1A_VARIANTS),
+                    "expected_runs": len(protocol.seeds) * len(H1A_VARIANTS),
+                    "overall_rule": (
+                        "FAVORABLE iff both co-primary CIs > 0; "
+                        "UNFAVORABLE iff both < 0; otherwise INCONCLUSIVE; "
+                        "INVALID on numerical/artifact failure"
+                    ),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
+
     feature_audit = audit_h1a_feature_bundle(args.features)
     if feature_audit.sha256 != H1A2_FEATURE_SHA256:
         raise ValueError(
