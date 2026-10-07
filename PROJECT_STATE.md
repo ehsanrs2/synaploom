@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-05  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.3 H1a protocol and benchmark machinery implemented in PR; scientific execution pending  
-**Research status:** M1.0-M1.2 merged; H1a is preregistered as a controlled reserve-recruitment test; no scientific benchmark result yet
+**Current stage:** M1.3 H1a numerical-stability calibration after invalid primary execution  
+**Research status:** EXP-H1A-001 executed but invalidated by widespread NaN/Inf divergence; H1a remains NOT_EVALUATED
 
 ## 1. Project objective
 
@@ -238,42 +238,45 @@ Outputs include per-seed results, paired bootstrap CIs, full continual matrices,
 
 See docs/M1_3_PROTOCOL.md.
 
-## 11. No scientific experimental results yet
+## 11. EXP-H1A-001 execution status
 
-There are currently:
+EXP-H1A-001 was executed on 2026-10-07 at commit `188b32ab663301e8486657bf8661d40d58514159`.
 
-- no continual-learning benchmark results
-- no accuracy/forgetting claims
-- no compute-efficiency claims
-- no ablation conclusions
-- no evidence yet that controlled growth improves learning
+Artifact integrity passed, but numerical validity did not:
 
-Engineering smoke tests validate mechanics only. Research results must be recorded in docs/EXPERIMENT_LOG.md.
+- progressive_reserve: 2/10 finite, 8/10 NaN/Inf
+- all_recruited: 0/10 finite, 10/10 NaN/Inf
+- fixed_small: 7/10 finite, 3/10 NaN/Inf
+- dense_active_proxy: 1/10 finite, 9/10 NaN/Inf
+- dense_total: 1/10 finite, 9/10 NaN/Inf
+
+Therefore:
+
+```text
+EXP-H1A-001 = INVALID_NUMERICAL_INSTABILITY
+H1a = NOT_EVALUATED
+```
+
+Do not interpret the aggregate accuracy/forgetting deltas from that run.
 
 ## 12. Immediate next milestone
 
-**Execute M1.3a — H1a primary paired run**
+**EXP-H1A-STABILITY-001 — numerical calibration only**
 
-Execution safeguards are now specified in `docs/H1A_RUNBOOK.md`:
+Implemented/preregistered safeguards:
 
-- feature extraction writes SHA-256 provenance;
-- a mandatory preflight validates dimensions, finiteness, class ids/counts and metadata;
-- the benchmark independently reruns the same audit before any seed;
-- every run records the exact feature-bundle SHA-256.
+- fail immediately on non-finite logits, loss, gradients, parameters, routing state or evaluation values;
+- failure payload records stage/task/epoch/batch/global-step and offending parameter when applicable;
+- record per-task maximum gradient norm and parameter magnitude;
+- use independent calibration seeds 101,102,103;
+- test shared learning rates 0.03, 0.01, 0.003 in descending order;
+- evaluate all five H1a variants;
+- select the highest rate only if all 15 seed x variant runs are finite;
+- ignore accuracy and all scientific metrics for selection.
 
-Next actions:
+If no candidate is stable, do not add clipping in-place; open a separate calibration experiment.
 
-1. Extract the frozen CIFAR-100 ResNet-18 feature bundle.
-2. Run the mandatory H1a preflight and preserve its output.
-3. Run the preregistered 10-seed benchmark.
-4. Verify all expected artifacts/provenance and paired comparisons.
-5. Record results in docs/EXPERIMENT_LOG.md.
-6. Only after inspecting the preregistered H1a result, decide whether to:
-   - proceed to H1a sensitivity / end-to-end replication;
-   - add M1.3b external sparse baselines;
-   - revise the mechanism before M2.
-
-No adaptive novelty trigger is allowed into H1a.
+If calibration succeeds, preregister **EXP-H1A-002** with fresh primary seeds before evaluating H1a again.
 
 ## 13. Open design questions
 
