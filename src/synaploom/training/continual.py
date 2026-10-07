@@ -367,6 +367,18 @@ def run_continual_experiment(
                             trace.selected_node_ids,
                             trace.router_weights,
                         )
+                        ensure_finite_tensor(
+                            model.graph_state.node_utilization_ema,
+                            phase="structural_statistics",
+                            tensor_name="node_utilization_ema",
+                            context=context,
+                        )
+                        ensure_finite_tensor(
+                            model.graph_state.edge_utilization_ema,
+                            phase="structural_statistics",
+                            tensor_name="edge_utilization_ema",
+                            context=context,
+                        )
                     ids = (
                         [int(v) for v in trace.selected_node_ids.detach().cpu().tolist()]
                         if trace is not None
