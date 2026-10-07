@@ -1,9 +1,11 @@
 # EXP-H1A-001 Execution Runbook
 
-**Status:** execution-ready; no primary result has been inspected  
+**Status:** historical runbook — EXP-H1A-001 executed on 2026-10-07 and later invalidated by numerical instability  
 **Protocol:** `docs/M1_3_PROTOCOL.md`
 
-This runbook does not change the preregistered protocol. It only fixes the execution and provenance procedure.
+This runbook preserves the execution procedure used for EXP-H1A-001. Do **not** rerun or reinterpret EXP-H1A-001 in place. Its status is `INVALID_NUMERICAL_INSTABILITY` and H1a remains `NOT_EVALUATED`.
+
+The current next experiment is `EXP-H1A-STABILITY-001`; see `docs/H1A_STABILITY_PROTOCOL.md`.
 
 ## 1. Environment
 
