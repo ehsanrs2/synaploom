@@ -1,5 +1,6 @@
 from synaploom.protocols.h1a2 import (
     H1A2_EXPERIMENT_ID,
+    H1A2_FEATURE_SHA256,
     H1A2_LEARNING_RATE,
     H1A2_SEEDS,
     h1a2_protocol,
@@ -11,6 +12,7 @@ def test_h1a2_protocol_uses_calibrated_learning_rate_and_fresh_seeds() -> None:
     protocol = h1a2_protocol()
     assert H1A2_EXPERIMENT_ID == "EXP-H1A-002"
     assert H1A2_LEARNING_RATE == 0.01
+    assert H1A2_FEATURE_SHA256 == "c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47"
     assert protocol.learning_rate == 0.01
     assert protocol.seeds == H1A2_SEEDS
     assert len(protocol.seeds) == 10
