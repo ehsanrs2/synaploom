@@ -31,6 +31,12 @@ from synaploom.training.continual_metrics import (
 )
 from synaploom.training.engine import TrainingEngine
 from synaploom.training.evaluation import evaluate_task, logits_from_output
+from synaploom.training.numerics import (
+    NumericalContext,
+    check_model_gradients,
+    check_model_parameters,
+    ensure_finite_tensor,
+)
 
 
 @dataclass(frozen=True)
@@ -82,6 +88,8 @@ class ContinualRunResult:
     train_seconds_by_task: list[float] = field(default_factory=list)
     eval_seconds_by_stage: list[float] = field(default_factory=list)
     peak_cuda_memory_bytes: int | None = None
+    max_gradient_norm_by_task: list[float] = field(default_factory=list)
+    max_parameter_abs_by_task: list[float] = field(default_factory=list)
 
     def summary(self) -> dict[str, Any]:
         curve_means = [
@@ -125,6 +133,8 @@ class ContinualRunResult:
             "train_seconds_by_task": self.train_seconds_by_task,
             "eval_seconds_by_stage": self.eval_seconds_by_stage,
             "peak_cuda_memory_bytes": self.peak_cuda_memory_bytes,
+            "max_gradient_norm_by_task": self.max_gradient_norm_by_task,
+            "max_parameter_abs_by_task": self.max_parameter_abs_by_task,
             "summary": self.summary(),
         }
 
@@ -229,6 +239,8 @@ def run_continual_experiment(
     current_task_learning_curves: list[list[dict[str, float | int]]] = []
     train_seconds_by_task: list[float] = []
     eval_seconds_by_stage: list[float] = []
+    max_gradient_norm_by_task: list[float] = []
+    max_parameter_abs_by_task: list[float] = []
     global_step = 0
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
@@ -244,6 +256,8 @@ def run_continual_experiment(
         train_started = time.perf_counter()
         selection_counts: Counter[int] = Counter()
         executed_sizes: list[int] = []
+        task_max_gradient_norm = 0.0
+        task_max_parameter_abs = 0.0
 
         for epoch in range(config.epochs_per_task):
             num_batches = (int(task.train_x.shape[0]) + config.batch_size - 1) // config.batch_size
@@ -271,8 +285,20 @@ def run_continual_experiment(
                         step=global_step,
                         task_boundary=boundary,
                         allowed_classes=allowed_classes,
+                        stage=stage,
+                        task_id=task.task_id,
+                        epoch=epoch,
+                        batch_index=batch_index,
                     )
                     losses.append(result.loss)
+                    task_max_gradient_norm = max(
+                        task_max_gradient_norm,
+                        result.gradient_norm_l2,
+                    )
+                    task_max_parameter_abs = max(
+                        task_max_parameter_abs,
+                        result.max_abs_parameter,
+                    )
                     trace = result.trace
                     ids = [int(v) for v in trace.selected_node_ids.tolist()]
                 else:
@@ -280,7 +306,27 @@ def run_continual_experiment(
                     optimizer.zero_grad(set_to_none=True)
                     output = model(x)
                     logits = logits_from_output(output)
+                    context = NumericalContext(
+                        stage=stage,
+                        task_id=task.task_id,
+                        epoch=epoch,
+                        batch_index=batch_index,
+                        global_step=global_step,
+                    )
+                    ensure_finite_tensor(
+                        logits,
+                        phase="train_forward",
+                        tensor_name="logits",
+                        context=context,
+                    )
                     aux_loss = getattr(output, "aux_loss", None)
+                    if isinstance(aux_loss, Tensor):
+                        ensure_finite_tensor(
+                            aux_loss,
+                            phase="train_forward",
+                            tensor_name="aux_loss",
+                            context=context,
+                        )
                     loss = class_incremental_cross_entropy(
                         logits,
                         y,
@@ -288,14 +334,50 @@ def run_continual_experiment(
                     )
                     if isinstance(aux_loss, Tensor):
                         loss = loss + aux_loss
+                    ensure_finite_tensor(
+                        loss,
+                        phase="train_loss",
+                        tensor_name="loss",
+                        context=context,
+                    )
                     loss.backward()
+                    gradient_diagnostics = check_model_gradients(
+                        model,
+                        phase="backward_gradients",
+                        context=context,
+                    )
                     optimizer.step()
+                    parameter_diagnostics = check_model_parameters(
+                        model,
+                        phase="post_optimizer_parameters",
+                        context=context,
+                    )
+                    task_max_gradient_norm = max(
+                        task_max_gradient_norm,
+                        gradient_diagnostics.total_l2_norm,
+                    )
+                    task_max_parameter_abs = max(
+                        task_max_parameter_abs,
+                        parameter_diagnostics.max_abs,
+                    )
                     losses.append(float(loss.detach().item()))
                     trace = getattr(output, "trace", None)
                     if trace is not None and hasattr(model, "graph_state"):
                         model.graph_state.update_utilization(
                             trace.selected_node_ids,
                             trace.router_weights,
+                        )
+                        ensure_finite_tensor(
+                            model.graph_state.node_utilization_ema,
+                            phase="structural_statistics",
+                            tensor_name="node_utilization_ema",
+                            context=context,
+                        )
+                        ensure_finite_tensor(
+                            model.graph_state.edge_utilization_ema,
+                            phase="structural_statistics",
+                            tensor_name="edge_utilization_ema",
+                            context=context,
                         )
                     ids = (
                         [int(v) for v in trace.selected_node_ids.detach().cpu().tolist()]
@@ -318,6 +400,12 @@ def run_continual_experiment(
                     batch_size=config.eval_batch_size,
                     device=device,
                     allowed_classes=allowed_classes,
+                    numerical_context=NumericalContext(
+                        stage=stage,
+                        task_id=task.task_id,
+                        epoch=epoch,
+                        global_step=global_step,
+                    ),
                 )
                 task_curve.append(
                     {
@@ -333,6 +421,8 @@ def run_continual_experiment(
         train_seconds_by_task.append(time.perf_counter() - train_started)
         train_loss_by_task.append(sum(losses) / max(1, len(losses)))
         current_task_learning_curves.append(task_curve)
+        max_gradient_norm_by_task.append(task_max_gradient_norm)
+        max_parameter_abs_by_task.append(task_max_parameter_abs)
         structural_history.append(
             _snapshot(
                 model,
@@ -354,6 +444,11 @@ def run_continual_experiment(
                 batch_size=config.eval_batch_size,
                 device=device,
                 allowed_classes=allowed_classes,
+                numerical_context=NumericalContext(
+                    stage=stage,
+                    task_id=stream[eval_task_index].task_id,
+                    global_step=global_step,
+                ),
             )
             accuracy[stage, eval_task_index] = result.accuracy
             eval_loss[stage, eval_task_index] = result.loss
@@ -387,4 +482,6 @@ def run_continual_experiment(
             if device.type == "cuda"
             else None
         ),
+        max_gradient_norm_by_task=max_gradient_norm_by_task,
+        max_parameter_abs_by_task=max_parameter_abs_by_task,
     )

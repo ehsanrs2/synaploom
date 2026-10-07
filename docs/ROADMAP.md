@@ -91,9 +91,12 @@ Implemented/preregistered:
 - [x] parameter/MAC/wall-time/VRAM reporting hooks
 - [x] paired bootstrap comparison
 - [x] full run provenance
-- [ ] execute primary 10-seed run
-- [ ] record result in EXPERIMENT_LOG
-- [ ] run batching/class-order sensitivity if effect is small
+- [x] execute primary 10-seed run — invalidated by numerical instability
+- [x] record invalid result in EXPERIMENT_LOG
+- [x] add numerical fail-fast diagnostics
+- [ ] run EXP-H1A-STABILITY-001 on independent calibration seeds
+- [ ] preregister and execute EXP-H1A-002 if a stable optimizer setting is found
+- [ ] run batching/class-order sensitivity only after a numerically valid H1a result
 
 #### M1.3b — external sparse/continual controls
 

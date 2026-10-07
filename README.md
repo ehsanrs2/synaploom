@@ -4,7 +4,7 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **M1.3 H1a protocol and benchmark machinery ready; primary scientific run pending**. No scientific performance claims yet.
+> Project status: **EXP-H1A-001 executed but invalidated by numerical instability; H1a remains NOT_EVALUATED. Numerical stability calibration is next.**
 
 ## Development environment
 
@@ -61,7 +61,8 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 - [Architecture](docs/ARCHITECTURE.md) — formal v0.1 architecture and constraints
 - [M1 design](docs/M1_DESIGN.md) — implementation-ready contract for the structural core
 - [M1.3 H1a protocol](docs/M1_3_PROTOCOL.md) — preregistered first scientific reserve-recruitment test
-- [H1a execution runbook](docs/H1A_RUNBOOK.md) — feature extraction, preflight, execution and integrity checks
+- [H1a execution runbook](docs/H1A_RUNBOOK.md) — historical EXP-H1A-001 execution procedure
+- [H1a stability protocol](docs/H1A_STABILITY_PROTOCOL.md) — preregistered numerical calibration after the invalid primary run
 - [Theory notes](docs/THEORY.md) — mathematical framing, complexity targets, and open questions
 - [Research hypotheses](docs/RESEARCH_HYPOTHESES.md) — falsifiable hypotheses and baselines
 - [Roadmap](docs/ROADMAP.md) — milestone plan
@@ -89,7 +90,9 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 **M1.3a** is now preregistered as a mechanism-isolation test on frozen CIFAR-100 ResNet-18 features. The primary paired comparison is progressive reserve recruitment vs an all-recruited routed control with the same total capacity and top-k execution.
 
-The next action is to extract the frozen feature bundle, pass the mandatory H1a preflight, then execute the frozen 10-seed protocol and record the result. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 are follow-up validation, not hidden tuning steps.
+EXP-H1A-001 produced all expected artifacts but 39/50 runs developed NaN/Inf, including 10/10 all-recruited controls. The result is therefore INVALID_NUMERICAL_INSTABILITY and cannot support or reject H1a.
+
+The next action is EXP-H1A-STABILITY-001: use independent seeds and numerical validity only to select a shared learning rate before preregistering a fresh scientific run. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 remain later validation, not hidden tuning steps.
 
 ## Prior-work anchors
 

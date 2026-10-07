@@ -6,10 +6,12 @@ from synaploom.training.continual import (
     save_continual_result,
 )
 from synaploom.training.engine import TrainingEngine
+from synaploom.training.numerics import NumericalInstabilityError
 
 __all__ = [
     "ContinualConfig",
     "ContinualRunResult",
+    "NumericalInstabilityError",
     "TrainingEngine",
     "load_checkpoint",
     "run_continual_experiment",
