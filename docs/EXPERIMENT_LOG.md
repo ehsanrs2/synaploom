@@ -31,7 +31,8 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | ID | Date | Commit | Hypothesis | Dataset | Seeds | Status | Main result |
 |---|---|---|---|---|---:|---|---|
 | EXP-H1A-001 | 2026-10-07 | 188b32ab663301e8486657bf8661d40d58514159 | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 | INVALID_NUMERICAL_INSTABILITY | 39/50 runs developed NaN/Inf; H1a NOT_EVALUATED |
-| EXP-H1A-STABILITY-001 | 2026-10-07 | pending | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | preregistered / not run | choose highest LR with 15/15 finite runs; accuracy ignored |
+| EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
+| EXP-H1A-002 | 2026-10-07 | pending | H1a | same frozen H1a feature stream | 10 fresh paired seeds | preregistered / not run | scientific rerun with calibrated lr=0.01 |
 
 ## Template
 
@@ -154,7 +155,7 @@ The instability occurred in dense and routed variants, so EXP-H1A-001 does not i
 **Date:** 2026-10-07  
 **Commit:** pending merge/execution commit  
 **Hypothesis:** none; numerical calibration only  
-**Status:** preregistered / not run
+**Status:** COMPLETE
 
 **Protocol**
 
@@ -191,5 +192,42 @@ uv run --locked python experiments/scripts/m1_3_h1a_stability.py \
 ```
 
 **Results**
+
+- LR 0.03: **1/15 stable**, 14/15 numerical failures.
+- LR 0.01: **15/15 stable**, 0/15 failures.
+- LR 0.003: not executed because the preregistered stop rule selected the first fully stable candidate.
+- selected learning rate: **0.01**
+- feature SHA-256: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`
+- execution environment: Python 3.11.15, PyTorch 2.14.1+cu130, CUDA 13.0, RTX 4090
+- maximum gradient L2 norm observed among stable LR=0.01 runs: approximately **49.99**
+- maximum absolute parameter value observed among stable LR=0.01 runs: approximately **1.01445**
+
+Accuracy, forgetting, transfer and routing metrics from this calibration were **not used** for optimizer selection.
+
+**Conclusion**
+
+`lr=0.01` satisfies the preregistered numerical-validity rule and is the shared optimizer setting for the next fresh scientific H1a test.
+
+H1a remains `NOT_EVALUATED` until EXP-H1A-002.
+
+---
+
+### EXP-H1A-002 — Controlled reserve recruitment scientific rerun
+
+**Date:** 2026-10-07  
+**Commit:** pending merge/execution commit  
+**Hypothesis:** H1a — controlled reserve recruitment  
+**Status:** preregistered / not run
+
+See `docs/H1A_002_PROTOCOL.md`.
+
+Frozen changes relative to EXP-H1A-001:
+
+- shared learning rate: **0.01**, selected by EXP-H1A-STABILITY-001 using numerical validity only;
+- fresh paired seeds: **201..210**.
+
+Everything else remains frozen: feature artifact, class order, five variants, model sizes, SGD momentum/weight decay, epochs, batching, no replay/consolidation/edges, primary comparison and co-primary outcomes.
+
+**Scientific result**
 
 Not run yet.
