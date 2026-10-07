@@ -48,14 +48,21 @@ jobs:
       - name: Install SynapLoom
         run: uv pip install --python .venv/bin/python --editable . --no-deps
 
-      - name: Run test suite
-        run: uv run --no-sync pytest
+      - name: Run validation suite
+        shell: bash
+        run: |
+          set -o pipefail
+          {
+            uv run --no-sync pytest -vv
+            uv run --no-sync python experiments/scripts/m1_1_smoke.py
+            uv run --no-sync python experiments/scripts/m1_2_synthetic_smoke.py
+            uv run --no-sync python experiments/scripts/m1_3_protocol_smoke.py
+          } 2>&1 | tee ci-validation.log
 
-      - name: Run M1.1 smoke
-        run: uv run --no-sync python experiments/scripts/m1_1_smoke.py
-
-      - name: Run M1.2 smoke
-        run: uv run --no-sync python experiments/scripts/m1_2_synthetic_smoke.py
-
-      - name: Run M1.3 protocol smoke
-        run: uv run --no-sync python experiments/scripts/m1_3_protocol_smoke.py
+      - name: Upload validation log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-validation-log
+          path: ci-validation.log
+          if-no-files-found: ignore
