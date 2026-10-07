@@ -153,7 +153,7 @@ The instability occurred in dense and routed variants, so EXP-H1A-001 does not i
 ### EXP-H1A-STABILITY-001 — Shared optimizer numerical calibration
 
 **Date:** 2026-10-07  
-**Commit:** pending merge/execution commit  
+**Commit:** `7d8622fdb47bdb79fce109c64066b854711bafb2`  
 **Hypothesis:** none; numerical calibration only  
 **Status:** COMPLETE
 
