@@ -21,6 +21,7 @@ from synaploom.research.budgets import (
     synaploom_budget,
 )
 from synaploom.training.continual import run_continual_experiment, save_continual_result
+from synaploom.training.numerics import NumericalInstabilityError
 
 
 def _git_commit() -> str | None:
@@ -154,13 +155,14 @@ def main() -> None:
                     batch_size=protocol.batch_size,
                 )
 
-            result = run_continual_experiment(
-                model,
-                stream,
-                optimizer,
-                config=run_config,
-                engine=engine,
-                metadata={
+            try:
+                result = run_continual_experiment(
+                    model,
+                    stream,
+                    optimizer,
+                    config=run_config,
+                    engine=engine,
+                    metadata={
                     "milestone": "M1.3",
                     "hypothesis": "H1a-controlled-reserve-recruitment",
                     "variant": variant,
@@ -177,9 +179,31 @@ def main() -> None:
                     "initial_budget": (
                         asdict(initial_budget) if initial_budget is not None else None
                     ),
-                    "initial_linear_macs_per_batch_estimate": initial_macs,
-                },
-            )
+                        "initial_linear_macs_per_batch_estimate": initial_macs,
+                    },
+                )
+            except NumericalInstabilityError as exc:
+                failure_path = args.output / f"{variant}__seed-{seed}__failure.json"
+                failure_path.write_text(
+                    json.dumps(
+                        {
+                            "milestone": "M1.3",
+                            "hypothesis": "H1a-controlled-reserve-recruitment",
+                            "status": "INVALID_NUMERICAL_INSTABILITY",
+                            "variant": variant,
+                            "seed": seed,
+                            "feature_bundle_sha256": feature_audit.sha256,
+                            "environment": environment,
+                            "error": exc.to_dict(),
+                        },
+                        indent=2,
+                        sort_keys=True,
+                    ),
+                    encoding="utf-8",
+                )
+                raise RuntimeError(
+                    f"H1a benchmark aborted on numerical instability; details: {failure_path}"
+                ) from exc
 
             if hasattr(model, "graph_state"):
                 result.metadata["final_budget"] = synaploom_budget(model).__dict__
