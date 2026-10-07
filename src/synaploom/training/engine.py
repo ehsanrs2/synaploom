@@ -129,6 +129,12 @@ class TrainingEngine:
             self.model.graph_state,
             decay=self.importance_decay,
         )
+        ensure_finite_tensor(
+            self.model.graph_state.node_importance_ema,
+            phase="structural_statistics",
+            tensor_name="node_importance_ema",
+            context=context,
+        )
         scale_node_owned_gradients(self.model.executor, self.model.graph_state)
 
         gradient_diagnostics = check_model_gradients(
@@ -147,6 +153,18 @@ class TrainingEngine:
         self.model.graph_state.update_utilization(
             output.trace.selected_node_ids,
             output.trace.router_weights,
+        )
+        ensure_finite_tensor(
+            self.model.graph_state.node_utilization_ema,
+            phase="structural_statistics",
+            tensor_name="node_utilization_ema",
+            context=context,
+        )
+        ensure_finite_tensor(
+            self.model.graph_state.edge_utilization_ema,
+            phase="structural_statistics",
+            tensor_name="edge_utilization_ema",
+            context=context,
         )
 
         events: list[StructuralEvent] = []
