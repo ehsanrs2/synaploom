@@ -13,7 +13,11 @@ import torch
 
 from synaploom.data.features import load_feature_bundle, make_split_feature_stream
 from synaploom.protocols.h1a import H1A_CLASS_ORDER, H1A_VARIANTS, build_h1a_variant
-from synaploom.protocols.h1a2 import H1A2_EXPERIMENT_ID, h1a2_protocol
+from synaploom.protocols.h1a2 import (
+    H1A2_EXPERIMENT_ID,
+    H1A2_FEATURE_SHA256,
+    h1a2_protocol,
+)
 from synaploom.research.budgets import (
     count_trainable_parameters,
     estimate_dense_linear_macs_per_batch,
@@ -158,6 +162,11 @@ def main() -> None:
 
     protocol = h1a2_protocol()
     feature_audit = audit_h1a_feature_bundle(args.features)
+    if feature_audit.sha256 != H1A2_FEATURE_SHA256:
+        raise ValueError(
+            "EXP-H1A-002 requires the frozen feature artifact SHA-256 "
+            f"{H1A2_FEATURE_SHA256}, got {feature_audit.sha256}"
+        )
     bundle = load_feature_bundle(args.features)
     feature_metadata = dict(bundle.get("metadata", {}))
     stream = make_split_feature_stream(
