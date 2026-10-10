@@ -148,7 +148,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="EXP-H1A-002: preregistered H1a rerun after stability calibration."
     )
-    parser.add_argument("--features", type=Path, required=True)
+    parser.add_argument(
+        "--features",
+        type=Path,
+        help="Frozen feature bundle (required unless --dry-run is used).",
+    )
     parser.add_argument(
         "--output",
         type=Path,
@@ -164,6 +168,8 @@ def main() -> None:
         help="Print the frozen protocol without reading data or training.",
     )
     args = parser.parse_args()
+    if not args.dry_run and args.features is None:
+        parser.error("--features is required unless --dry-run is used")
 
     protocol = h1a2_protocol()
     if args.dry_run:
