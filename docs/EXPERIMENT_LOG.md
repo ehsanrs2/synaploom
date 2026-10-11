@@ -33,7 +33,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | EXP-H1A-001 | 2026-10-07 | 188b32ab663301e8486657bf8661d40d58514159 | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 | INVALID_NUMERICAL_INSTABILITY | 39/50 runs developed NaN/Inf; H1a NOT_EVALUATED |
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
 | EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
-| EXP-H1A-ORDER-001 | 2026-10-11 | implementation PR #15 pending | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) reused across order blocks | PREREGISTERED / LOCAL VALIDATION PENDING / NOT RUN | Runner and tests added in PR #15; 60 runs; primary pair only; pooled seed-cluster bootstrap and per-order deltas; eval batch size fixed at 256 |
+| EXP-H1A-ORDER-001 | 2026-10-11 | 4f572068892093124ada78023c1d4bba6eb9f331 | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) shared across orders | COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE | all 60 runs valid; pooled final accuracy Δ -0.0160 pp [-0.0457, +0.0170]; pooled late-task accuracy Δ -0.0082 pp [-0.0738, +0.0538]; late-task point-estimate signs vary by order |
 
 ## Template
 
@@ -317,10 +317,11 @@ The final-average-accuracy advantage is statistically above zero under the prere
 
 ### EXP-H1A-ORDER-001 — Class-order sensitivity of controlled reserve recruitment
 
-**Protocol date:** 2026-10-11  
-**Implementation:** [PR #15](https://github.com/ehsanrs2/synaploom/pull/15); implementation commit pending merge  
+**Date:** 2026-10-11  
+**Execution commit:** `4f572068892093124ada78023c1d4bba6eb9f331` (PR #15 merge commit)  
+**Protocol:** `docs/H1A_CLASS_ORDER_SENSITIVITY_PROTOCOL.md` (frozen before execution)  
 **Hypothesis:** robustness of the H1a treatment effect to class order  
-**Status:** **PREREGISTERED; RUNNER/TESTS ADDED IN PR #15; LOCAL VALIDATION PENDING; NOT RUN**  
+**Status:** **COMPLETE_NUMERICALLY_VALID; registered classification ORDER_SENSITIVE**  
 **Parent result:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**.
 
 **Question**
@@ -329,43 +330,75 @@ Does the paired effect of `progressive_reserve - all_recruited` remain direction
 
 **Frozen setup**
 
-- Same frozen ResNet-18 feature bundle and SHA-256 as EXP-H1A-002: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
-- Same model, optimizer and continual-learning protocol as EXP-H1A-002: LR=0.01, momentum=0.9, weight decay=0.0005, 20 epochs/task, batch size=128, evaluation batch size=256, N=16, initially recruited=4, top-k=4, q_max=0 and no message passing, replay or consolidation.
-- Primary variants only: `progressive_reserve` and `all_recruited`.
-- Three fixed orders: O0 (the original `H1A_CLASS_ORDER`), O1 (one literal permutation generated from stdlib seed 20261006), and O2 (one literal permutation generated from stdlib seed 20261007). Exact order groupings are frozen in `docs/H1A_CLASS_ORDER_SENSITIVITY_PROTOCOL.md`.
-- Fresh seeds: **301..310**, shared across the three orders and two variants.
-- Expected run count: **3 orders x 10 seeds x 2 variants = 60**.
+- CIFAR-100 frozen torchvision ResNet-18 `IMAGENET1K_V1` feature bundle, 50,000 training and 10,000 evaluation examples; feature dimension 512.
+- Feature bundle SHA-256: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+- Three literal class orders O0/O1/O2, each frozen in the protocol and checked against its compact-JSON SHA-256 fingerprint.
+- Fresh paired seeds **301–310**, shared across orders and variants.
+- Variants: `progressive_reserve` and `all_recruited` only; exactly `3 orders × 10 seeds × 2 variants = 60` runs.
+- Model/optimizer settings: LR=0.01, momentum=0.9, weight decay=0.0005, 20 epochs/task, batch size=128, evaluation batch size=256, feature dimension=512, `d_model=128`, `d_hidden=256`, 16 nodes, 4 initially recruited, top-k=4, q_max=0, and no message passing, replay, or consolidation.
 
-**Registered analysis**
-
-- Co-primary metrics: final average accuracy and late-task within-task mean accuracy.
-- For each order, report paired seed deltas and paired-bootstrap 95% CIs (10,000 resamples; RNG seeds 1337, 1338, 1339 for O0, O1, O2).
-- Pooled order-marginal estimates weight each order equally. For pooled CIs, bootstrap seed clusters (10,000 resamples; RNG seed 7331), carrying all three order outcomes for every resampled seed; do not treat the 30 order-by-seed blocks as independent.
-- Registered labels: `ORDER_ROBUST_FAVORABLE`, `ORDER_ROBUST_UNFAVORABLE`, `ORDER_SENSITIVE`, or `INCONCLUSIVE`, using the exact rules in the protocol.
-- Any numerical or artifact-integrity failure invalidates the full sensitivity study; do not interpret partial aggregates.
-- This study cannot retroactively change the EXP-H1A-002 verdict.
-
-**Implementation status and command**
-
-The dedicated runner and protocol tests are added in [PR #15](https://github.com/ehsanrs2/synaploom/pull/15). Local validation is required before merge, and the 60-run scientific study has not started. The frozen command interface is:
+**Command**
 
 ```bash
 uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py \
   --features data/features/cifar100_resnet18_imagenet1k_v1.pt \
   --output runs/m1_3_h1a_order_sensitivity \
-  --device cuda
+  --device cuda \
+  2>&1 | tee runs/m1_3_h1a_order_sensitivity.console.log
 ```
 
-**Local validation before the scientific run**
+**Environment and execution integrity**
 
-```bash
-uv sync --locked --extra vision
-uv run --locked pytest -vv
-uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py --dry-run
+- Local validation before the real run: **43 tests passed**; dry-run confirmed the frozen order fingerprints, seeds 301–310, two variants, and `expected_runs=60`.
+- Environment: Python 3.11.15; PyTorch 2.14.1+cu130; CUDA 13.0; NVIDIA GeForce RTX 4090.
+- The aggregate reports `COMPLETE_NUMERICALLY_VALID`; all **60/60** expected run JSONs exist with the exact order/seed/variant matrix and a 60-entry run manifest.
+- Independent artifact audit found zero non-finite numeric values in the 60 serialized per-run JSONs and no per-run feature-SHA mismatch.
+- The feature SHA matches the frozen protocol; the execution commit matches the PR #15 merge commit.
+
+**Registered analysis**
+
+- Primary co-outcomes: final average accuracy and late-task within-task mean accuracy.
+- Per-order paired-bootstrap 95% percentile CIs: 10,000 resamples per order, bootstrap seeds O0=1337, O1=1338, O2=1339.
+- Pooled result gives each class order equal weight and uses a seed-cluster bootstrap (10,000 resamples, seed 7331), retaining all order blocks for a sampled seed.
+- All deltas are `progressive_reserve - all_recruited` in percentage points (pp).
+
+**Results**
+
+| Class order | Final average accuracy Δ (95% CI), pp | Late-task within-task mean accuracy Δ (95% CI), pp |
+|---|---:|---:|
+| O0 | -0.0010 [-0.0820, +0.0660] | +0.0363 [-0.0825, +0.1658] |
+| O1 | -0.0140 [-0.0470, +0.0230] | -0.0283 [-0.1060, +0.0583] |
+| O2 | -0.0330 [-0.1240, +0.0390] | -0.0325 [-0.1460, +0.0728] |
+| Equal-order pooled, seed-cluster bootstrap | -0.0160 [-0.0457, +0.0170] | -0.0082 [-0.0738, +0.0538] |
+
+Descriptive secondary outcomes (not used by the registered classifier), in pp:
+
+| Class order | Average forgetting Δ | Backward transfer Δ |
+|---|---:|---:|
+| O0 | +0.0244 | -0.0244 |
+| O1 | -0.0344 | +0.0344 |
+| O2 | -0.0056 | +0.0056 |
+| Equal-order pooled | -0.0052 | +0.0052 |
+
+**Registered classification and interpretation**
+
+`EXP-H1A-ORDER-001 = ORDER_SENSITIVE`.
+
+For the late-task co-primary, the order-specific mean deltas have mixed signs (O0 positive; O1 and O2 negative), which satisfies the preregistered directional-heterogeneity rule. Both pooled co-primary CIs include zero. The label is not evidence of a statistically significant order-by-treatment interaction and does not show a robust favorable effect.
+
+The outcome **does not** retroactively change the frozen primary result:
+
+```text
+EXP-H1A-002 = COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE
+H1a benefit = NOT ESTABLISHED
+EXP-H1A-ORDER-001 = COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE
 ```
 
-The dry-run must report the three frozen order fingerprints, seeds 301–310, two variants, and 60 expected runs, without requiring or reading the feature bundle.
+**Caveats and next action**
 
-**Deferred follow-up**
+- This sensitivity study changes class order only; evaluation batch size remains frozen at 256.
+- Features are frozen; this remains a mechanism-isolation study, not end-to-end feature learning.
+- No replay or consolidation is enabled.
+- The classification is a directional sensitivity flag based on point estimates, not a formal interaction-significance test.
+- Next: preregister evaluation-batch-size sensitivity that evaluates identical trained model states across batch sizes. Do not change the primary EXP-H1A-002 verdict.
 
-Evaluation-batch-size sensitivity is not part of this study. It will need its own protocol that evaluates identical trained model states at multiple batch sizes, since batch-level routing makes predictions depend on the evaluation-batch composition.

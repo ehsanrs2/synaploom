@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-11  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.3a EXP-H1A-ORDER-001 runner and unit tests implemented in [PR #15](https://github.com/ehsanrs2/synaploom/pull/15); local validation pending; study not run  
-**Research status:** EXP-H1A-002 remains INCONCLUSIVE; EXP-H1A-ORDER-001 protocol is frozen, runner/tests are in PR #15, local validation is pending, and no sensitivity runs have started
+**Current stage:** EXP-H1A-ORDER-001 completed on 2026-10-11; all 60 registered runs are numerically valid and the registered class-order sensitivity verdict is ORDER_SENSITIVE  
+**Research status:** EXP-H1A-002 remains the frozen primary result with verdict INCONCLUSIVE. EXP-H1A-ORDER-001 found directional heterogeneity across class orders but no pooled co-primary CI excluding zero; the next step is a separately preregistered evaluation-batch-size sensitivity study using identical trained model states.
 
 ## 1. Project objective
 
@@ -282,23 +282,47 @@ EXP-H1A-002 completed on 2026-10-11 at commit `7b301224151882d677403e1ea7a91d4b2
 - Late-task within-task mean accuracy delta: -0.041 percentage points; paired-bootstrap 95% CI [-0.171, +0.087] pp.
 - Preregistered overall verdict: **INCONCLUSIVE**. The final-average-accuracy co-primary is favorable, but the late-task co-primary is inconclusive, so the two-outcome rule is not satisfied.
 
-H1a is **not established** by this experiment. Do not relabel the outcome as favorable or change the frozen primary protocol to improve the result after seeing it. The next research action is to implement and execute the separately preregistered EXP-H1A-ORDER-001 class-order sensitivity study, keeping EXP-H1A-002 as the primary result.
+H1a is **not established** by this experiment. Do not relabel the outcome as favorable or change the frozen primary protocol to improve the result after seeing it. The separately preregistered EXP-H1A-ORDER-001 class-order sensitivity study has since completed; it has its own ORDER_SENSITIVE classification and does not change the frozen primary verdict. See section 14 and `docs/EXPERIMENT_LOG.md` for its execution and limitations.
 
 See `docs/EXPERIMENT_LOG.md` for per-variant summaries and paired seed-level deltas.
 
-## 14. Next milestone: EXP-H1A-ORDER-001
+## 14. EXP-H1A-ORDER-001 — class-order sensitivity result
 
-The class-order sensitivity study is preregistered in `docs/H1A_CLASS_ORDER_SENSITIVITY_PROTOCOL.md`.
+The frozen protocol is documented in `docs/H1A_CLASS_ORDER_SENSITIVITY_PROTOCOL.md`. The runner and tests were merged in [PR #15](https://github.com/ehsanrs2/synaploom/pull/15); local validation passed (43 tests, plus the registered dry-run).
 
-- Three fixed class orders: the primary order plus two alternate orders frozen in the protocol.
-- Fresh paired seeds 301..310 shared across order blocks.
-- Only the primary pair `progressive_reserve` vs `all_recruited`.
-- Exactly 60 runs; `eval_batch_size=256` stays fixed to isolate class-order changes.
-- Status: protocol registered; runner and tests are in PR #15; local validation pending; study not run.
-- Runner: `experiments/scripts/m1_3_h1a_order_sensitivity.py`; unit tests cover order fingerprints, protocol invariants, bootstrap behavior, classification rules, and the dry-run contract.
-- Batch-size sensitivity will be preregistered separately and should evaluate identical model states across batch sizes.
+Execution completed on 2026-10-11 at merge commit `4f572068892093124ada78023c1d4bba6eb9f331`.
 
-EXP-H1A-002 remains the frozen primary result with verdict **INCONCLUSIVE**.
+- Integrity: **PASS** — all 60 registered order × seed × variant runs are present, with no non-finite numeric values in the per-run JSON files.
+- Feature bundle SHA-256 matched the frozen artifact: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+- Environment: Python 3.11.15, PyTorch 2.14.1+cu130, CUDA 13.0, NVIDIA GeForce RTX 4090.
+- Run matrix: orders O0/O1/O2 × seeds 301–310 × `progressive_reserve`/`all_recruited` = 60 runs.
+- Analysis: 10,000 paired-bootstrap resamples per order; the pooled CI uses 10,000 seed-cluster bootstrap resamples and equal order weighting.
+
+All deltas below are `progressive_reserve - all_recruited` in percentage points (pp).
+
+| Class order | Final average accuracy Δ (95% CI), pp | Late-task within-task mean accuracy Δ (95% CI), pp |
+|---|---:|---:|
+| O0 | -0.0010 [-0.0820, +0.0660] | +0.0363 [-0.0825, +0.1658] |
+| O1 | -0.0140 [-0.0470, +0.0230] | -0.0283 [-0.1060, +0.0583] |
+| O2 | -0.0330 [-0.1240, +0.0390] | -0.0325 [-0.1460, +0.0728] |
+| Equal-order pooled, seed-cluster bootstrap | -0.0160 [-0.0457, +0.0170] | -0.0082 [-0.0738, +0.0538] |
+
+Registered classification: **ORDER_SENSITIVE**. The late-task point estimate is positive for O0 and negative for O1/O2, satisfying the frozen directional-heterogeneity rule. Both pooled co-primary confidence intervals include zero. This classification does **not** establish a statistically significant order-by-treatment interaction or show a robust benefit for progressive reserve recruitment.
+
+Descriptive secondary metric deltas (not used by the registered classifier), also in pp:
+
+| Class order | Average forgetting Δ | Backward transfer Δ |
+|---|---:|---:|
+| O0 | +0.0244 | -0.0244 |
+| O1 | -0.0344 | +0.0344 |
+| O2 | -0.0056 | +0.0056 |
+| Equal-order pooled | -0.0052 | +0.0052 |
+
+Artifacts were generated under `runs/m1_3_h1a_order_sensitivity/`; the aggregate records the 60-run manifest, environment, feature provenance, per-order paired results, and seed-cluster pooled results.
+
+**Primary-result guardrail:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 is a separate sensitivity result and cannot retroactively change that verdict.
+
+**Next action:** preregister evaluation-batch-size sensitivity, evaluating identical trained model states at multiple evaluation batch sizes to isolate batch-context effects from training differences.
 
 ## 15. Open design questions
 
@@ -308,7 +332,7 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- locally validate/merge PR #15 and execute EXP-H1A-ORDER-001; separately design eval-batch-size sensitivity using identical trained states
+- preregister a separate eval-batch-size sensitivity study that evaluates identical trained model states at multiple evaluation batch sizes; keep EXP-H1A-002's primary verdict unchanged
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 

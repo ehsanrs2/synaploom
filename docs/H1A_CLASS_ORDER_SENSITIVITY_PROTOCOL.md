@@ -1,7 +1,7 @@
 # EXP-H1A-ORDER-001 — Class-Order Sensitivity of Controlled Reserve Recruitment
 
 **Protocol date:** 2026-10-11  
-**Status:** preregistered; runner implementation pending; not run  
+**Status:** executed; COMPLETE_NUMERICALLY_VALID; registered classification **ORDER_SENSITIVE**. Execution results are recorded in `docs/EXPERIMENT_LOG.md`.  
 **Parent result:** EXP-H1A-002 — COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE  
 **Question:** Is the paired effect of `progressive_reserve` versus `all_recruited` directionally consistent across different fixed class orders?
 
@@ -151,9 +151,9 @@ The runner must validate before training:
 
 Each per-run artifact must record experiment ID, order ID, literal class order, seed, variant, resolved protocol, feature SHA/audit, environment, Git commit, and numerical diagnostics. The aggregate must contain the per-order paired comparisons, seed-cluster pooled comparisons, registered sensitivity classification, and a complete run manifest.
 
-## 8. Planned command
+## 8. Implemented command
 
-The dedicated runner will be added in a subsequent implementation PR. Its required interface is frozen as:
+The dedicated runner was implemented in [PR #15](https://github.com/ehsanrs2/synaploom/pull/15), merged on 2026-10-11, and used for the registered 60-run execution. Its interface remains:
 
 ```bash
 uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py \
@@ -162,10 +162,12 @@ uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py \
   --device cuda
 ```
 
-A `--dry-run` mode must emit the protocol, order fingerprints, seed list, and `expected_runs=60` without loading feature data or training. Runtime overrides for class orders, seeds, variants, batch sizes, or optimizer settings are not permitted.
+The merged `--dry-run` mode emits the protocol, order fingerprints, seed list, and `expected_runs=60` without loading feature data or training. Runtime overrides for class orders, seeds, variants, batch sizes, or optimizer settings are not permitted. The observed outcome and registered classification are recorded separately in `docs/EXPERIMENT_LOG.md`; the preregistered decision rules above were not altered after seeing the results.
 
 ## 9. What follows this study
 
 This study isolates class-order sensitivity. Evaluation-batch-size sensitivity remains a separate preregistration. Because routing is batch-context dependent and the late-task co-primary depends on epoch-level evaluations, the next batch-size study should evaluate identical trained model states at multiple evaluation batch sizes rather than conflate evaluation batching with a new training condition.
 
-The scientific sequence is: merge this preregistration, implement and test the fixed runner, run all 60 combinations, audit the artifacts, then update `PROJECT_STATE.md` and `docs/EXPERIMENT_LOG.md` with the outcome. EXP-H1A-002 remains the frozen primary result.
+Execution record: PR #15 implemented the runner; local validation passed (43 tests and the registered dry-run); all 60 combinations completed with numerically valid, integrity-checked artifacts. The registered classification is **ORDER_SENSITIVE** because late-task point estimates have mixed signs across orders. Both pooled co-primary confidence intervals include zero, and this result does not change EXP-H1A-002's frozen **INCONCLUSIVE** verdict.
+
+The remaining follow-up is a separate evaluation-batch-size sensitivity preregistration. It should evaluate identical trained model states at multiple evaluation batch sizes so batch-context effects are not confounded with training differences.

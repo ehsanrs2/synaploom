@@ -99,8 +99,8 @@ Implemented/preregistered:
 - [x] execute EXP-H1A-002 and record the paired scientific result — 50/50 numerically valid runs; preregistered overall verdict INCONCLUSIVE
 - [x] preregister EXP-H1A-ORDER-001 class-order sensitivity: three fixed orders x 10 paired seeds x two primary variants
 - [x] implement sensitivity runner and protocol/unit tests with exact order fingerprints and 60-run manifest validation — PR #15; local validation pending
-- [ ] run local tests and dry-run, then merge PR #15
-- [ ] execute EXP-H1A-ORDER-001 and record results; preserve EXP-H1A-002 as the primary result
+- [x] run local tests and dry-run, then merge PR #15 — 43 tests passed and the dry-run confirmed the frozen 60-run matrix
+- [x] execute EXP-H1A-ORDER-001 and record results — 60/60 numerically valid runs; registered classification ORDER_SENSITIVE; EXP-H1A-002 remains INCONCLUSIVE
 - [ ] preregister separate eval-batch-size sensitivity using identical trained model states
 
 #### M1.3b — external sparse/continual controls
