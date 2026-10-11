@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import random
+import statistics
+
 from synaploom.protocols.h1a import H1A_CLASS_ORDER
 from synaploom.protocols.h1a2 import h1a2_protocol
 from synaploom.protocols.h1a_order_sensitivity import (
@@ -58,21 +61,40 @@ def test_paired_bootstrap_is_deterministic_and_reports_constant_effect_exactly()
 
 
 def test_cluster_bootstrap_resamples_seed_clusters_not_order_seed_rows() -> None:
-    seed_values = {301: 0.5, 302: 1.0, 303: 1.5, 304: 2.0}
+    seeds = (301, 302, 303, 304)
     by_order = {
-        "O0": dict(seed_values),
-        "O1": dict(seed_values),
-        "O2": dict(seed_values),
+        "O0": {301: 0.0, 302: 1.0, 303: 10.0, 304: 11.0},
+        "O1": {301: 100.0, 302: 101.0, 303: 110.0, 304: 111.0},
+        "O2": {301: -100.0, 302: -99.0, 303: -90.0, 304: -89.0},
     }
     first = seed_cluster_bootstrap_ci(
-        by_order, seeds=tuple(seed_values), samples=500, seed=7331
+        by_order, seeds=seeds, samples=500, seed=7331
     )
     second = seed_cluster_bootstrap_ci(
-        by_order, seeds=tuple(seed_values), samples=500, seed=7331
+        by_order, seeds=seeds, samples=500, seed=7331
     )
     assert first == second
-    assert 0.5 <= first[0] <= first[1] <= 2.0
 
+    # Reproduce the registered cluster-resampling unit: each sampled seed keeps
+    # all three of its order-specific deltas together for that bootstrap draw.
+    cluster_means = [
+        statistics.fmean(by_order[order_id][seed] for order_id in ("O0", "O1", "O2"))
+        for seed in seeds
+    ]
+    rng = random.Random(7331)
+    means = sorted(
+        statistics.fmean(
+            cluster_means[rng.randrange(len(cluster_means))]
+            for _ in cluster_means
+        )
+        for _ in range(500)
+    )
+    expected = [
+        means[int(0.025 * (500 - 1))],
+        means[int(0.975 * (500 - 1))],
+    ]
+    assert first == expected
+    assert 0.0 <= first[0] <= first[1] <= 11.0
 
 def test_order_sensitivity_classification_obeys_registered_rules() -> None:
     metrics = (
