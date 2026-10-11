@@ -36,6 +36,8 @@ Every order is a permutation of the 100 CIFAR-100 class IDs, partitioned sequent
 
 ### O0 — primary order
 
+Compact-JSON-list SHA-256 fingerprint: `81d7f0637b8e61477c1ef80b7eef33270aae8d81dfcaffad6e58252fd004b633`.
+
 Re-use the exact frozen `H1A_CLASS_ORDER` from `src/synaploom/protocols/h1a.py` (the same order used by EXP-H1A-002):
 
 ```python
@@ -55,6 +57,8 @@ Re-use the exact frozen `H1A_CLASS_ORDER` from `src/synaploom/protocols/h1a.py` 
 
 ### O1 — alternate order A
 
+Compact-JSON-list SHA-256 fingerprint: `c0dc7d8b234ec06670526cbc8d917f0e7e14ed9bbaee640272eab95573f1f8ed`.
+
 Generated once with Python standard-library `random.Random(20261006).sample(range(100), 100)`, then frozen here. Its task grouping is:
 
 ```text
@@ -72,6 +76,8 @@ Generated once with Python standard-library `random.Random(20261006).sample(rang
 
 ### O2 — alternate order B
 
+Compact-JSON-list SHA-256 fingerprint: `b610995c70c2269fb28e7492f1c1eb2870703fa134f967e185ca02dbd44e2e63`.
+
 Generated once with Python standard-library `random.Random(20261007).sample(range(100), 100)`, then frozen here. Its task grouping is:
 
 ```text
@@ -87,7 +93,7 @@ Generated once with Python standard-library `random.Random(20261007).sample(rang
 [10, 31, 38, 4, 89, 48, 51, 53, 78, 68]
 ```
 
-The O1/O2 generation seeds are provenance only. The frozen literal orders are authoritative even if a future Python version changes its random-number implementation.
+The fingerprints above are SHA-256 over the UTF-8 encoding of each order as a compact JSON integer list (`json.dumps(order, separators=(",", ":"))`, with no trailing newline); they are protocol fingerprints, distinct from the feature-stream audit's class-order hash. The O1/O2 generation seeds are provenance only. The frozen literal orders and fingerprints are authoritative even if a future Python version changes its random-number implementation.
 
 ## 4. Seeds and run matrix
 
@@ -129,7 +135,7 @@ For each co-primary outcome, all effect signs refer to `progressive_reserve - al
 - **ORDER_SENSITIVE:** for at least one co-primary outcome, the order-specific mean deltas include at least one positive and at least one negative value.
 - **INCONCLUSIVE:** none of the preceding rules is satisfied.
 
-This classification summarizes class-order robustness; it does not retroactively upgrade, downgrade, or replace the primary EXP-H1A-002 verdict. Order-specific confidence intervals are reported transparently but are not separate primary-hypothesis tests.
+This classification summarizes class-order robustness; it does not retroactively upgrade, downgrade, or replace the primary EXP-H1A-002 verdict. `ORDER_SENSITIVE` is a descriptive directional-heterogeneity flag based on per-order point estimates, not a claim that the order-by-treatment interaction is statistically significant. Order-specific confidence intervals are reported transparently but are not separate primary-hypothesis tests.
 
 ## 7. Validity and provenance checks
 
