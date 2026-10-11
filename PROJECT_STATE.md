@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-11  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.3a class-order sensitivity preregistered; dedicated runner implementation pending  
-**Research status:** EXP-H1A-002 completed with 50/50 numerically valid runs and an INCONCLUSIVE preregistered verdict; EXP-H1A-ORDER-001 is preregistered on three fixed class orders with 10 fresh paired seeds, not run yet
+**Current stage:** M1.3a EXP-H1A-ORDER-001 runner and unit tests implemented in [PR #15](https://github.com/ehsanrs2/synaploom/pull/15); local validation pending; study not run  
+**Research status:** EXP-H1A-002 remains INCONCLUSIVE; EXP-H1A-ORDER-001 protocol is frozen, runner/tests are in PR #15, local validation is pending, and no sensitivity runs have started
 
 ## 1. Project objective
 
@@ -294,8 +294,8 @@ The class-order sensitivity study is preregistered in `docs/H1A_CLASS_ORDER_SENS
 - Fresh paired seeds 301..310 shared across order blocks.
 - Only the primary pair `progressive_reserve` vs `all_recruited`.
 - Exactly 60 runs; `eval_batch_size=256` stays fixed to isolate class-order changes.
-- Status: protocol registered; implementation and tests pending; study not run.
-- Planned runner: `experiments/scripts/m1_3_h1a_order_sensitivity.py`.
+- Status: protocol registered; runner and tests are in PR #15; local validation pending; study not run.
+- Runner: `experiments/scripts/m1_3_h1a_order_sensitivity.py`; unit tests cover order fingerprints, protocol invariants, bootstrap behavior, classification rules, and the dry-run contract.
 - Batch-size sensitivity will be preregistered separately and should evaluate identical model states across batch sizes.
 
 EXP-H1A-002 remains the frozen primary result with verdict **INCONCLUSIVE**.
@@ -308,7 +308,7 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- implement and execute preregistered EXP-H1A-ORDER-001; separately design eval-batch-size sensitivity using identical trained states
+- locally validate/merge PR #15 and execute EXP-H1A-ORDER-001; separately design eval-batch-size sensitivity using identical trained states
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
