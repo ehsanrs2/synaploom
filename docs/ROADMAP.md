@@ -98,7 +98,7 @@ Implemented/preregistered:
 - [x] preregister EXP-H1A-002 with fresh seeds and calibrated lr=0.01
 - [x] execute EXP-H1A-002 and record the paired scientific result — 50/50 numerically valid runs; preregistered overall verdict INCONCLUSIVE
 - [x] preregister EXP-H1A-ORDER-001 class-order sensitivity: three fixed orders x 10 paired seeds x two primary variants
-- [ ] implement sensitivity runner and tests with exact order/hash and run-count checks
+- [ ] implement sensitivity runner and tests with exact order/fingerprint and run-count checks
 - [ ] execute EXP-H1A-ORDER-001 and record results; preserve EXP-H1A-002 as the primary result
 - [ ] preregister separate eval-batch-size sensitivity using identical trained model states
 
