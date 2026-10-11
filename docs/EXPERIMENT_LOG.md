@@ -33,7 +33,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | EXP-H1A-001 | 2026-10-07 | 188b32ab663301e8486657bf8661d40d58514159 | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 | INVALID_NUMERICAL_INSTABILITY | 39/50 runs developed NaN/Inf; H1a NOT_EVALUATED |
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
 | EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
-| EXP-H1A-ORDER-001 | 2026-10-11 | pending | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) reused across order blocks | PREREGISTERED / IMPLEMENTATION PENDING / NOT RUN | 60 runs; primary pair only; pooled seed-cluster bootstrap and per-order deltas; eval batch size fixed at 256 |
+| EXP-H1A-ORDER-001 | 2026-10-11 | implementation PR #15 pending | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) reused across order blocks | PREREGISTERED / LOCAL VALIDATION PENDING / NOT RUN | Runner and tests added in PR #15; 60 runs; primary pair only; pooled seed-cluster bootstrap and per-order deltas; eval batch size fixed at 256 |
 
 ## Template
 
@@ -318,9 +318,9 @@ The final-average-accuracy advantage is statistically above zero under the prere
 ### EXP-H1A-ORDER-001 — Class-order sensitivity of controlled reserve recruitment
 
 **Protocol date:** 2026-10-11  
-**Commit:** pending implementation/execution  
+**Implementation:** [PR #15](https://github.com/ehsanrs2/synaploom/pull/15); implementation commit pending merge  
 **Hypothesis:** robustness of the H1a treatment effect to class order  
-**Status:** **PREREGISTERED; IMPLEMENTATION PENDING; NOT RUN**  
+**Status:** **PREREGISTERED; RUNNER/TESTS ADDED IN PR #15; LOCAL VALIDATION PENDING; NOT RUN**  
 **Parent result:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**.
 
 **Question**
@@ -347,7 +347,7 @@ Does the paired effect of `progressive_reserve - all_recruited` remain direction
 
 **Implementation status and command**
 
-The dedicated runner and protocol tests will be added in a separate implementation PR. The frozen command interface is:
+The dedicated runner and protocol tests are added in [PR #15](https://github.com/ehsanrs2/synaploom/pull/15). Local validation is required before merge, and the 60-run scientific study has not started. The frozen command interface is:
 
 ```bash
 uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py \
@@ -355,6 +355,16 @@ uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py \
   --output runs/m1_3_h1a_order_sensitivity \
   --device cuda
 ```
+
+**Local validation before the scientific run**
+
+```bash
+uv sync --locked --extra vision
+uv run --locked pytest -vv
+uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py --dry-run
+```
+
+The dry-run must report the three frozen order fingerprints, seeds 301–310, two variants, and 60 expected runs, without requiring or reading the feature bundle.
 
 **Deferred follow-up**
 
