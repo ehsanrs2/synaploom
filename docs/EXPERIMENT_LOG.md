@@ -32,7 +32,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 |---|---|---|---|---|---:|---|---|
 | EXP-H1A-001 | 2026-10-07 | 188b32ab663301e8486657bf8661d40d58514159 | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 | INVALID_NUMERICAL_INSTABILITY | 39/50 runs developed NaN/Inf; H1a NOT_EVALUATED |
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
-| EXP-H1A-002 | 2026-10-07 | pending | H1a | same frozen H1a feature stream | 10 fresh paired seeds | preregistered / not run | scientific rerun with calibrated lr=0.01 |
+| EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
 
 ## Template
 
@@ -214,20 +214,101 @@ H1a remains `NOT_EVALUATED` until EXP-H1A-002.
 
 ### EXP-H1A-002 — Controlled reserve recruitment scientific rerun
 
-**Date:** 2026-10-07  
-**Commit:** pending merge/execution commit  
+**Date:** 2026-10-11  
+**Commit:** `7b301224151882d677403e1ea7a91d4b26b1291c`  
 **Hypothesis:** H1a — controlled reserve recruitment  
-**Status:** preregistered / not run
+**Status:** **COMPLETE_NUMERICALLY_VALID; PREREGISTERED VERDICT INCONCLUSIVE**
 
-See `docs/H1A_002_PROTOCOL.md`.
+**Frozen protocol**
 
-Frozen changes relative to EXP-H1A-001:
+- CIFAR-100 frozen ImageNet ResNet-18 features, 50,000 train / 10,000 eval examples, feature dimension 512.
+- Feature bundle SHA-256: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+- Fixed class order, 10 experiences x 10 classes, 100-way classifier with unseen logits masked.
+- Variants: `progressive_reserve`, `all_recruited`, `fixed_small`, `dense_active_proxy`, `dense_total`.
+- 10 paired seeds: **201..210**; 50 total runs.
+- Learning rate **0.01**, selected by EXP-H1A-STABILITY-001 using numerical validity only; SGD momentum=0.9, weight decay=5e-4.
+- 20 epochs/task, batch size 128, eval batch size 256, N=16, initial recruited=4, top-k=4.
+- No replay, no consolidation, q_max=0, message_rounds=0.
+- Primary comparison: `progressive_reserve - all_recruited`.
+- Co-primary outcomes: final average accuracy and late-task within-task mean accuracy.
+- The original preregistered overall rule is unchanged: FAVORABLE only if both co-primary 95% CIs are strictly above zero; UNFAVORABLE only if both are strictly below zero; otherwise INCONCLUSIVE; INVALID on numerical/artifact failure.
 
-- shared learning rate: **0.01**, selected by EXP-H1A-STABILITY-001 using numerical validity only;
-- fresh paired seeds: **201..210**.
+**Command**
 
-Everything else remains frozen: feature artifact, class order, five variants, model sizes, SGD momentum/weight decay, epochs, batching, no replay/consolidation/edges, primary comparison and co-primary outcomes.
+```bash
+uv run --locked python experiments/scripts/m1_3_h1a_002.py \
+  --features data/features/cifar100_resnet18_imagenet1k_v1.pt \
+  --output runs/m1_3_h1a_002 \
+  --device cuda \
+  2>&1 | tee runs/m1_3_h1a_002/console.log
+```
 
-**Scientific result**
+**Execution and artifact integrity**
 
-Not run yet.
+- All **50/50** expected run files were produced and reported complete.
+- All 50 files contained the expected experiment ID, variant, and seed metadata; no duplicate variant/seed pairs were found.
+- No non-finite values were found in the serialized per-run JSON results.
+- Feature hash matched the frozen protocol.
+- Environment: Python 3.11.15, PyTorch 2.14.1+cu130, Torchvision 0.29.1+cu130, CUDA 13.0, NVIDIA GeForce RTX 4090.
+- Commit recorded in the aggregate: `7b301224151882d677403e1ea7a91d4b26b1291c`.
+- Full per-run JSON files, `aggregate.json`, and `console.log` remain in the local `runs/m1_3_h1a_002/` artifact directory; `runs/` is git-ignored.
+
+**Per-variant descriptive results**
+
+Accuracy means are percentages; values after ± are standard deviations in percentage points.
+
+| Variant | Final average accuracy (%) | Late-task within-task mean accuracy (%) | Average forgetting (%) |
+|---|---:|---:|---:|
+| progressive_reserve | 9.524 ± 0.254 | 86.496 ± 0.280 | 88.467 ± 0.227 |
+| all_recruited | 9.455 ± 0.271 | 86.537 ± 0.319 | 88.586 ± 0.271 |
+| fixed_small | 9.465 ± 0.252 | 86.463 ± 0.308 | 88.547 ± 0.222 |
+| dense_active_proxy | 9.392 ± 0.287 | 86.580 ± 0.287 | 88.382 ± 0.358 |
+| dense_total | 9.315 ± 0.345 | 86.619 ± 0.238 | 88.310 ± 0.421 |
+
+The high forgetting values occur under the frozen no-replay/no-consolidation protocol and are descriptive outcomes, not one of the two co-primary criteria.
+
+**Preregistered paired comparison**
+
+Differences and confidence intervals below are in percentage points (pp), for `progressive_reserve - all_recruited`.
+
+| Co-primary outcome | Mean paired delta (pp) | Paired-bootstrap 95% CI (pp) | Outcome |
+|---|---:|---:|---|
+| Final average accuracy | +0.069 | [+0.036, +0.103] | Favorable |
+| Late-task within-task mean accuracy | -0.041 | [-0.171, +0.087] | Inconclusive |
+
+**Paired deltas by seed**
+
+All values are percentage points for `progressive_reserve - all_recruited`.
+
+| Seed | Final average accuracy delta (pp) | Late-task within-task mean accuracy delta (pp) |
+|---:|---:|---:|
+| 201 | +0.100 | +0.025 |
+| 202 | +0.070 | -0.090 |
+| 203 | +0.010 | -0.090 |
+| 204 | +0.090 | -0.285 |
+| 205 | +0.170 | -0.1075 |
+| 206 | +0.120 | +0.0125 |
+| 207 | -0.010 | -0.440 |
+| 208 | +0.090 | +0.2425 |
+| 209 | +0.000 | +0.025 |
+| 210 | +0.050 | +0.2975 |
+
+**Preregistered conclusion**
+
+```text
+Execution/artifact validity = PASS
+Final-average-accuracy co-primary = FAVORABLE
+Late-task within-task-accuracy co-primary = INCONCLUSIVE
+EXP-H1A-002 overall verdict = INCONCLUSIVE
+H1a benefit = NOT ESTABLISHED
+```
+
+The final-average-accuracy advantage is statistically above zero under the preregistered paired-bootstrap interval, but it is only **0.069 percentage points**. The late-task within-task outcome is slightly negative on average and its interval crosses zero. Therefore, the experiment does **not** establish that progressive reserve recruitment improves both final retention and late-task learning.
+
+**Caveats and next action**
+
+- This is one fixed class order and one fixed evaluation batch size (256); routing is batch-context dependent.
+- Features are frozen; this is a mechanism-isolation test, not an end-to-end encoder result.
+- No replay or consolidation is enabled, so the experiment does not test those remedies for forgetting.
+- Do not treat the small favorable final-accuracy result as a broad architectural win.
+- Next: preregister a separate sensitivity/robustness study for class order and/or evaluation batch size. Keep this primary result frozen and report any follow-up as a separate experiment.

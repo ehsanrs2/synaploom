@@ -96,8 +96,8 @@ Implemented/preregistered:
 - [x] add numerical fail-fast diagnostics
 - [x] run EXP-H1A-STABILITY-001 on independent calibration seeds — lr=0.01 selected with 15/15 finite runs
 - [x] preregister EXP-H1A-002 with fresh seeds and calibrated lr=0.01
-- [ ] execute EXP-H1A-002 and record the paired scientific result
-- [ ] run batching/class-order sensitivity only after a numerically valid H1a result
+- [x] execute EXP-H1A-002 and record the paired scientific result — 50/50 numerically valid runs; preregistered overall verdict INCONCLUSIVE
+- [ ] preregister and run a separate batching/class-order sensitivity study; preserve EXP-H1A-002 as the primary result
 
 #### M1.3b — external sparse/continual controls
 

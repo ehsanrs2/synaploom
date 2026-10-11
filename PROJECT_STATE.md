@@ -2,10 +2,10 @@
 
 > This file is the authoritative project memory. Update it in every PR that changes architecture, experiment status, accepted assumptions, or the next milestone.
 
-**Last updated:** 2026-10-07  
+**Last updated:** 2026-10-11  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.3 H1a scientific rerun preregistration  
-**Research status:** EXP-H1A-STABILITY-001 selected lr=0.01 by numerical validity only; EXP-H1A-002 is preregistered with fresh seeds; H1a remains NOT_EVALUATED
+**Current stage:** M1.3 H1a primary run complete; follow-up robustness study not yet preregistered  
+**Research status:** EXP-H1A-STABILITY-001 selected lr=0.01 by numerical validity only; EXP-H1A-002 completed with 50/50 numerically valid runs; preregistered H1a verdict is INCONCLUSIVE
 
 ## 1. Project objective
 
@@ -218,8 +218,8 @@ H1a is frozen as a mechanism-isolation experiment:
 - q_max=0 and message_rounds=0
 - N=16, initial recruited=4, top-k=4
 - one recruitment after the first optimization step of each new task after task 0
-- 20 epochs/task, SGD lr=0.03, momentum=0.9, weight decay=5e-4
-- 10 paired model seeds
+- 20 epochs/task, SGD lr=0.01 (selected by numerical-validity-only calibration), momentum=0.9, weight decay=5e-4
+- 10 paired model seeds: 201..210 for EXP-H1A-002
 - fixed eval_batch_size=256 because routing is batch-level
 
 Primary causal comparison:
@@ -270,24 +270,21 @@ Calibration completed at commit `7d8622fdb47bdb79fce109c64066b854711bafb2`.
 
 Selection used numerical validity only. Scientific metrics from the calibration were not used.
 
-## 13. Immediate next milestone
+## 13. EXP-H1A-002 scientific result
 
-**EXP-H1A-002 — fresh scientific H1a rerun**
+EXP-H1A-002 completed on 2026-10-11 at commit `7b301224151882d677403e1ea7a91d4b26b1291c`.
 
-Frozen:
+- Execution/artifact validity: PASS — all 50 expected runs completed; the 50 per-run JSON files had the expected variant/seed metadata and no non-finite serialized values.
+- Feature bundle SHA-256 matched the frozen artifact: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+- Environment: Python 3.11.15, PyTorch 2.14.1+cu130, CUDA 13.0, NVIDIA GeForce RTX 4090.
+- Primary comparison: `progressive_reserve - all_recruited`.
+- Final average accuracy delta: +0.069 percentage points; paired-bootstrap 95% CI [+0.036, +0.103] pp.
+- Late-task within-task mean accuracy delta: -0.041 percentage points; paired-bootstrap 95% CI [-0.171, +0.087] pp.
+- Preregistered overall verdict: **INCONCLUSIVE**. The final-average-accuracy co-primary is favorable, but the late-task co-primary is inconclusive, so the two-outcome rule is not satisfied.
 
-- same feature artifact and SHA-256;
-- same class order;
-- same five variants;
-- same model/budget protocol;
-- same 20 epochs/task and batch sizes;
-- SGD momentum=0.9, weight decay=5e-4;
-- learning rate=**0.01**;
-- fresh paired seeds: **201..210**;
-- fail-fast numerical validity gate remains active;
-- same two co-primary outcomes and paired bootstrap reporting.
+H1a is **not established** by this experiment. Do not relabel the outcome as favorable or change the frozen primary protocol to improve the result after seeing it. The next research action is to preregister a separate robustness/sensitivity study, keeping EXP-H1A-002 as the primary result.
 
-Overall H1a verdict is FAVORABLE only if both co-primary metric CIs are strictly above zero, UNFAVORABLE only if both are strictly below zero, INCONCLUSIVE otherwise, and INVALID if numerical/artifact validity fails.
+See `docs/EXPERIMENT_LOG.md` for per-variant summaries and paired seed-level deltas.
 
 ## 14. Open design questions
 
@@ -297,7 +294,7 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- class-order and eval-batch-size sensitivity protocol after the primary H1a run
+- design and preregister a separate class-order / eval-batch-size sensitivity study without overwriting the primary H1a result
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
