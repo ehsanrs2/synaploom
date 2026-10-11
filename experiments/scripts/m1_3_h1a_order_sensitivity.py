@@ -7,6 +7,7 @@ import math
 import platform
 import statistics
 import subprocess
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -269,18 +270,30 @@ def _validate_protocol(protocol: Any) -> None:
         raise ValueError("protocol learning rate must remain 0.01")
     if settings["eval_batch_size"] != 256:
         raise ValueError("protocol eval_batch_size must remain 256")
-    if settings["batch_size"] != 128 or settings["epochs_per_task"] != 20:
-        raise ValueError("protocol training settings differ from the preregistration")
-    if settings["feature_dim"] != 512 or settings["num_classes"] != 100:
-        raise ValueError("protocol feature/class dimensions differ from the preregistration")
+    if (
+        settings["batch_size"] != 128
+        or settings["epochs_per_task"] != 20
+        or settings["classes_per_task"] != 10
+        or settings["current_task_eval_every_epochs"] != 1
+    ):
+        raise ValueError("protocol training/task settings differ from the preregistration")
+    if (
+        settings["feature_dim"] != 512
+        or settings["num_classes"] != 100
+        or settings["momentum"] != 0.9
+        or settings["weight_decay"] != 0.0005
+    ):
+        raise ValueError("protocol optimizer/feature settings differ from the preregistration")
     if (
         settings["d_model"] != 128
         or settings["d_hidden"] != 256
         or settings["num_nodes"] != 16
         or settings["initial_recruited"] != 4
         or settings["top_k"] != 4
+        or protocol.graph_config().q_max != 0
+        or protocol.graph_config().message_rounds != 0
     ):
-        raise ValueError("protocol model settings differ from the preregistration")
+        raise ValueError("protocol model/graph settings differ from the preregistration")
 
 
 def _dry_run_payload(protocol: Any) -> dict[str, Any]:
@@ -475,14 +488,14 @@ def main() -> None:
                             "build": build_meta,
                             "initial_total_parameters": count_trainable_parameters(model),
                             "initial_budget": (
-                                vars(initial_budget) if initial_budget is not None else None
+                                asdict(initial_budget) if initial_budget is not None else None
                             ),
                             "initial_linear_macs_per_batch_estimate": initial_macs,
                             "seed_block_source": "EXP-H1A-ORDER-001 preregistration",
                         },
                     )
                     if hasattr(model, "graph_state"):
-                        result.metadata["final_budget"] = vars(synaploom_budget(model))
+                        result.metadata["final_budget"] = asdict(synaploom_budget(model))
                         result.metadata["final_linear_macs_per_batch_estimate"] = (
                             estimate_synaploom_linear_macs_per_batch(
                                 model,
