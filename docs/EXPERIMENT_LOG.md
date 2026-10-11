@@ -33,6 +33,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | EXP-H1A-001 | 2026-10-07 | 188b32ab663301e8486657bf8661d40d58514159 | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 | INVALID_NUMERICAL_INSTABILITY | 39/50 runs developed NaN/Inf; H1a NOT_EVALUATED |
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
 | EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
+| EXP-H1A-ORDER-001 | 2026-10-11 | pending | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) reused across order blocks | PREREGISTERED / IMPLEMENTATION PENDING / NOT RUN | 60 runs; primary pair only; pooled seed-cluster bootstrap and per-order deltas; eval batch size fixed at 256 |
 
 ## Template
 
@@ -312,3 +313,49 @@ The final-average-accuracy advantage is statistically above zero under the prere
 - No replay or consolidation is enabled, so the experiment does not test those remedies for forgetting.
 - Do not treat the small favorable final-accuracy result as a broad architectural win.
 - Next: preregister a separate sensitivity/robustness study for class order and/or evaluation batch size. Keep this primary result frozen and report any follow-up as a separate experiment.
+
+
+### EXP-H1A-ORDER-001 — Class-order sensitivity of controlled reserve recruitment
+
+**Protocol date:** 2026-10-11  
+**Commit:** pending implementation/execution  
+**Hypothesis:** robustness of the H1a treatment effect to class order  
+**Status:** **PREREGISTERED; IMPLEMENTATION PENDING; NOT RUN**  
+**Parent result:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**.
+
+**Question**
+
+Does the paired effect of `progressive_reserve - all_recruited` remain directionally consistent across multiple fixed CIFAR-100 class orders?
+
+**Frozen setup**
+
+- Same frozen ResNet-18 feature bundle and SHA-256 as EXP-H1A-002: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+- Same model, optimizer and continual-learning protocol as EXP-H1A-002: LR=0.01, momentum=0.9, weight decay=0.0005, 20 epochs/task, batch size=128, evaluation batch size=256, N=16, initially recruited=4, top-k=4, q_max=0 and no message passing, replay or consolidation.
+- Primary variants only: `progressive_reserve` and `all_recruited`.
+- Three fixed orders: O0 (the original `H1A_CLASS_ORDER`), O1 (one literal permutation generated from stdlib seed 20261006), and O2 (one literal permutation generated from stdlib seed 20261007). Exact order groupings are frozen in `docs/H1A_CLASS_ORDER_SENSITIVITY_PROTOCOL.md`.
+- Fresh seeds: **301..310**, shared across the three orders and two variants.
+- Expected run count: **3 orders x 10 seeds x 2 variants = 60**.
+
+**Registered analysis**
+
+- Co-primary metrics: final average accuracy and late-task within-task mean accuracy.
+- For each order, report paired seed deltas and paired-bootstrap 95% CIs (10,000 resamples; RNG seeds 1337, 1338, 1339 for O0, O1, O2).
+- Pooled order-marginal estimates weight each order equally. For pooled CIs, bootstrap seed clusters (10,000 resamples; RNG seed 7331), carrying all three order outcomes for every resampled seed; do not treat the 30 order-by-seed blocks as independent.
+- Registered labels: `ORDER_ROBUST_FAVORABLE`, `ORDER_ROBUST_UNFAVORABLE`, `ORDER_SENSITIVE`, or `INCONCLUSIVE`, using the exact rules in the protocol.
+- Any numerical or artifact-integrity failure invalidates the full sensitivity study; do not interpret partial aggregates.
+- This study cannot retroactively change the EXP-H1A-002 verdict.
+
+**Implementation status and command**
+
+The dedicated runner and protocol tests will be added in a separate implementation PR. The frozen command interface is:
+
+```bash
+uv run --locked python experiments/scripts/m1_3_h1a_order_sensitivity.py \
+  --features data/features/cifar100_resnet18_imagenet1k_v1.pt \
+  --output runs/m1_3_h1a_order_sensitivity \
+  --device cuda
+```
+
+**Deferred follow-up**
+
+Evaluation-batch-size sensitivity is not part of this study. It will need its own protocol that evaluates identical trained model states at multiple batch sizes, since batch-level routing makes predictions depend on the evaluation-batch composition.

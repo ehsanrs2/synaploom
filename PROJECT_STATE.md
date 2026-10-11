@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-11  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.3 H1a primary run complete; follow-up robustness study not yet preregistered  
-**Research status:** EXP-H1A-STABILITY-001 selected lr=0.01 by numerical validity only; EXP-H1A-002 completed with 50/50 numerically valid runs; preregistered H1a verdict is INCONCLUSIVE
+**Current stage:** M1.3a class-order sensitivity preregistered; dedicated runner implementation pending  
+**Research status:** EXP-H1A-002 completed with 50/50 numerically valid runs and an INCONCLUSIVE preregistered verdict; EXP-H1A-ORDER-001 is preregistered on three fixed class orders with 10 fresh paired seeds, not run yet
 
 ## 1. Project objective
 
@@ -282,11 +282,25 @@ EXP-H1A-002 completed on 2026-10-11 at commit `7b301224151882d677403e1ea7a91d4b2
 - Late-task within-task mean accuracy delta: -0.041 percentage points; paired-bootstrap 95% CI [-0.171, +0.087] pp.
 - Preregistered overall verdict: **INCONCLUSIVE**. The final-average-accuracy co-primary is favorable, but the late-task co-primary is inconclusive, so the two-outcome rule is not satisfied.
 
-H1a is **not established** by this experiment. Do not relabel the outcome as favorable or change the frozen primary protocol to improve the result after seeing it. The next research action is to preregister a separate robustness/sensitivity study, keeping EXP-H1A-002 as the primary result.
+H1a is **not established** by this experiment. Do not relabel the outcome as favorable or change the frozen primary protocol to improve the result after seeing it. The next research action is to implement and execute the separately preregistered EXP-H1A-ORDER-001 class-order sensitivity study, keeping EXP-H1A-002 as the primary result.
 
 See `docs/EXPERIMENT_LOG.md` for per-variant summaries and paired seed-level deltas.
 
-## 14. Open design questions
+## 14. Next milestone: EXP-H1A-ORDER-001
+
+The class-order sensitivity study is preregistered in `docs/H1A_CLASS_ORDER_SENSITIVITY_PROTOCOL.md`.
+
+- Three fixed class orders: the primary order plus two alternate orders frozen in the protocol.
+- Fresh paired seeds 301..310 shared across order blocks.
+- Only the primary pair `progressive_reserve` vs `all_recruited`.
+- Exactly 60 runs; `eval_batch_size=256` stays fixed to isolate class-order changes.
+- Status: protocol registered; implementation and tests pending; study not run.
+- Planned runner: `experiments/scripts/m1_3_h1a_order_sensitivity.py`.
+- Batch-size sensitivity will be preregistered separately and should evaluate identical model states across batch sizes.
+
+EXP-H1A-002 remains the frozen primary result with verdict **INCONCLUSIVE**.
+
+## 15. Open design questions
 
 Still unresolved:
 
@@ -294,11 +308,11 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- design and preregister a separate class-order / eval-batch-size sensitivity study without overwriting the primary H1a result
+- implement and execute preregistered EXP-H1A-ORDER-001; separately design eval-batch-size sensitivity using identical trained states
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 15. Environment and dependency management
+## 16. Environment and dependency management
 
 Accepted project tooling:
 
@@ -311,7 +325,7 @@ Accepted project tooling:
 - dependency changes should use `uv add` / `uv remove` and update `uv.lock`;
 - CI uses `astral-sh/setup-uv`.
 
-## 16. Documentation rule
+## 17. Documentation rule
 
 For every merged milestone PR:
 
