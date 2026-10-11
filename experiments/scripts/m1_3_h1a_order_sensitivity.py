@@ -122,14 +122,15 @@ def _paired_comparison(
         delta = treatment - control
         paired_deltas[seed] = delta
         per_seed[str(seed)] = {
-            "progressive_reserve_pp": treatment,
-            "all_recruited_pp": control,
+            "progressive_reserve_percent": treatment,
+            "all_recruited_percent": control,
             "delta_pp": delta,
         }
 
     return {
         "metric": metric,
-        "units": "percentage_points",
+        "absolute_value_units": "percent",
+        "delta_units": "percentage_points",
         "n_paired_seeds": len(paired_deltas),
         "mean_delta_pp": statistics.fmean(paired_deltas.values()),
         "ci95_pp": paired_bootstrap_ci(
@@ -240,7 +241,7 @@ def _secondary_descriptives(
         }
         all_pair_deltas.extend(deltas.values())
         per_order[order_id] = {
-            "variant_summary_pp": variant_summary,
+            "variant_summary_percent": variant_summary,
             "paired_mean_delta_pp": statistics.fmean(deltas.values()),
             "paired_deltas_by_seed_pp": {
                 str(seed): deltas[seed] for seed in H1A_ORDER_SEEDS
@@ -248,10 +249,11 @@ def _secondary_descriptives(
         }
 
     return {
-        "units": "percentage_points",
+        "absolute_value_units": "percent",
+        "delta_units": "percentage_points",
         "per_order": per_order,
         "pooled_equal_order_weight": {
-            "variant_summary_pp": {
+            "variant_summary_percent": {
                 variant: _describe(pooled_values[variant])
                 for variant in H1A_ORDER_VARIANTS
             },
@@ -614,7 +616,7 @@ def main() -> None:
     order_mean_deltas: dict[str, dict[str, float]] = {
         metric: {} for metric in CO_PRIMARY_METRICS
     }
-    for order_index, order_id in enumerate(H1A_ORDER_IDS):
+    for order_id in H1A_ORDER_IDS:
         left = by_order_variant_seed[order_id]["progressive_reserve"]
         right = by_order_variant_seed[order_id]["all_recruited"]
         per_order_comparisons[order_id] = {}
@@ -685,7 +687,7 @@ def main() -> None:
         "expected_runs": expected_runs,
         "completed_runs": len(run_manifest),
         "run_manifest": run_manifest,
-        "per_order_variant_descriptives_pp": variant_descriptives,
+        "per_order_variant_descriptives_percent": variant_descriptives,
         "per_order_paired_comparisons": per_order_comparisons,
         "pooled_seed_cluster_comparisons": pooled_comparisons,
         "descriptive_secondary_metrics": {
