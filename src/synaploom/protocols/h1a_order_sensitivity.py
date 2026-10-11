@@ -9,7 +9,7 @@ from dataclasses import replace
 from typing import Mapping, Sequence
 
 from synaploom.protocols.h1a import H1A_CLASS_ORDER
-from synaploom.protocols.h1a2 import H1A2_FEATURE_SHA256, h1a2_protocol
+from synaploom.protocols.h1a2 import h1a2_protocol
 
 
 H1A_ORDER_EXPERIMENT_ID = "EXP-H1A-ORDER-001"
