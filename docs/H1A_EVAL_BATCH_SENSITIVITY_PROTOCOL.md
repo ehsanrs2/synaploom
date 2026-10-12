@@ -18,10 +18,10 @@ The available EXP-H1A-002 and EXP-H1A-ORDER-001 output artifacts contain evaluat
 ## 2. Frozen data and model configuration
 
 - Dataset: CIFAR-100 using frozen torchvision ResNet-18 IMAGENET1K_V1 features, 50,000 training and 10,000 evaluation examples, feature dimension 512.
-- Feature bundle SHA-256: \`c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47\`.
-- Class order: O0 / the exact frozen H1A_CLASS_ORDER used by EXP-H1A-002. Compact-JSON-list fingerprint: \`81d7f0637b8e61477c1ef80b7eef33270aae8d81dfcaffad6e58252fd004b633\`.
+- Feature bundle SHA-256: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+- Class order: O0 / the exact frozen H1A_CLASS_ORDER used by EXP-H1A-002. Compact-JSON-list fingerprint: `81d7f0637b8e61477c1ef80b7eef33270aae8d81dfcaffad6e58252fd004b633`.
 - Task stream: 10 experiences × 10 classes; 100-way output with logits restricted to classes seen by the current stage.
-- Variants: exactly \`progressive_reserve\` and \`all_recruited\`; paired contrast is progressive reserve minus all recruited.
+- Variants: exactly `progressive_reserve` and `all_recruited`; paired contrast is progressive reserve minus all recruited.
 - Model: feature dimension 512, d_model=128, d_hidden=256, 16 nodes, initially recruited=4 for progressive reserve, top-k=4, q_max=0 and message_rounds=0.
 - Training: 20 epochs/task, train batch size=128, SGD learning rate=0.01, momentum=0.9, weight decay=0.0005, no scheduler, no replay, no consolidation, no pruning/recycling, and no message passing.
 - The training minibatch stream, optimizer, learning schedule, class order, and parameter updates remain unchanged. Evaluation must not affect training decisions or update parameters/buffers.
@@ -30,18 +30,18 @@ The available EXP-H1A-002 and EXP-H1A-ORDER-001 output artifacts contain evaluat
 
 Use exactly these fresh paired seeds, shared by both variants:
 
-\`\`\`text
+```text
 401, 402, 403, 404, 405, 406, 407, 408, 409, 410
-\`\`\`
+```
 
 These seeds are disjoint from the previous primary and sensitivity seed blocks (201–210 and 301–310). Do not replace or omit seeds based on their metrics.
 
 Expected training trajectories:
 
-\`\`\`text
+```text
 10 paired seeds × 2 variants = 20 trajectories
 20 trajectories × 6 evaluation batch sizes = 120 run-size summaries
-\`\`\`
+```
 
 This is a newly run cohort designed to isolate batch-size effects within identical model states; it is not a claim of posthoc evaluation of the historical EXP-H1A-002 checkpoints.
 
@@ -49,9 +49,9 @@ This is a newly run cohort designed to isolate batch-size effects within identic
 
 Evaluate at exactly these sizes, in this order:
 
-\`\`\`text
+```text
 32, 64, 128, 256, 512, 1024
-\`\`\`
+```
 
 Batch size 256 is the reference condition matching the original protocol. No runtime overrides are permitted. For every evaluation, use the same task examples in the same fixed order, no shuffling, and do not drop the final partial batch. Since each CIFAR-100 task has 1,000 evaluation examples, batch size 1024 places the task in one evaluation batch.
 
@@ -126,14 +126,14 @@ Any missing run, missing batch-size result, non-finite value, feature or protoco
 
 The runner is planned as:
 
-\`\`\`bash
-uv run --locked python experiments/scripts/m1_3_h1a_eval_batch_sensitivity.py \\
-  --features data/features/cifar100_resnet18_imagenet1k_v1.pt \\
-  --output runs/m1_3_h1a_eval_batch_sensitivity \\
+```bash
+uv run --locked python experiments/scripts/m1_3_h1a_eval_batch_sensitivity.py \
+  --features data/features/cifar100_resnet18_imagenet1k_v1.pt \
+  --output runs/m1_3_h1a_eval_batch_sensitivity \
   --device cuda
-\`\`\`
+```
 
-A \`--dry-run\` mode must print the frozen feature hash, O0 fingerprint, seed list, variants, six evaluation batch sizes, 20 expected training trajectories, and 120 expected run-size summaries without loading the feature artifact or starting training. The runner must reject overrides to any registered seed, order, variant, training setting, or evaluation batch size.
+A `--dry-run` mode must print the frozen feature hash, O0 fingerprint, seed list, variants, six evaluation batch sizes, 20 expected training trajectories, and 120 expected run-size summaries without loading the feature artifact or starting training. The runner must reject overrides to any registered seed, order, variant, training setting, or evaluation batch size.
 
 ## 7. Interpretation guardrail and next action
 
