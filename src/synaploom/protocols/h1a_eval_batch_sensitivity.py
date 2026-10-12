@@ -237,7 +237,6 @@ def paired_batch_size_comparisons(
         ]
         for metric in CO_PRIMARY_METRICS:
             reference = batch_deltas[metric][H1A_EVALBATCH_REFERENCE_SIZE]
-            reference_mean = statistics.fmean(reference[item] for item in sampled_seeds)
             for batch_size in H1A_EVAL_BATCH_SIZES:
                 deltas = batch_deltas[metric][batch_size]
                 effect_mean = statistics.fmean(deltas[item] for item in sampled_seeds)
