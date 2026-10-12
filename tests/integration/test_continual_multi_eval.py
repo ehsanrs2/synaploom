@@ -90,3 +90,36 @@ def test_multi_eval_requires_unique_sizes_and_the_reference_size() -> None:
             config=config,
             evaluation_batch_sizes=(4, 16),
         )
+
+class _MutatingEvaluationModel(torch.nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.linear = torch.nn.Linear(6, 4)
+        self.register_buffer("evaluation_calls", torch.tensor(0))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if not self.training:
+            self.evaluation_calls.add_(1)
+        return self.linear(x)
+
+
+def test_multi_eval_fails_closed_if_evaluation_mutates_model_state() -> None:
+    model = _MutatingEvaluationModel()
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.05)
+    config = ContinualConfig(
+        epochs_per_task=1,
+        batch_size=8,
+        eval_batch_size=8,
+        seed=23,
+        current_task_eval_every_epochs=1,
+        restrict_logits_to_seen_classes=True,
+    )
+
+    with pytest.raises(RuntimeError, match="model state changed during evaluation sweep"):
+        run_continual_experiment(
+            model,
+            _stream(),
+            optimizer,
+            config=config,
+            evaluation_batch_sizes=(4, 8),
+        )
