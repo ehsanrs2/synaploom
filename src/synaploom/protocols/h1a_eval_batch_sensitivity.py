@@ -214,10 +214,6 @@ def paired_batch_size_comparisons(
                             f"batch_size={batch_size}"
                         )
                     metric_values_by_variant[metric][batch_size][variant][run_seed] = value
-                for metric in CO_PRIMARY_METRICS:
-                    batch_deltas[metric][batch_size][run_seed] = (
-                        float(values[metric])
-                    )
 
     for metric in CO_PRIMARY_METRICS:
         for batch_size in H1A_EVAL_BATCH_SIZES:
