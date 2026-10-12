@@ -322,7 +322,7 @@ Artifacts were generated under `runs/m1_3_h1a_order_sensitivity/`; the aggregate
 
 **Primary-result guardrail:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 is a separate sensitivity result and cannot retroactively change that verdict.
 
-**Next action:** preregister evaluation-batch-size sensitivity, evaluating identical trained model states at multiple evaluation batch sizes to isolate batch-context effects from training differences.
+**Next action:** implement and locally validate the preregistered EXP-H1A-EVALBATCH-001 multi-size evaluator; then execute all registered trajectories while preserving EXP-H1A-002's INCONCLUSIVE primary verdict.
 
 ## 15. Open design questions
 
