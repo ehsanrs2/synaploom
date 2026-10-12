@@ -170,4 +170,4 @@ This study isolates class-order sensitivity. Evaluation-batch-size sensitivity r
 
 Execution record: PR #15 implemented the runner; local validation passed (43 tests and the registered dry-run); all 60 combinations completed with numerically valid, integrity-checked artifacts. The registered classification is **ORDER_SENSITIVE** because late-task point estimates have mixed signs across orders. Both pooled co-primary confidence intervals include zero, and this result does not change EXP-H1A-002's frozen **INCONCLUSIVE** verdict.
 
-The remaining follow-up is a separate evaluation-batch-size sensitivity preregistration. It should evaluate identical trained model states at multiple evaluation batch sizes so batch-context effects are not confounded with training differences.
+The follow-up evaluation-batch-size sensitivity protocol is now preregistered in `docs/H1A_EVAL_BATCH_SENSITIVITY_PROTOCOL.md`. Its runner must evaluate all registered batch sizes at each checkpoint on the same in-memory model state; implementation and execution remain pending.
