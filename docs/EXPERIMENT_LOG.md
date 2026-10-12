@@ -401,7 +401,7 @@ EXP-H1A-ORDER-001 = COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE
 - Features are frozen; this remains a mechanism-isolation study, not end-to-end feature learning.
 - No replay or consolidation is enabled.
 - The classification is a directional sensitivity flag based on point estimates, not a formal interaction-significance test.
-- Next: preregister evaluation-batch-size sensitivity that evaluates identical trained model states across batch sizes. Do not change the primary EXP-H1A-002 verdict.
+- Next: implement and execute the now-preregistered EXP-H1A-EVALBATCH-001 protocol in `docs/H1A_EVAL_BATCH_SENSITIVITY_PROTOCOL.md`. Do not change the primary EXP-H1A-002 verdict.
 
 
 
