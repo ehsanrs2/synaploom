@@ -102,7 +102,8 @@ Implemented/preregistered:
 - [x] run local tests and dry-run, then merge PR #15 — 43 tests passed and the dry-run confirmed the frozen 60-run matrix
 - [x] execute EXP-H1A-ORDER-001 and record results — 60/60 numerically valid runs; registered classification ORDER_SENSITIVE; EXP-H1A-002 remains INCONCLUSIVE
 - [x] preregister EXP-H1A-EVALBATCH-001 evaluation batch-size sensitivity: fixed O0 class order, fresh paired seeds 401–410, sizes 32/64/128/256/512/1024, all measured on the same in-memory model state
-- [ ] implement the multi-batch evaluation runner and tests; validate the dry-run and state-hash invariance checks
+- [x] implement the multi-batch evaluation runner, protocol helpers, canonical state digest, and tests — implementation PR #18; local validation pending
+- [ ] run local tests and the dry-run; validate the registered 20/120 matrix and state-hash invariance checks
 - [ ] execute EXP-H1A-EVALBATCH-001 (20 training trajectories / 120 run-size summaries) and record results without changing EXP-H1A-002's primary verdict
 
 #### M1.3b — external sparse/continual controls

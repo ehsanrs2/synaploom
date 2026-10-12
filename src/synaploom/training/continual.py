@@ -31,6 +31,7 @@ from synaploom.training.continual_metrics import (
 )
 from synaploom.training.engine import TrainingEngine
 from synaploom.training.evaluation import evaluate_task, logits_from_output
+from synaploom.training.state_digest import model_state_sha256
 from synaploom.training.numerics import (
     NumericalContext,
     check_model_gradients,
@@ -90,11 +91,17 @@ class ContinualRunResult:
     peak_cuda_memory_bytes: int | None = None
     max_gradient_norm_by_task: list[float] = field(default_factory=list)
     max_parameter_abs_by_task: list[float] = field(default_factory=list)
+    evaluation_batch_size_results: dict[int, dict[str, Any]] = field(default_factory=dict)
+    evaluation_state_hashes: list[dict[str, Any]] = field(default_factory=list)
 
-    def summary(self) -> dict[str, Any]:
+    @staticmethod
+    def _summary_for(
+        accuracy_matrix: Tensor,
+        learning_curves: list[list[dict[str, float | int]]],
+    ) -> dict[str, Any]:
         curve_means = [
-            (sum(float(point["accuracy"]) for point in curve) / len(curve))
-            for curve in self.current_task_learning_curves
+            sum(float(point["accuracy"]) for point in curve) / len(curve)
+            for curve in learning_curves
             if curve
         ]
         late_curve_mean = (
@@ -103,24 +110,39 @@ class ContinualRunResult:
             else None
         )
         return {
-            "final_average_accuracy": final_average_accuracy(self.accuracy_matrix),
-            "average_forgetting": average_forgetting(self.accuracy_matrix),
-            "backward_transfer": backward_transfer(self.accuracy_matrix),
+            "final_average_accuracy": final_average_accuracy(accuracy_matrix),
+            "average_forgetting": average_forgetting(accuracy_matrix),
+            "backward_transfer": backward_transfer(accuracy_matrix),
             "late_task_learning_accuracy": late_task_learning_accuracy(
-                self.accuracy_matrix, last_n=min(2, self.accuracy_matrix.shape[0])
+                accuracy_matrix, last_n=min(2, accuracy_matrix.shape[0])
             ),
             "average_accuracy_by_stage": average_accuracy_by_stage(
-                self.accuracy_matrix
+                accuracy_matrix
             ).detach().cpu().tolist(),
             "diagonal_learning_accuracy": diagonal_learning_accuracy(
-                self.accuracy_matrix
+                accuracy_matrix
             ).detach().cpu().tolist(),
             "within_task_mean_accuracy_by_task": curve_means,
             "late_task_within_task_mean_accuracy": late_curve_mean,
         }
 
+    def summary(self) -> dict[str, Any]:
+        return self._summary_for(self.accuracy_matrix, self.current_task_learning_curves)
+
+    def summary_for_eval_batch_size(self, batch_size: int) -> dict[str, Any]:
+        """Return standard metrics for one registered evaluation batch size."""
+        if batch_size not in self.evaluation_batch_size_results:
+            if batch_size == self.run_config.get("eval_batch_size"):
+                return self.summary()
+            raise KeyError(f"no evaluation results for batch size {batch_size}")
+        item = self.evaluation_batch_size_results[batch_size]
+        return self._summary_for(
+            item["accuracy_matrix"],
+            item["current_task_learning_curves"],
+        )
+
     def to_dict(self) -> dict[str, Any]:
-        return {
+        payload: dict[str, Any] = {
             "accuracy_matrix": matrix_to_jsonable(self.accuracy_matrix),
             "eval_loss_matrix": matrix_to_jsonable(self.eval_loss_matrix),
             "train_loss_by_task": [float(v) for v in self.train_loss_by_task],
@@ -137,6 +159,22 @@ class ContinualRunResult:
             "max_parameter_abs_by_task": self.max_parameter_abs_by_task,
             "summary": self.summary(),
         }
+        if self.evaluation_batch_size_results:
+            payload["evaluation_batch_size_results"] = {
+                str(batch_size): {
+                    "eval_batch_size": int(batch_size),
+                    "accuracy_matrix": matrix_to_jsonable(item["accuracy_matrix"]),
+                    "eval_loss_matrix": matrix_to_jsonable(item["eval_loss_matrix"]),
+                    "current_task_learning_curves": item["current_task_learning_curves"],
+                    "summary": self._summary_for(
+                        item["accuracy_matrix"],
+                        item["current_task_learning_curves"],
+                    ),
+                }
+                for batch_size, item in sorted(self.evaluation_batch_size_results.items())
+            }
+            payload["evaluation_state_hashes"] = self.evaluation_state_hashes
+        return payload
 
 
 def save_continual_result(result: ContinualRunResult, path: str | Path) -> None:
@@ -219,9 +257,25 @@ def run_continual_experiment(
     config: ContinualConfig | None = None,
     engine: TrainingEngine | None = None,
     metadata: dict[str, Any] | None = None,
+    evaluation_batch_sizes: tuple[int, ...] | None = None,
 ) -> ContinualRunResult:
-    """Train sequentially and evaluate the standard stage-by-task matrix."""
+    """Train once and optionally evaluate each checkpoint at several batch sizes."""
     config = config or ContinualConfig()
+    multi_eval = evaluation_batch_sizes is not None
+    if multi_eval:
+        eval_batch_sizes = tuple(int(size) for size in evaluation_batch_sizes or ())
+        if not eval_batch_sizes:
+            raise ValueError("evaluation_batch_sizes must not be empty")
+        if any(size <= 0 for size in eval_batch_sizes):
+            raise ValueError("evaluation batch sizes must be positive")
+        if len(set(eval_batch_sizes)) != len(eval_batch_sizes):
+            raise ValueError("evaluation batch sizes must be unique")
+        if config.eval_batch_size not in eval_batch_sizes:
+            raise ValueError(
+                "config.eval_batch_size must be included as the reference evaluation size"
+            )
+    else:
+        eval_batch_sizes = (config.eval_batch_size,)
     _set_seed(config.seed)
     device = torch.device(config.device)
     model.to(device)
@@ -232,11 +286,20 @@ def run_continual_experiment(
             raise ValueError("engine.optimizer must be the optimizer passed to run_continual_experiment")
 
     num_tasks = len(stream)
-    accuracy = torch.full((num_tasks, num_tasks), float("nan"))
-    eval_loss = torch.full((num_tasks, num_tasks), float("nan"))
+    accuracy_by_eval_size = {
+        batch_size: torch.full((num_tasks, num_tasks), float("nan"))
+        for batch_size in eval_batch_sizes
+    }
+    eval_loss_by_eval_size = {
+        batch_size: torch.full((num_tasks, num_tasks), float("nan"))
+        for batch_size in eval_batch_sizes
+    }
+    current_task_learning_curves_by_size: dict[
+        int, list[list[dict[str, float | int]]]
+    ] = {batch_size: [] for batch_size in eval_batch_sizes}
+    evaluation_state_hashes: list[dict[str, Any]] = []
     train_loss_by_task: list[float] = []
     structural_history: list[StructuralSnapshot] = []
-    current_task_learning_curves: list[list[dict[str, float | int]]] = []
     train_seconds_by_task: list[float] = []
     eval_seconds_by_stage: list[float] = []
     max_gradient_norm_by_task: list[float] = []
@@ -250,7 +313,9 @@ def run_continual_experiment(
         seen_classes.extend(int(v) for v in task.classes)
         allowed_classes = tuple(sorted(set(seen_classes))) if config.restrict_logits_to_seen_classes else None
         losses: list[float] = []
-        task_curve: list[dict[str, float | int]] = []
+        task_curves_by_size: dict[int, list[dict[str, float | int]]] = {
+            batch_size: [] for batch_size in eval_batch_sizes
+        }
         if device.type == "cuda":
             torch.cuda.synchronize(device)
         train_started = time.perf_counter()
@@ -394,33 +459,58 @@ def run_continual_experiment(
                 config.current_task_eval_every_epochs > 0
                 and (epoch + 1) % config.current_task_eval_every_epochs == 0
             ):
-                curve_eval = evaluate_task(
-                    model,
-                    task,
-                    batch_size=config.eval_batch_size,
-                    device=device,
-                    allowed_classes=allowed_classes,
-                    numerical_context=NumericalContext(
-                        stage=stage,
-                        task_id=task.task_id,
-                        epoch=epoch,
-                        global_step=global_step,
-                    ),
+                checkpoint_id = (
+                    f"stage-{stage}/task-{task.task_id}/epoch-{epoch + 1}/current-task"
                 )
-                task_curve.append(
-                    {
-                        "epoch": int(epoch + 1),
-                        "global_step": int(global_step),
-                        "accuracy": float(curve_eval.accuracy),
-                        "loss": float(curve_eval.loss),
-                    }
-                )
+                state_before = model_state_sha256(model) if multi_eval else None
+                for batch_size in eval_batch_sizes:
+                    curve_eval = evaluate_task(
+                        model,
+                        task,
+                        batch_size=batch_size,
+                        device=device,
+                        allowed_classes=allowed_classes,
+                        numerical_context=NumericalContext(
+                            stage=stage,
+                            task_id=task.task_id,
+                            epoch=epoch,
+                            global_step=global_step,
+                        ),
+                    )
+                    task_curves_by_size[batch_size].append(
+                        {
+                            "epoch": int(epoch + 1),
+                            "global_step": int(global_step),
+                            "accuracy": float(curve_eval.accuracy),
+                            "loss": float(curve_eval.loss),
+                        }
+                    )
+                if multi_eval:
+                    state_after = model_state_sha256(model)
+                    if state_before != state_after:
+                        raise RuntimeError(
+                            "model state changed during evaluation sweep "
+                            f"{checkpoint_id}: {state_before} != {state_after}"
+                        )
+                    evaluation_state_hashes.append(
+                        {
+                            "checkpoint_id": checkpoint_id,
+                            "sweep_type": "current_task_curve",
+                            "batch_sizes": list(eval_batch_sizes),
+                            "state_sha256_before": state_before,
+                            "state_sha256_after": state_after,
+                            "state_unchanged": True,
+                        }
+                    )
 
         if device.type == "cuda":
             torch.cuda.synchronize(device)
         train_seconds_by_task.append(time.perf_counter() - train_started)
         train_loss_by_task.append(sum(losses) / max(1, len(losses)))
-        current_task_learning_curves.append(task_curve)
+        for batch_size in eval_batch_sizes:
+            current_task_learning_curves_by_size[batch_size].append(
+                task_curves_by_size[batch_size]
+            )
         max_gradient_norm_by_task.append(task_max_gradient_norm)
         max_parameter_abs_by_task.append(task_max_parameter_abs)
         structural_history.append(
@@ -437,21 +527,41 @@ def run_continual_experiment(
             torch.cuda.synchronize(device)
         eval_started = time.perf_counter()
         eval_limit = num_tasks if config.evaluate_future_tasks else stage + 1
-        for eval_task_index in range(eval_limit):
-            result = evaluate_task(
-                model,
-                stream[eval_task_index],
-                batch_size=config.eval_batch_size,
-                device=device,
-                allowed_classes=allowed_classes,
-                numerical_context=NumericalContext(
-                    stage=stage,
-                    task_id=stream[eval_task_index].task_id,
-                    global_step=global_step,
-                ),
+        checkpoint_id = f"stage-{stage}/task-{task.task_id}/stage-matrix"
+        state_before = model_state_sha256(model) if multi_eval else None
+        for batch_size in eval_batch_sizes:
+            for eval_task_index in range(eval_limit):
+                result = evaluate_task(
+                    model,
+                    stream[eval_task_index],
+                    batch_size=batch_size,
+                    device=device,
+                    allowed_classes=allowed_classes,
+                    numerical_context=NumericalContext(
+                        stage=stage,
+                        task_id=stream[eval_task_index].task_id,
+                        global_step=global_step,
+                    ),
+                )
+                accuracy_by_eval_size[batch_size][stage, eval_task_index] = result.accuracy
+                eval_loss_by_eval_size[batch_size][stage, eval_task_index] = result.loss
+        if multi_eval:
+            state_after = model_state_sha256(model)
+            if state_before != state_after:
+                raise RuntimeError(
+                    "model state changed during evaluation sweep "
+                    f"{checkpoint_id}: {state_before} != {state_after}"
+                )
+            evaluation_state_hashes.append(
+                {
+                    "checkpoint_id": checkpoint_id,
+                    "sweep_type": "stage_matrix",
+                    "batch_sizes": list(eval_batch_sizes),
+                    "state_sha256_before": state_before,
+                    "state_sha256_after": state_after,
+                    "state_unchanged": True,
+                }
             )
-            accuracy[stage, eval_task_index] = result.accuracy
-            eval_loss[stage, eval_task_index] = result.loss
         if device.type == "cuda":
             torch.cuda.synchronize(device)
         eval_seconds_by_stage.append(time.perf_counter() - eval_started)
@@ -465,16 +575,33 @@ def run_continual_experiment(
         }
         for task in stream
     ]
+    reference_batch_size = config.eval_batch_size
+    evaluation_results = (
+        {
+            batch_size: {
+                "accuracy_matrix": accuracy_by_eval_size[batch_size],
+                "eval_loss_matrix": eval_loss_by_eval_size[batch_size],
+                "current_task_learning_curves": (
+                    current_task_learning_curves_by_size[batch_size]
+                ),
+            }
+            for batch_size in eval_batch_sizes
+        }
+        if multi_eval
+        else {}
+    )
     return ContinualRunResult(
-        accuracy_matrix=accuracy,
-        eval_loss_matrix=eval_loss,
+        accuracy_matrix=accuracy_by_eval_size[reference_batch_size],
+        eval_loss_matrix=eval_loss_by_eval_size[reference_batch_size],
         train_loss_by_task=train_loss_by_task,
         structural_history=structural_history,
         global_steps=global_step,
         run_config=asdict(config),
         stream_manifest=stream_manifest,
         metadata=dict(metadata or {}),
-        current_task_learning_curves=current_task_learning_curves,
+        current_task_learning_curves=(
+            current_task_learning_curves_by_size[reference_batch_size]
+        ),
         train_seconds_by_task=train_seconds_by_task,
         eval_seconds_by_stage=eval_seconds_by_stage,
         peak_cuda_memory_bytes=(
@@ -484,4 +611,6 @@ def run_continual_experiment(
         ),
         max_gradient_norm_by_task=max_gradient_norm_by_task,
         max_parameter_abs_by_task=max_parameter_abs_by_task,
+        evaluation_batch_size_results=evaluation_results,
+        evaluation_state_hashes=evaluation_state_hashes,
     )

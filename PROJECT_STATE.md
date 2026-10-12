@@ -4,8 +4,8 @@
 
 **Last updated:** 2026-10-12  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** EXP-H1A-EVALBATCH-001 evaluation-batch-size sensitivity protocol preregistered; runner and tests pending; study not run  
-**Research status:** EXP-H1A-002 remains the frozen primary result with verdict INCONCLUSIVE; EXP-H1A-ORDER-001 is COMPLETE_NUMERICALLY_VALID / ORDER_SENSITIVE. EXP-H1A-EVALBATCH-001 will evaluate six batch sizes at each in-memory training checkpoint, using the same model state across sizes. Prior artifact sets do not contain model checkpoints, so this is a new paired training cohort and not a retrospective re-evaluation of the historical weights.
+**Current stage:** EXP-H1A-EVALBATCH-001 runner, protocol helpers, and tests are implemented in [PR #18](https://github.com/ehsanrs2/synaploom/pull/18); local validation pending; study not run  
+**Research status:** EXP-H1A-002 remains the frozen primary result with verdict INCONCLUSIVE; EXP-H1A-ORDER-001 is COMPLETE_NUMERICALLY_VALID / ORDER_SENSITIVE. The EXP-H1A-EVALBATCH-001 runner in PR #18 trains once per seed/variant and evaluates six batch sizes at each checkpoint on the same in-memory model state, checking state hashes before/after each sweep. Prior output artifacts contain no model checkpoints, so this is a fresh paired cohort rather than retrospective re-evaluation of historical weights.
 
 ## 1. Project objective
 
@@ -322,7 +322,7 @@ Artifacts were generated under `runs/m1_3_h1a_order_sensitivity/`; the aggregate
 
 **Primary-result guardrail:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 is a separate sensitivity result and cannot retroactively change that verdict.
 
-**Next action:** implement and locally validate the preregistered EXP-H1A-EVALBATCH-001 multi-size evaluator; then execute all registered trajectories while preserving EXP-H1A-002's INCONCLUSIVE primary verdict.
+**Next action:** locally validate PR #18 (pytest and dry-run), merge it after the checks pass, then execute EXP-H1A-EVALBATCH-001 while preserving EXP-H1A-002's INCONCLUSIVE primary verdict.
 
 ## 15. Open design questions
 
@@ -332,7 +332,7 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- implement and locally validate the EXP-H1A-EVALBATCH-001 multi-size evaluation runner; execute the 20 registered seed/variant training trajectories and record the batch-size sensitivity without changing EXP-H1A-002's primary verdict
+- locally validate and merge implementation PR #18; then execute the 20 registered seed/variant training trajectories and record batch-size sensitivity without changing EXP-H1A-002's primary verdict
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
