@@ -34,7 +34,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
 | EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
 | EXP-H1A-ORDER-001 | 2026-10-11 | 4f572068892093124ada78023c1d4bba6eb9f331 | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) shared across orders | COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE | all 60 runs valid; pooled final accuracy Δ -0.0160 pp [-0.0457, +0.0170]; pooled late-task accuracy Δ -0.0082 pp [-0.0738, +0.0538]; late-task point-estimate signs vary by order |
-| EXP-H1A-EVALBATCH-001 | 2026-10-12 | protocol PR pending | evaluation batch-size sensitivity for H1a metrics | CIFAR-100 frozen ResNet-18 features, primary order O0 | 10 paired seeds (401..410) shared across variants | PREREGISTERED / RUNNER PENDING / NOT RUN | 20 training trajectories; each model state evaluated at 32, 64, 128, 256, 512, and 1024; compare treatment-effect drift against 256; historical primary verdict unchanged |
+| EXP-H1A-EVALBATCH-001 | 2026-10-12 | implementation PR #18 pending merge | evaluation batch-size sensitivity for H1a metrics | CIFAR-100 frozen ResNet-18 features, primary order O0 | 10 paired seeds (401..410) shared across variants | PREREGISTERED / RUNNER IMPLEMENTED / LOCAL VALIDATION PENDING / NOT RUN | Runner adds same-state multi-size evaluation, canonical state digests, and a 20-trajectory / 120-summary manifest; sizes 32/64/128/256/512/1024; historical primary verdict unchanged |
 
 ## Template
 
@@ -408,7 +408,7 @@ EXP-H1A-ORDER-001 = COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE
 ### EXP-H1A-EVALBATCH-001 — Evaluation batch-size sensitivity of H1a outcome measurement
 
 **Protocol date:** 2026-10-12  
-**Status:** **PREREGISTERED; RUNNER/TESTS PENDING; NOT RUN**  
+**Status:** **PREREGISTERED; RUNNER/TESTS IMPLEMENTED IN PR #18; LOCAL VALIDATION PENDING; NOT RUN**  
 **Parent result:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 remains separately recorded as **ORDER_SENSITIVE**.
 
 **Question**
@@ -440,4 +440,4 @@ The runner must evaluate each registered size on the same in-memory model state 
 
 **Next action**
 
-Implement and test the multi-batch evaluator, run its dry-run and complete the 20 registered trajectories, audit artifacts, then record results. Batch-size sensitivity is a separate diagnostic and does not replace either previous experiment.
+Implementation is in PR #18. First run the full local test suite and the registered dry-run, review the expected 20 trajectories / 120 summaries and state-hash invariance checks, then merge after successful validation. Only after merge should the 20 trajectories be executed. Batch-size sensitivity is a separate diagnostic and does not replace either previous experiment.
