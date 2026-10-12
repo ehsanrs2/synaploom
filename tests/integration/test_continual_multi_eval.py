@@ -44,7 +44,8 @@ def test_multi_eval_records_each_size_without_retraining_and_hashes_state() -> N
     )
 
     assert set(result.evaluation_batch_size_results) == set(sizes)
-    assert result.accuracy_matrix.equal(
+    assert torch.allclose(
+        result.accuracy_matrix,
         result.evaluation_batch_size_results[8]["accuracy_matrix"],
         equal_nan=True,
     )
