@@ -31,6 +31,7 @@ from synaploom.training.continual_metrics import (
 )
 from synaploom.training.engine import TrainingEngine
 from synaploom.training.evaluation import evaluate_task, logits_from_output
+from synaploom.training.state_digest import model_state_sha256
 from synaploom.training.numerics import (
     NumericalContext,
     check_model_gradients,
@@ -90,11 +91,17 @@ class ContinualRunResult:
     peak_cuda_memory_bytes: int | None = None
     max_gradient_norm_by_task: list[float] = field(default_factory=list)
     max_parameter_abs_by_task: list[float] = field(default_factory=list)
+    evaluation_batch_size_results: dict[int, dict[str, Any]] = field(default_factory=dict)
+    evaluation_state_hashes: list[dict[str, Any]] = field(default_factory=list)
 
-    def summary(self) -> dict[str, Any]:
+    @staticmethod
+    def _summary_for(
+        accuracy_matrix: Tensor,
+        learning_curves: list[list[dict[str, float | int]]],
+    ) -> dict[str, Any]:
         curve_means = [
-            (sum(float(point["accuracy"]) for point in curve) / len(curve))
-            for curve in self.current_task_learning_curves
+            sum(float(point["accuracy"]) for point in curve) / len(curve)
+            for curve in learning_curves
             if curve
         ]
         late_curve_mean = (
@@ -103,24 +110,39 @@ class ContinualRunResult:
             else None
         )
         return {
-            "final_average_accuracy": final_average_accuracy(self.accuracy_matrix),
-            "average_forgetting": average_forgetting(self.accuracy_matrix),
-            "backward_transfer": backward_transfer(self.accuracy_matrix),
+            "final_average_accuracy": final_average_accuracy(accuracy_matrix),
+            "average_forgetting": average_forgetting(accuracy_matrix),
+            "backward_transfer": backward_transfer(accuracy_matrix),
             "late_task_learning_accuracy": late_task_learning_accuracy(
-                self.accuracy_matrix, last_n=min(2, self.accuracy_matrix.shape[0])
+                accuracy_matrix, last_n=min(2, accuracy_matrix.shape[0])
             ),
             "average_accuracy_by_stage": average_accuracy_by_stage(
-                self.accuracy_matrix
+                accuracy_matrix
             ).detach().cpu().tolist(),
             "diagonal_learning_accuracy": diagonal_learning_accuracy(
-                self.accuracy_matrix
+                accuracy_matrix
             ).detach().cpu().tolist(),
             "within_task_mean_accuracy_by_task": curve_means,
             "late_task_within_task_mean_accuracy": late_curve_mean,
         }
 
+    def summary(self) -> dict[str, Any]:
+        return self._summary_for(self.accuracy_matrix, self.current_task_learning_curves)
+
+    def summary_for_eval_batch_size(self, batch_size: int) -> dict[str, Any]:
+        """Return standard metrics for one registered evaluation batch size."""
+        if batch_size not in self.evaluation_batch_size_results:
+            if batch_size == self.run_config.get("eval_batch_size"):
+                return self.summary()
+            raise KeyError(f"no evaluation results for batch size {batch_size}")
+        item = self.evaluation_batch_size_results[batch_size]
+        return self._summary_for(
+            item["accuracy_matrix"],
+            item["current_task_learning_curves"],
+        )
+
     def to_dict(self) -> dict[str, Any]:
-        return {
+        payload: dict[str, Any] = {
             "accuracy_matrix": matrix_to_jsonable(self.accuracy_matrix),
             "eval_loss_matrix": matrix_to_jsonable(self.eval_loss_matrix),
             "train_loss_by_task": [float(v) for v in self.train_loss_by_task],
@@ -137,6 +159,22 @@ class ContinualRunResult:
             "max_parameter_abs_by_task": self.max_parameter_abs_by_task,
             "summary": self.summary(),
         }
+        if self.evaluation_batch_size_results:
+            payload["evaluation_batch_size_results"] = {
+                str(batch_size): {
+                    "eval_batch_size": int(batch_size),
+                    "accuracy_matrix": matrix_to_jsonable(item["accuracy_matrix"]),
+                    "eval_loss_matrix": matrix_to_jsonable(item["eval_loss_matrix"]),
+                    "current_task_learning_curves": item["current_task_learning_curves"],
+                    "summary": self._summary_for(
+                        item["accuracy_matrix"],
+                        item["current_task_learning_curves"],
+                    ),
+                }
+                for batch_size, item in sorted(self.evaluation_batch_size_results.items())
+            }
+            payload["evaluation_state_hashes"] = self.evaluation_state_hashes
+        return payload
 
 
 def save_continual_result(result: ContinualRunResult, path: str | Path) -> None:
