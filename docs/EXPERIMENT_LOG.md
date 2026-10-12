@@ -34,6 +34,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
 | EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
 | EXP-H1A-ORDER-001 | 2026-10-11 | 4f572068892093124ada78023c1d4bba6eb9f331 | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) shared across orders | COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE | all 60 runs valid; pooled final accuracy Δ -0.0160 pp [-0.0457, +0.0170]; pooled late-task accuracy Δ -0.0082 pp [-0.0738, +0.0538]; late-task point-estimate signs vary by order |
+| EXP-H1A-EVALBATCH-001 | 2026-10-12 | protocol PR pending | evaluation batch-size sensitivity for H1a metrics | CIFAR-100 frozen ResNet-18 features, primary order O0 | 10 paired seeds (401..410) shared across variants | PREREGISTERED / RUNNER PENDING / NOT RUN | 20 training trajectories; each model state evaluated at 32, 64, 128, 256, 512, and 1024; compare treatment-effect drift against 256; historical primary verdict unchanged |
 
 ## Template
 
@@ -400,5 +401,43 @@ EXP-H1A-ORDER-001 = COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE
 - Features are frozen; this remains a mechanism-isolation study, not end-to-end feature learning.
 - No replay or consolidation is enabled.
 - The classification is a directional sensitivity flag based on point estimates, not a formal interaction-significance test.
-- Next: preregister evaluation-batch-size sensitivity that evaluates identical trained model states across batch sizes. Do not change the primary EXP-H1A-002 verdict.
+- Next: implement and execute the now-preregistered EXP-H1A-EVALBATCH-001 protocol in `docs/H1A_EVAL_BATCH_SENSITIVITY_PROTOCOL.md`. Do not change the primary EXP-H1A-002 verdict.
 
+
+
+### EXP-H1A-EVALBATCH-001 — Evaluation batch-size sensitivity of H1a outcome measurement
+
+**Protocol date:** 2026-10-12  
+**Status:** **PREREGISTERED; RUNNER/TESTS PENDING; NOT RUN**  
+**Parent result:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 remains separately recorded as **ORDER_SENSITIVE**.
+
+**Question**
+
+How much do evaluation batch sizes change the two H1a co-primary accuracy metrics and the paired treatment-control contrast when the model weights at each evaluation checkpoint are held fixed?
+
+The complete frozen protocol is in [docs/H1A_EVAL_BATCH_SENSITIVITY_PROTOCOL.md](H1A_EVAL_BATCH_SENSITIVITY_PROTOCOL.md).
+
+**Important artifact limitation**
+
+The available EXP-H1A-002 and EXP-H1A-ORDER-001 result artifacts record metrics and run provenance but do not contain model state checkpoints. Therefore this study will not claim to re-evaluate those historical weights. It uses a new, fresh paired seed block and evaluates all registered batch sizes at each checkpoint of a single training trajectory. No separate training is permitted for each evaluation batch size.
+
+**Frozen design**
+
+- Feature bundle SHA-256: `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+- Primary class order O0 / H1A_CLASS_ORDER; compact-JSON order fingerprint: `81d7f0637b8e61477c1ef80b7eef33270aae8d81dfcaffad6e58252fd004b633`.
+- Fresh paired seeds: **401–410**; variants: **progressive_reserve** and **all_recruited**.
+- Training settings remain LR=0.01, SGD momentum=0.9, weight decay=0.0005, 20 epochs/task, train batch size=128, evaluation after every epoch, N=16, initially recruited=4, top-k=4, q_max=0, no message passing, replay, or consolidation.
+- Evaluation batch sizes: **32, 64, 128, 256, 512, 1024**; 256 is the reference condition.
+- Expected training trajectories: **20**. Expected per-run batch-size summaries: **120** (20 trajectories × 6 sizes).
+
+**Registered analysis**
+
+For each batch size, report final average accuracy and late-task within-task mean accuracy, each in percentage points for treatment-minus-control. Also report the paired drift from batch size 256. The primary protocol verdict is not reopened, and this sensitivity study cannot upgrade or downgrade EXP-H1A-002.
+
+**Validity**
+
+The runner must evaluate each registered size on the same in-memory model state at each epoch/stage checkpoint, verify that state hashes remain unchanged through the complete evaluation sweep, and invalidate the full study for a missing run, non-finite value, or state-hash mismatch. No partial scientific aggregate may be interpreted as a valid result.
+
+**Next action**
+
+Implement and test the multi-batch evaluator, run its dry-run and complete the 20 registered trajectories, audit artifacts, then record results. Batch-size sensitivity is a separate diagnostic and does not replace either previous experiment.

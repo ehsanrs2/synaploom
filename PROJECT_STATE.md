@@ -2,10 +2,10 @@
 
 > This file is the authoritative project memory. Update it in every PR that changes architecture, experiment status, accepted assumptions, or the next milestone.
 
-**Last updated:** 2026-10-11  
+**Last updated:** 2026-10-12  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** EXP-H1A-ORDER-001 completed on 2026-10-11; all 60 registered runs are numerically valid and the registered class-order sensitivity verdict is ORDER_SENSITIVE  
-**Research status:** EXP-H1A-002 remains the frozen primary result with verdict INCONCLUSIVE. EXP-H1A-ORDER-001 found directional heterogeneity across class orders but no pooled co-primary CI excluding zero; the next step is a separately preregistered evaluation-batch-size sensitivity study using identical trained model states.
+**Current stage:** EXP-H1A-EVALBATCH-001 evaluation-batch-size sensitivity protocol preregistered; runner and tests pending; study not run  
+**Research status:** EXP-H1A-002 remains the frozen primary result with verdict INCONCLUSIVE; EXP-H1A-ORDER-001 is COMPLETE_NUMERICALLY_VALID / ORDER_SENSITIVE. EXP-H1A-EVALBATCH-001 will evaluate six batch sizes at each in-memory training checkpoint, using the same model state across sizes. Prior artifact sets do not contain model checkpoints, so this is a new paired training cohort and not a retrospective re-evaluation of the historical weights.
 
 ## 1. Project objective
 
@@ -322,7 +322,7 @@ Artifacts were generated under `runs/m1_3_h1a_order_sensitivity/`; the aggregate
 
 **Primary-result guardrail:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 is a separate sensitivity result and cannot retroactively change that verdict.
 
-**Next action:** preregister evaluation-batch-size sensitivity, evaluating identical trained model states at multiple evaluation batch sizes to isolate batch-context effects from training differences.
+**Next action:** implement and locally validate the preregistered EXP-H1A-EVALBATCH-001 multi-size evaluator; then execute all registered trajectories while preserving EXP-H1A-002's INCONCLUSIVE primary verdict.
 
 ## 15. Open design questions
 
@@ -332,7 +332,7 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- preregister a separate eval-batch-size sensitivity study that evaluates identical trained model states at multiple evaluation batch sizes; keep EXP-H1A-002's primary verdict unchanged
+- implement and locally validate the EXP-H1A-EVALBATCH-001 multi-size evaluation runner; execute the 20 registered seed/variant training trajectories and record the batch-size sensitivity without changing EXP-H1A-002's primary verdict
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
