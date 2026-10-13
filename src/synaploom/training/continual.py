@@ -426,7 +426,15 @@ def run_continual_experiment(
                         parameter_diagnostics.max_abs,
                     )
                     losses.append(float(loss.detach().item()))
-                    trace = getattr(output, "trace", None)
+                    trace_candidate = getattr(output, "trace", None)
+                    # Plain torch.Tensor outputs expose a built-in .trace() method;
+                    # that is not a SynapLoom routing trace and must be ignored.
+                    trace = (
+                        trace_candidate
+                        if hasattr(trace_candidate, "selected_node_ids")
+                        and hasattr(trace_candidate, "router_weights")
+                        else None
+                    )
                     if trace is not None and hasattr(model, "graph_state"):
                         model.graph_state.update_utilization(
                             trace.selected_node_ids,
