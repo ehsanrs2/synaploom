@@ -2,10 +2,10 @@
 
 > This file is the authoritative project memory. Update it in every PR that changes architecture, experiment status, accepted assumptions, or the next milestone.
 
-**Last updated:** 2026-10-12  
+**Last updated:** 2026-10-13  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** EXP-H1A-EVALBATCH-001 runner, protocol helpers, and tests are implemented in [PR #18](https://github.com/ehsanrs2/synaploom/pull/18); local validation pending; study not run  
-**Research status:** EXP-H1A-002 remains the frozen primary result with verdict INCONCLUSIVE; EXP-H1A-ORDER-001 is COMPLETE_NUMERICALLY_VALID / ORDER_SENSITIVE. The EXP-H1A-EVALBATCH-001 runner in PR #18 trains once per seed/variant and evaluates six batch sizes at each checkpoint on the same in-memory model state, checking state hashes before/after each sweep. Prior output artifacts contain no model checkpoints, so this is a fresh paired cohort rather than retrospective re-evaluation of historical weights.
+**Current stage:** PR #18 is merged; first local validation recorded 53 passed / 1 failed; the trace-guard fix is in [PR #19](https://github.com/ehsanrs2/synaploom/pull/19); study not run  
+**Research status:** EXP-H1A-002 remains INCONCLUSIVE and EXP-H1A-ORDER-001 remains ORDER_SENSITIVE. EXP-H1A-EVALBATCH-001 has an implemented runner, but first local validation found one generic-output trace handling failure (53 passed, 1 failed); PR #19 fixes it. Dry-run completed, but the scientific study has not started. The runner is designed to train once per seed/variant and evaluate all six batch sizes on the same in-memory model state, guarded by before/after hashes. Previous artifacts lack model checkpoints, so the study uses a fresh paired cohort.
 
 ## 1. Project objective
 
@@ -322,7 +322,7 @@ Artifacts were generated under `runs/m1_3_h1a_order_sensitivity/`; the aggregate
 
 **Primary-result guardrail:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 is a separate sensitivity result and cannot retroactively change that verdict.
 
-**Next action:** locally validate PR #18 (pytest and dry-run), merge it after the checks pass, then execute EXP-H1A-EVALBATCH-001 while preserving EXP-H1A-002's INCONCLUSIVE primary verdict.
+**Next action:** rerun the full test suite and dry-run on PR #19; require all 54 tests to pass before merging the hotfix. Only then execute the registered study, preserving EXP-H1A-002's INCONCLUSIVE primary verdict.
 
 ## 15. Open design questions
 
@@ -332,7 +332,7 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- locally validate and merge implementation PR #18; then execute the 20 registered seed/variant training trajectories and record batch-size sensitivity without changing EXP-H1A-002's primary verdict
+- rerun local tests and dry-run on hotfix PR #19 after the initial 53-passed/1-failed check; only after all 54 tests pass, merge and execute the 20 registered trajectories without changing EXP-H1A-002's primary verdict
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 

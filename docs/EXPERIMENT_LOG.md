@@ -34,7 +34,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
 | EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
 | EXP-H1A-ORDER-001 | 2026-10-11 | 4f572068892093124ada78023c1d4bba6eb9f331 | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) shared across orders | COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE | all 60 runs valid; pooled final accuracy Δ -0.0160 pp [-0.0457, +0.0170]; pooled late-task accuracy Δ -0.0082 pp [-0.0738, +0.0538]; late-task point-estimate signs vary by order |
-| EXP-H1A-EVALBATCH-001 | 2026-10-12 | implementation PR #18 pending merge | evaluation batch-size sensitivity for H1a metrics | CIFAR-100 frozen ResNet-18 features, primary order O0 | 10 paired seeds (401..410) shared across variants | PREREGISTERED / RUNNER IMPLEMENTED / LOCAL VALIDATION PENDING / NOT RUN | Runner adds same-state multi-size evaluation, canonical state digests, and a 20-trajectory / 120-summary manifest; sizes 32/64/128/256/512/1024; historical primary verdict unchanged |
+| EXP-H1A-EVALBATCH-001 | 2026-10-13 | runner PR #18 merged; hotfix PR #19 pending | evaluation batch-size sensitivity for H1a metrics | CIFAR-100 frozen ResNet-18 features, primary order O0 | 10 paired seeds (401..410) shared across variants | PREREGISTERED / FIRST TEST RUN 53 PASSED, 1 FAILED / DRY-RUN PASSED / STUDY NOT RUN | Failure was generic Tensor output `.trace` method mistaken for a routing trace; guard fix in PR #19; scientific run remains unstarted |
 
 ## Template
 
@@ -408,7 +408,7 @@ EXP-H1A-ORDER-001 = COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE
 ### EXP-H1A-EVALBATCH-001 — Evaluation batch-size sensitivity of H1a outcome measurement
 
 **Protocol date:** 2026-10-12  
-**Status:** **PREREGISTERED; RUNNER/TESTS IMPLEMENTED IN PR #18; LOCAL VALIDATION PENDING; NOT RUN**  
+**Status:** **PREREGISTERED; PR #18 MERGED; HOTFIX PR #19 PENDING VALIDATION; STUDY NOT RUN**  
 **Parent result:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 remains separately recorded as **ORDER_SENSITIVE**.
 
 **Question**
@@ -440,4 +440,4 @@ The runner must evaluate each registered size on the same in-memory model state 
 
 **Next action**
 
-Implementation is in PR #18. First run the full local test suite and the registered dry-run, review the expected 20 trajectories / 120 summaries and state-hash invariance checks, then merge after successful validation. Only after merge should the 20 trajectories be executed. Batch-size sensitivity is a separate diagnostic and does not replace either previous experiment.
+PR #18 was merged. The first local validation run collected 54 tests: 53 passed and `test_multi_eval_fails_closed_if_evaluation_mutates_model_state` failed because a plain Tensor's built-in `.trace` method was treated as a SynapLoom routing trace. The fix is in PR #19; the dry-run did pass, but the full suite must be rerun and must pass all 54 tests before merging the hotfix. The scientific run was not started. Only after the hotfix is validated and merged should the 20 registered trajectories be executed. Batch-size sensitivity is a separate diagnostic and does not replace either previous experiment.
