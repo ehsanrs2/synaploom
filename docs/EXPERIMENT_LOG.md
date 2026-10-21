@@ -34,7 +34,7 @@ Do not promote a single-seed exploratory result to PROJECT_STATE.
 | EXP-H1A-STABILITY-001 | 2026-10-07 | 7d8622fdb47bdb79fce109c64066b854711bafb2 | numerical calibration only | same frozen H1a feature stream | 3 calibration seeds | COMPLETE | lr=0.01 selected: 15/15 stable; lr=0.03 was 1/15 stable |
 | EXP-H1A-002 | 2026-10-11 | 7b301224151882d677403e1ea7a91d4b26b1291c | H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL | 10 paired seeds (201..210) | COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE | final accuracy +0.069 pp [0.036, 0.103]; late-task accuracy -0.041 pp [-0.171, 0.087]; preregistered overall verdict INCONCLUSIVE |
 | EXP-H1A-ORDER-001 | 2026-10-11 | 4f572068892093124ada78023c1d4bba6eb9f331 | class-order robustness for H1a | CIFAR-100 frozen ResNet-18 features, 10x10 CIL, three fixed orders | 10 paired seeds (301..310) shared across orders | COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE | all 60 runs valid; pooled final accuracy Δ -0.0160 pp [-0.0457, +0.0170]; pooled late-task accuracy Δ -0.0082 pp [-0.0738, +0.0538]; late-task point-estimate signs vary by order |
-| EXP-H1A-EVALBATCH-001 | 2026-10-13 | runner PR #18 merged; hotfix PR #19 pending | evaluation batch-size sensitivity for H1a metrics | CIFAR-100 frozen ResNet-18 features, primary order O0 | 10 paired seeds (401..410) shared across variants | PREREGISTERED / FIRST TEST RUN 53 PASSED, 1 FAILED / DRY-RUN PASSED / STUDY NOT RUN | Failure was generic Tensor output `.trace` method mistaken for a routing trace; guard fix in PR #19; scientific run remains unstarted |
+| EXP-H1A-EVALBATCH-001 | 2026-10-21 | `ab6b1d847745` | evaluation batch-size sensitivity for H1a metrics | CIFAR-100 frozen ResNet-18 features, primary order O0 | 10 paired seeds (401..410) shared across variants | COMPLETE_NUMERICALLY_VALID; DIRECTION_FLIP_OBSERVED | 20/20 runs, 120/120 summaries, 4,200 intact state sweeps; near-zero late-task effect switches sign at batches 128 and 512; no established benefit |
 
 ## Template
 
@@ -408,7 +408,8 @@ EXP-H1A-ORDER-001 = COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE
 ### EXP-H1A-EVALBATCH-001 — Evaluation batch-size sensitivity of H1a outcome measurement
 
 **Protocol date:** 2026-10-12  
-**Status:** **PREREGISTERED; PR #18 MERGED; HOTFIX PR #19 PENDING VALIDATION; STUDY NOT RUN**  
+**Status:** **COMPLETE_NUMERICALLY_VALID; DIRECTION_FLIP_OBSERVED** (see 2026-10-21 execution record below)  
+**Pre-execution status (2026-10-13):** PR #18 merged, PR #19 pending local validation, study not run  
 **Parent result:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 remains separately recorded as **ORDER_SENSITIVE**.
 
 **Question**
@@ -438,6 +439,54 @@ For each batch size, report final average accuracy and late-task within-task mea
 
 The runner must evaluate each registered size on the same in-memory model state at each epoch/stage checkpoint, verify that state hashes remain unchanged through the complete evaluation sweep, and invalidate the full study for a missing run, non-finite value, or state-hash mismatch. No partial scientific aggregate may be interpreted as a valid result.
 
-**Next action**
+**Historical pre-execution next action (recorded before the 2026-10-21 run)**
 
 PR #18 was merged. The first local validation run collected 54 tests: 53 passed and `test_multi_eval_fails_closed_if_evaluation_mutates_model_state` failed because a plain Tensor's built-in `.trace` method was treated as a SynapLoom routing trace. The fix is in PR #19; the dry-run did pass, but the full suite must be rerun and must pass all 54 tests before merging the hotfix. The scientific run was not started. Only after the hotfix is validated and merged should the 20 registered trajectories be executed. Batch-size sensitivity is a separate diagnostic and does not replace either previous experiment.
+
+
+#### Execution result and independent artifact audit — 2026-10-21
+
+**Status:** **COMPLETE_NUMERICALLY_VALID; DIRECTION_FLIP_OBSERVED** (registered descriptive classification; not confirmatory evidence of an interaction).
+**Execution commit:** `ab6b1d8477451bc2a3d0c12c3f29a488c8357bd4` (merged PR #19 on `main`).
+**Local validation before execution:** locked dependencies; 54/54 pytest tests passed (one nonblocking sparse-invariant warning); registered dry-run and M1.1, M1.2 and M1.3 smoke checks passed.
+**Data:** frozen CIFAR-100 / ResNet-18 feature bundle SHA-256 `c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47`.
+**Order:** O0 fingerprint `81d7f0637b8e61477c1ef80b7eef33270aae8d81dfcaffad6e58252fd004b633`.
+**Hardware/environment:** NVIDIA GeForce RTX 4090; Python 3.11.15; PyTorch 2.14.1+cu130; CUDA 13.0.
+**Configuration:** seeds 401–410 paired across `progressive_reserve` and `all_recruited`; 20 epochs/task; 10 tasks x 10 classes; SGD lr 0.01, momentum 0.9, weight decay 0.0005; train batch 128; evaluation sizes 32, 64, 128, 256, 512, 1024; 256 reference; all other settings exactly as frozen in the protocol.
+
+**Executed command (console log kept outside the empty-required artifact directory):**
+
+```bash
+PYTHONUNBUFFERED=1 uv run --locked python experiments/scripts/m1_3_h1a_eval_batch_sensitivity.py \
+  --features data/features/cifar100_resnet18_imagenet1k_v1.pt \
+  --output runs/m1_3_h1a_eval_batch_sensitivity \
+  --device cuda \
+  2>&1 | tee runs/m1_3_h1a_eval_batch_sensitivity.console.log
+```
+
+**Artifact and provenance audit:** 20/20 trajectory JSONs and 120/120 run-size manifest entries matched the exact preregistered matrix. SHA-256 checks for all 20 trajectory file bytes and all 120 canonical run-size summaries matched their manifests. Every trajectory has 210 state-hash sweeps, all with unchanged before/after hashes: 4,200 valid sweeps total (8,400 digest evaluations). No non-finite JSON values were found in the supplied artifact archive. Independent audit of the supplied ZIP returned SHA-256 `1bc545a1a16c2ed6e164881e57a8ed5c78202cbcafd14100f2c2013bcde38720`. Local artifacts: `runs/m1_3_h1a_eval_batch_sensitivity/` (`aggregate.json`, `preflight.json`, and 20 per-trajectory JSONs). These large local artifacts are intentionally not committed.
+
+**Registered paired effects** (`progressive_reserve - all_recruited`, percentage points; 10,000 paired seed-cluster bootstrap resamples, RNG seed 7331):
+
+| Eval batch | Final average accuracy delta (pp; 95% CI) | Late-task within-task mean delta (pp; 95% CI) |
+|---:|---:|---:|
+| 32 | +0.0240 [-0.0410, +0.0950] | -0.0100 [-0.1925, +0.2133] |
+| 64 | +0.0160 [-0.0650, +0.0980] | -0.0058 [-0.1720, +0.2018] |
+| 128 | +0.0320 [-0.0490, +0.1180] | +0.0045 [-0.1738, +0.2228] |
+| 256 (reference) | +0.0320 [-0.0410, +0.1130] | -0.0015 [-0.1695, +0.2033] |
+| 512 | +0.0150 [-0.0640, +0.0960] | +0.0063 [-0.1578, +0.2045] |
+| 1024 | +0.0010 [-0.0780, +0.0870] | -0.0030 [-0.1680, +0.1970] |
+
+At the 256 reference, final accuracy means were 9.539% (`progressive_reserve`) and 9.507% (`all_recruited`); late-task within-task accuracy means were 86.849% and 86.8505%, respectively. All displayed treatment-effect 95% intervals cross zero.
+
+**Drift in treatment effect relative to evaluation batch size 256 (pp):** final accuracy: 32 -0.008 [-0.023,+0.009], 64 -0.016 [-0.036,+0.006], 128 ~0 [-0.013,+0.014], 256 0, 512 -0.017 [-0.032,-0.002], 1024 -0.031 [-0.046,-0.016]. Late-task within-task accuracy: 32 -0.0085 [-0.036,+0.016], 64 -0.00425 [-0.0215,+0.012], 128 +0.006 [-0.0095,+0.021], 256 0, 512 +0.00775 [-0.00525,+0.02075], 1024 -0.0015 [-0.0145,+0.01175]. These multiple size comparisons are descriptive, not familywise confirmatory.
+
+**Registered classification:** `DIRECTION_FLIP_OBSERVED` because the late-task within-task point-estimate effect at reference size 256 is negative (-0.0015 pp), but sizes 128 (+0.0045 pp) and 512 (+0.00625 pp) are positive. Final accuracy effect point estimates remain positive at all sizes. This is a very small sign change near zero; it does **not** establish a statistically significant treatment-by-batch-size interaction.
+
+**Forgetting limitation:** at reference 256, average forgetting was 88.552% for progressive reserve and 88.600% for all-recruited. Final-stage mean accuracy for tasks T0–T4 is 0%, while T9 retains about 84.7%; the no-replay/no-consolidation protocol cannot show a solution to catastrophic forgetting.
+
+**Runtime diagnostics (descriptive):** artifact `train_seconds_by_task` sums to 2,860.8 s across 20 trajectories, and `eval_seconds_by_stage` sums to 54.3 s, for 2,915.1 s of recorded time (~48.6 minutes). Note: per-task training timers include within-epoch evaluation and state-hash sweeps; these counters do not isolate GPU training compute. An observed GPU utilization sample ranged 11–36% and the Python process used ~859% CPU, suggesting profiling is warranted, not proving a specific bottleneck.
+
+**Interpretation guardrails:** `EXP-H1A-002 = INCONCLUSIVE` and `EXP-H1A-ORDER-001 = ORDER_SENSITIVE` remain unchanged. This study evaluates a fresh cohort, not the historical model states, because the earlier studies did not save their checkpoints. Any sample-level routing or performance optimization must be preregistered/validated separately and cannot retroactively change these results.
+
+**Next:** keep the study frozen; design independent R&D for prediction dependence on batch composition and separately profile CPU/GPU synchronization costs, with parity/fairness gates before scientific reruns.
