@@ -1,7 +1,7 @@
 # EXP-H1A-EVALBATCH-001 — Evaluation Batch-Size Sensitivity of H1a Outcome Measurement
 
 **Protocol date:** 2026-10-12  
-**Status:** preregistered; runner/tests pending; not run  
+**Status:** preregistered on 2026-10-12; completed on 2026-10-21 as `COMPLETE_NUMERICALLY_VALID; DIRECTION_FLIP_OBSERVED` (administrative status only; frozen protocol below unchanged; see EXPERIMENT_LOG.md)  
 **Parent result:** EXP-H1A-002 — COMPLETE_NUMERICALLY_VALID; INCONCLUSIVE  
 **Related sensitivity result:** EXP-H1A-ORDER-001 — COMPLETE_NUMERICALLY_VALID; ORDER_SENSITIVE
 
