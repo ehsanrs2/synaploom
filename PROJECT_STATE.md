@@ -2,10 +2,10 @@
 
 > This file is the authoritative project memory. Update it in every PR that changes architecture, experiment status, accepted assumptions, or the next milestone.
 
-**Last updated:** 2026-10-13  
+**Last updated:** 2026-10-21  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** PR #18 is merged; first local validation recorded 53 passed / 1 failed; the trace-guard fix is in [PR #19](https://github.com/ehsanrs2/synaploom/pull/19); study not run  
-**Research status:** EXP-H1A-002 remains INCONCLUSIVE and EXP-H1A-ORDER-001 remains ORDER_SENSITIVE. EXP-H1A-EVALBATCH-001 has an implemented runner, but first local validation found one generic-output trace handling failure (53 passed, 1 failed); PR #19 fixes it. Dry-run completed, but the scientific study has not started. The runner is designed to train once per seed/variant and evaluate all six batch sizes on the same in-memory model state, guarded by before/after hashes. Previous artifacts lack model checkpoints, so the study uses a fresh paired cohort.
+**Current stage:** M1.3a sensitivity study `EXP-H1A-EVALBATCH-001` completed on 2026-10-21 at merged PR #19 commit `ab6b1d8477451bc2a3d0c12c3f29a488c8357bd4`; 54/54 local tests passed. Documentation/result registration in progress.  
+**Research status:** EXP-H1A-002 = INCONCLUSIVE; EXP-H1A-ORDER-001 = ORDER_SENSITIVE; EXP-H1A-EVALBATCH-001 = COMPLETE_NUMERICALLY_VALID / DIRECTION_FLIP_OBSERVED. The latter is descriptive measurement sensitivity, not proof of a batch-size interaction or benefit of progressive growth. The historical checkpoints were not saved; evaluation used a fresh paired cohort.
 
 ## 1. Project objective
 
@@ -322,9 +322,25 @@ Artifacts were generated under `runs/m1_3_h1a_order_sensitivity/`; the aggregate
 
 **Primary-result guardrail:** EXP-H1A-002 remains the frozen primary experiment with verdict **INCONCLUSIVE**. EXP-H1A-ORDER-001 is a separate sensitivity result and cannot retroactively change that verdict.
 
-**Next action:** rerun the full test suite and dry-run on PR #19; require all 54 tests to pass before merging the hotfix. Only then execute the registered study, preserving EXP-H1A-002's INCONCLUSIVE primary verdict.
+**Historical next action (superseded 2026-10-21):** the post-merge test suite and registered study have now completed; see Section 15.
 
-## 15. Open design questions
+## 15. EXP-H1A-EVALBATCH-001 — evaluation batch-size sensitivity result
+
+**Execution:** 2026-10-21 on `main` at `ab6b1d8477451bc2a3d0c12c3f29a488c8357bd4`. PR #19 merged; local tests 54/54 passed and dry-run/smoke checks passed.
+**Status:** `COMPLETE_NUMERICALLY_VALID; DIRECTION_FLIP_OBSERVED`.
+
+- Frozen seeds: 401–410 paired across `progressive_reserve` / `all_recruited` and batch sizes 32/64/128/256/512/1024 (reference 256); exact O0 class order and frozen feature SHA.
+- Independent artifact audit: 20/20 trajectories; 120/120 run-size summaries; all manifest SHA-256 values verified; 4,200/4,200 unchanged state-hash sweeps; no non-finite JSON values.
+- At reference 256: final accuracy treatment delta +0.0320 pp, paired-bootstrap 95% CI [-0.0410,+0.1130]; late-task within-task accuracy delta -0.0015 pp, CI [-0.1695,+0.2033]. Both intervals cross zero.
+- Late-task point-estimate sign flips positive at sizes 128 (+0.0045 pp) and 512 (+0.00625 pp); this descriptive label does not establish a statistically significant interaction.
+- Average forgetting at reference 256 remains severe: 88.552% for progressive reserve and 88.600% for all recruited under the no-replay/no-consolidation protocol.
+- Recorded execution time summed over 20 artifacts: ~2,915.1 s (training timers include checkpoint evaluations). GPU was not fully utilized in a small observed sample; profile before optimizing.
+- Historical results remain `EXP-H1A-002 = INCONCLUSIVE` and `EXP-H1A-ORDER-001 = ORDER_SENSITIVE`.
+
+See `docs/EXPERIMENT_LOG.md` for all six effects, confidence intervals, artifact provenance, execution command, and interpretation limits.
+
+**Next action:** open independent, non-result-changing R&D for sample-level/batch-composition-invariant routing and performance profiling, each with explicit parity checks and a separately frozen evaluation contract before any new confirmatory result.
+## 16. Open design questions
 
 Still unresolved:
 
@@ -332,11 +348,11 @@ Still unresolved:
 - exact load-balancing loss
 - consolidation coefficient and importance EMA hyperparameters
 - first fair dynamic-sparse baseline implementation for M1.3
-- rerun local tests and dry-run on hotfix PR #19 after the initial 53-passed/1-failed check; only after all 54 tests pass, merge and execute the 20 registered trajectories without changing EXP-H1A-002's primary verdict
+- measure and mitigate batch-composition dependence without revising the historical H1a scientific verdicts; profile CUDA/CPU synchronization and verify parity before any performance change
 - exact fairness reporting table
 - when to introduce sample-level or hierarchical routing
 
-## 16. Environment and dependency management
+## 17. Environment and dependency management
 
 Accepted project tooling:
 
@@ -349,7 +365,7 @@ Accepted project tooling:
 - dependency changes should use `uv add` / `uv remove` and update `uv.lock`;
 - CI uses `astral-sh/setup-uv`.
 
-## 17. Documentation rule
+## 18. Documentation rule
 
 For every merged milestone PR:
 

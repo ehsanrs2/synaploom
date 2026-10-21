@@ -103,8 +103,10 @@ Implemented/preregistered:
 - [x] execute EXP-H1A-ORDER-001 and record results — 60/60 numerically valid runs; registered classification ORDER_SENSITIVE; EXP-H1A-002 remains INCONCLUSIVE
 - [x] preregister EXP-H1A-EVALBATCH-001 evaluation batch-size sensitivity: fixed O0 class order, fresh paired seeds 401–410, sizes 32/64/128/256/512/1024, all measured on the same in-memory model state
 - [x] implement the multi-batch evaluation runner, protocol helpers, canonical state digest, and tests — PR #18 merged
-- [ ] fix generic Tensor output trace handling and rerun validation on hotfix PR #19 — the first run had 53 passed / 1 failed; dry-run passed
-- [ ] execute EXP-H1A-EVALBATCH-001 (20 training trajectories / 120 run-size summaries) and record results without changing EXP-H1A-002's primary verdict
+- [x] fix generic Tensor output trace handling, merge PR #19, and rerun post-merge local validation — 54/54 tests passed; dry-run and three smoke checks passed
+- [x] execute EXP-H1A-EVALBATCH-001 — 20 trajectories, 120 size summaries, 4,200 verified state-hash sweeps; `DIRECTION_FLIP_OBSERVED` (descriptive); EXP-H1A-002 stays `INCONCLUSIVE`
+- [ ] preregister independent batch-composition invariance / sample-level routing R&D; do not reuse the completed sensitivity study for new mechanism claims
+- [ ] profile performance separately, identify CPU/GPU synchronization costs, and require frozen-output parity checks before runtime optimizations
 
 #### M1.3b — external sparse/continual controls
 
