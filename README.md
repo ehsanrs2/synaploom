@@ -4,7 +4,7 @@
 
 SynapLoom is a research project exploring whether a neural system can learn continually by reorganizing and recruiting pre-existing capacity — changing active pathways and structural state in addition to ordinary weights.
 
-> Project status: **EXP-H1A-STABILITY-001 selected lr=0.01 with 15/15 stable calibration runs. EXP-H1A-002 is preregistered; H1a remains NOT_EVALUATED until that fresh scientific run completes.**
+> Project status: **M1 structural core and continual evaluation harness implemented. EXP-H1A-002 is numerically valid but INCONCLUSIVE; EXP-H1A-ORDER-001 is ORDER_SENSITIVE; EXP-H1A-EVALBATCH-001 completed with a descriptive DIRECTION_FLIP_OBSERVED classification. H1a benefit remains NOT ESTABLISHED.**
 
 ## Development environment
 
@@ -64,6 +64,7 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 - [H1a execution runbook](docs/H1A_RUNBOOK.md) — historical EXP-H1A-001 execution procedure
 - [H1a stability protocol](docs/H1A_STABILITY_PROTOCOL.md) — numerical calibration after the invalid primary run
 - [EXP-H1A-002 protocol](docs/H1A_002_PROTOCOL.md) — fresh scientific H1a rerun after stability calibration
+- [Evaluation batch-size sensitivity protocol](docs/H1A_EVAL_BATCH_SENSITIVITY_PROTOCOL.md) — preregistered follow-up and batch-level routing caveat
 - [Theory notes](docs/THEORY.md) — mathematical framing, complexity targets, and open questions
 - [Research hypotheses](docs/RESEARCH_HYPOTHESES.md) — falsifiable hypotheses and baselines
 - [Roadmap](docs/ROADMAP.md) — milestone plan
@@ -89,13 +90,13 @@ Under a fixed total capacity budget, can reserve-capacity recruitment, sparse ro
 
 **M1.2** adds one model-agnostic continual pipeline for controlled growth, routed no-growth, and dense controls: deterministic task streams, the stage-by-task evaluation matrix, continual metrics, structural histories, and JSON artifacts. CI uses a deterministic synthetic class-incremental smoke; a real SplitMNIST adapter is optional.
 
-**M1.3a** is now preregistered as a mechanism-isolation test on frozen CIFAR-100 ResNet-18 features. The primary paired comparison is progressive reserve recruitment vs an all-recruited routed control with the same total capacity and top-k execution.
+**M1.3a** is a mechanism-isolation test on frozen CIFAR-100 ResNet-18 features. The primary paired comparison is progressive reserve recruitment vs an all-recruited routed control with the same total capacity and top-k execution.
 
 EXP-H1A-001 produced all expected artifacts but 39/50 runs developed NaN/Inf, including 10/10 all-recruited controls. The result is therefore INVALID_NUMERICAL_INSTABILITY and cannot support or reject H1a.
 
 EXP-H1A-STABILITY-001 selected lr=0.01 strictly from numerical validity: 0.03 passed 1/15 runs, while 0.01 passed 15/15; 0.003 was not run because the preregistered stop rule had already selected the first fully stable candidate.
 
-The next action is EXP-H1A-002 on fresh paired seeds 201..210 with all other scientific settings frozen. External RigL/NISPA-style comparisons and end-to-end CIFAR-100 remain later validation, not hidden tuning steps.
+EXP-H1A-002 subsequently completed on fresh seeds 201..210: the registered overall result was INCONCLUSIVE. EXP-H1A-ORDER-001 completed with the descriptive ORDER_SENSITIVE classification. EXP-H1A-EVALBATCH-001 evaluated six batch sizes on shared model states from 20 fresh trajectories (seeds 401..410); its descriptive result was DIRECTION_FLIP_OBSERVED, with very small near-zero late-task effect sign changes. Neither sensitivity result revises EXP-H1A-002. Next: independently design and test batch-composition-invariant/sample-level routing and profile performance; external RigL/NISPA-style comparisons and end-to-end CIFAR-100 remain later validation, not hidden tuning steps.
 
 ## Prior-work anchors
 
