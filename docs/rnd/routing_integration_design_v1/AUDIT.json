@@ -1,0 +1,23 @@
+{
+  "qualified_research_commit": "fec8aed6c826df1ebb869af496608501d384f186",
+  "baseline": "2f5ebe7526d34845f45a520b574227ac71e769ca",
+  "prior_external_files_verified": 254,
+  "archive_files_verified": 148,
+  "tracked_files_equal_research_commit": true,
+  "final_tests": "110 passed, 1 warning",
+  "requirements": {
+    "1": "Scoped preservation commit fec8aed; data/ excluded",
+    "2": "representative_review/review.json; PERFORMANCE.md: all files, traces, operator tables, performance envelope",
+    "3": "DESIGN.md interface combinations and explicit Stage 1 boundary",
+    "4": "DESIGN.md checkpoints, mutations, training, inference, gradients and numerical determinism",
+    "5": "SingletonProbe; CPU/CUDA exact singleton-reference tests and bounded investigation evidence",
+    "6": "PERFORMANCE.md R16 operation counts; isolated slot and row-precomputation ablations",
+    "7": "DESIGN.md explicit legacy versus ascending-node exact tie policies",
+    "8": "GATES.md parity/performance matrix with tolerances, counts, launch/wall/memory gates",
+    "9": "PERFORMANCE.md standalone diagnostic/hash evidence and protected optimization proposals",
+    "10": "DESIGN.md, GATES.md, MANUAL.md and hashed reproducibility package",
+    "11": "Only tiny synthetic new probes; owner representative artifacts read only; no scientific training",
+    "12": "Tracked production/default source unchanged; no push or merge"
+  },
+  "decision": "GO for a future inference/diagnostic-only opt-in implementation; NO-GO training/default change or optimization promotion"
+}
