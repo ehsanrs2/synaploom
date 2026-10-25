@@ -1,0 +1,9 @@
+{
+  "python": "3.11.15",
+  "platform": "Linux-6.11.0-29-generic-x86_64-with-glibc2.39",
+  "torch": "2.14.1+cu130",
+  "cuda_build": "13.0",
+  "base": "a5453e20ad6a67ed6df8f9566bbc2529068142c4",
+  "qualification_device": "cpu",
+  "trained_checkpoint_used": false
+}

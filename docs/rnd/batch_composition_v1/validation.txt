@@ -1,0 +1,8 @@
+...............................................................          [100%]
+=============================== warnings summary ===============================
+tests/unit/test_state_digest.py::test_state_digest_rejects_unsupported_sparse_state
+  /home/ai/project/My/synaploom/tests/unit/test_state_digest.py:45: UserWarning: Sparse invariant checks are implicitly disabled. Memory errors (e.g. SEGFAULT) will occur when operating on a sparse tensor which violates the invariants, but checks incur performance overhead. To silence this warning, explicitly opt in or out. See `torch.sparse.check_sparse_tensor_invariants.__doc__` for guidance.  (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/Context.cpp:848.)
+    torch.sparse_coo_tensor(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+63 passed, 1 warning in 8.22s
