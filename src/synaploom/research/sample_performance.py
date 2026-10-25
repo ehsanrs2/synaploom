@@ -53,7 +53,14 @@ def measure(*, device="cpu", threads=1, steps=5, instrumented=False, trace_path=
         engine = TrainingEngine(model, torch.optim.SGD(model.parameters(), lr=.001))
         x = torch.randn(batch, width, device=device)
         y = torch.arange(batch, device=device) % classes
-        task = TensorTask(task_id=0, classes=tuple(range(classes)), train_x=x, train_y=y, eval_x=x, eval_y=y)
+        # The production evaluation iterator indexes CPU-hosted task data before
+        # evaluate_task transfers each batch to the model device. Keep resident
+        # training tensors unchanged (including their device RNG provenance).
+        # This one-time D2H setup is outside warmup and measurement boundaries;
+        # evaluation H2D transfers remain inside each measured iteration.
+        host_x, host_y = x.detach().cpu(), y.detach().cpu()
+        task = TensorTask(task_id=0, classes=tuple(range(classes)),
+                          train_x=host_x, train_y=host_y, eval_x=host_x, eval_y=host_y)
         def synchronize():
             if str(device).startswith("cuda"):
                 torch.cuda.synchronize(device)

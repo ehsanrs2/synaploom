@@ -1,0 +1,16 @@
+docs/rnd/batch_composition_v1/CONTRACT.md: OK
+docs/rnd/batch_composition_v1/MANUAL.md: OK
+docs/rnd/batch_composition_v1/REPORT.md: OK
+docs/rnd/batch_composition_v1/environment.json: OK
+docs/rnd/batch_composition_v1/evidence/qualified_seed19/results.json: OK
+docs/rnd/batch_composition_v1/evidence/qualified_seed7/results.json: OK
+docs/rnd/batch_composition_v1/evidence/seed19/results.json: OK
+docs/rnd/batch_composition_v1/evidence/seed7/results.json: OK
+docs/rnd/batch_composition_v1/validation.txt: OK
+experiments/scripts/rnd_batch_composition.py: OK
+experiments/scripts/rnd_performance.py: OK
+src/synaploom/research/batch_composition.py: OK
+src/synaploom/research/performance.py: OK
+tests/integration/test_rnd_performance.py: OK
+tests/integration/test_rnd_trained_cli.py: OK
+tests/unit/test_batch_composition.py: OK

@@ -1,0 +1,22 @@
+docs/rnd/sample_routing_v1/CONTRACT.md: OK
+docs/rnd/sample_routing_v1/MANUAL.md: OK
+docs/rnd/sample_routing_v1/REPORT.md: OK
+docs/rnd/sample_routing_v1/environment.json: OK
+docs/rnd/sample_routing_v1/evidence/results.json: OK
+docs/rnd/sample_routing_v1/prior_hash_audit.txt: OK
+docs/rnd/sample_routing_v1/profile_smoke/operators-0.txt: OK
+docs/rnd/sample_routing_v1/profile_smoke/operators-1.txt: OK
+docs/rnd/sample_routing_v1/profile_smoke/results.json: OK
+docs/rnd/sample_routing_v1/profile_smoke/trace-0.json: OK
+docs/rnd/sample_routing_v1/profile_smoke/trace-1.json: OK
+docs/rnd/sample_routing_v1/provenance_audit.json: OK
+docs/rnd/sample_routing_v1/reaudit_seed19/results.json: OK
+docs/rnd/sample_routing_v1/reaudit_seed7/results.json: OK
+docs/rnd/sample_routing_v1/validation.txt: OK
+experiments/scripts/rnd_sample_performance.py: OK
+experiments/scripts/rnd_sample_qualification.py: OK
+src/synaploom/research/sample_performance.py: FAILED
+src/synaploom/research/sample_routing.py: OK
+tests/integration/test_sample_performance.py: FAILED
+tests/unit/test_sample_routing.py: OK
+sha256sum: WARNING: 2 computed checksums did NOT match
