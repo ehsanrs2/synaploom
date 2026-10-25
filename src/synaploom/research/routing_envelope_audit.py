@@ -160,6 +160,21 @@ def audit_trusted_routing_envelope(
         raise ValueError("full envelope requires optimizer and controller")
     if not isinstance(envelope["optimizer"], Mapping) or not isinstance(envelope["controller"], Mapping):
         raise ValueError("invalid optimizer/controller envelope")
+    # Narrow V1 qualification: insist that the saved optimizer's declared
+    # param groups and hyperparameters match the caller's expected optimizer
+    # configuration before attempting ANY restore, even on the shadow.
+    saved_groups = envelope["optimizer"].get("param_groups")
+    actual_groups = optimizer.state_dict()["param_groups"]
+    if not isinstance(saved_groups, list) or len(saved_groups) != len(actual_groups):
+        raise ValueError("optimizer parameter group count mismatch")
+    for saved, expected in zip(saved_groups, actual_groups):
+        if not isinstance(saved, Mapping) or set(saved) != set(expected):
+            raise ValueError("optimizer parameter group schema mismatch")
+        if not isinstance(saved["params"], list) or len(saved["params"]) != len(expected["params"]):
+            raise ValueError("optimizer parameter group size mismatch")
+        for key in expected:
+            if key != "params" and saved[key] != expected[key]:
+                raise ValueError("optimizer hyperparameters mismatch: " + key)
     if set(envelope["controller"]) != {"last_applied_step"} or type(envelope["controller"]["last_applied_step"]) is not int:
         raise ValueError("invalid controller state schema")
     step = envelope["controller"]["last_applied_step"]
