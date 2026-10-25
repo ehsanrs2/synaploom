@@ -1,0 +1,55 @@
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg       CPU Mem  Self CPU Mem    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                     model_state_sha256        17.90%     747.648us        23.89%     997.944us     498.972us           0 B           0 B             2  
+                                  check_model_gradients         6.75%     281.993us        19.73%     823.987us     411.994us           0 B     -13.83 KB             2  
+                                              aten::abs         5.22%     217.875us         8.26%     344.885us       1.173us      81.68 KB      40.84 KB           294  
+                                 check_model_parameters         4.30%     179.785us        14.31%     597.815us     597.815us           0 B     -10.12 KB             1  
+                                               aten::ne         3.50%     146.287us         7.27%     303.482us       3.941us       4.82 KB       4.54 KB            77  
+                                           aten::detach         3.19%     133.374us         5.71%     238.440us       0.522us           0 B           0 B           457  
+                                  GraphExecutor.forward         3.09%     128.896us         7.30%     304.975us     152.487us       1.81 KB      -3.00 KB             2  
+                                 update_node_importance         2.94%     122.970us         5.76%     240.744us     240.744us           0 B      -5.77 KB             1  
+                                              aten::all         2.66%     111.167us         3.10%     129.327us       1.796us          72 B          72 B            72  
+                            evaluation_with_hash_guards         2.60%     108.642us        11.84%     494.327us     494.327us           0 B        -731 B             1  
+                                                 detach         2.52%     105.066us         2.52%     105.066us       0.230us           0 B           0 B           457  
+                                         aten::isfinite         2.45%     102.321us        13.08%     546.381us       7.589us       4.80 KB     -28.82 KB            72  
+                                         aten::_to_copy         2.28%      95.299us         4.28%     178.951us       1.672us         441 B           0 B           107  
+                                   SparseRouter.forward         2.06%      86.067us         5.96%     249.091us     124.546us       1.10 KB      -2.56 KB             2  
+                                             aten::view         1.85%      77.299us         1.85%      77.299us       0.413us           0 B           0 B           187  
+                                              aten::mul         1.71%      71.388us         1.82%      75.932us       0.808us       9.13 KB       9.12 KB            94  
+                                 SynapLoomModel.forward         1.63%      68.124us        15.92%     665.019us     332.510us       3.03 KB         -24 B             2  
+                                             aten::item         1.56%      65.079us         2.12%      88.529us       0.497us           0 B           0 B           178  
+                                            aten::empty         1.41%      59.020us         1.41%      59.020us       0.236us       2.30 KB       2.30 KB           250  
+                             scale_node_owned_gradients         1.40%      58.539us         2.55%     106.423us     106.423us           0 B           0 B             1  
+                                              aten::max         1.40%      58.374us         1.94%      80.859us       1.326us         244 B           0 B            61  
+                                              aten::sum         1.36%      56.962us         1.64%      68.320us       2.733us         532 B         500 B            25  
+                                   ensure_finite_tensor         1.29%      53.813us         3.56%     148.613us      18.577us           0 B         -96 B             8  
+                                            aten::copy_         1.23%      51.250us         1.23%      51.250us       0.420us           0 B           0 B           122  
+                                               aten::to         1.17%      48.739us         5.45%     227.690us       0.805us         441 B           0 B           283  
+                                             aten::gelu         1.11%      46.445us         1.11%      46.445us      11.611us       1.00 KB       1.00 KB             4  
+                                               aten::eq         1.07%      44.877us         1.07%      44.877us       0.615us       4.81 KB       4.81 KB            73  
+                                    aten::empty_strided         0.98%      41.010us         0.98%      41.010us       0.380us         445 B         445 B           108  
+                               aten::linalg_vector_norm         0.98%      40.986us         1.08%      45.067us       1.408us         128 B         128 B            32  
+                                Optimizer.step#SGD.step         0.91%      38.016us         1.13%      47.308us      47.308us           0 B           0 B             1  
+                                       aten::as_strided         0.88%      36.619us         0.88%      36.619us       0.175us           0 B           0 B           209  
+                                          aten::reshape         0.86%      35.795us         1.75%      73.075us       0.860us           0 B           0 B            85  
+                                    aten::gelu_backward         0.78%      32.604us         0.78%      32.604us      16.302us         512 B         512 B             2  
+                                               aten::mm         0.69%      28.958us         0.73%      30.477us       2.344us       6.97 KB       6.97 KB            13  
+                                            aten::addmm         0.67%      27.898us         1.03%      43.151us       4.315us       1.59 KB       1.59 KB            10  
+                                                aten::t         0.65%      27.208us         1.31%      54.640us       1.518us           0 B           0 B            36  
+                                           aten::select         0.59%      24.632us         0.72%      29.897us       1.068us           0 B           0 B            28  
+                              aten::_local_scalar_dense         0.56%      23.450us         0.56%      23.450us       0.132us           0 B           0 B           178  
+                                       aten::is_nonzero         0.54%      22.633us         1.33%      55.465us       0.770us           0 B           0 B            72  
+                                        aten::transpose         0.47%      19.461us         0.66%      27.432us       0.762us           0 B           0 B            36  
+                                             aten::mul_         0.46%      19.118us         1.12%      46.665us       2.592us           0 B         -72 B            18  
+                                              aten::add         0.43%      17.934us         0.43%      17.934us       1.055us         564 B         564 B            17  
+                      Optimizer.zero_grad#SGD.zero_grad         0.41%      17.134us         0.41%      17.134us      17.134us           0 B           0 B             1  
+                                          aten::nonzero         0.41%      17.114us         0.57%      23.824us       3.971us          96 B          96 B             6  
+autograd::engine::evaluate_function: torch::autograd...         0.37%      15.524us         0.71%      29.480us       1.843us           0 B           0 B            16  
+                                aten::native_layer_norm         0.37%      15.257us         0.52%      21.862us       5.466us         640 B           0 B             4  
+                                          SGD.zero_grad         0.35%      14.512us         0.76%      31.646us      31.646us           0 B           0 B             1  
+                                     aten::index_select         0.34%      14.189us         0.52%      21.557us       3.593us       1.19 KB       1.19 KB             6  
+                                             aten::add_         0.31%      12.957us         0.31%      12.957us       0.648us           0 B           0 B            20  
+                                            aten::fill_         0.31%      12.873us         0.31%      12.873us       0.083us           0 B           0 B           156  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 4.176ms

@@ -1,0 +1,151 @@
+{
+  "cpu": {
+    "metadata": {
+      "platform": "Linux-6.11.0-29-generic-x86_64-with-glibc2.39",
+      "python": "3.11.15",
+      "torch": "2.14.1+cu130",
+      "cuda": "13.0",
+      "device": "cpu",
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "threads": 1,
+      "interop": 16,
+      "env": {
+        "OMP_NUM_THREADS": null,
+        "MKL_NUM_THREADS": null
+      },
+      "gpu": null,
+      "parameters": 4323428,
+      "shape": {
+        "batch": 128,
+        "width": 256,
+        "hidden": 512,
+        "nodes": 16,
+        "recruited": 4,
+        "top_k": 4,
+        "classes": 100
+      },
+      "per_example_expert_calls": 4,
+      "batch_expert_row_evaluations": 512,
+      "state_sha256": "71d3e236c5e5b89420a1dc45d21a6a7db5bb20c45271e360bf7ec3b903e61fc8"
+    },
+    "median_forward_ms": {
+      "batch": 2.2198619990376756,
+      "sample": 23.54036399992765
+    },
+    "artifacts": {
+      "/tmp/synaploom-host-eval-cpu-v3/operators-0.txt": "f5d9ed0cf410b5651e399c8147a7c0c37ec86e01b18fa6b3817cdfefa2d9f38e",
+      "/tmp/synaploom-host-eval-cpu-v3/operators-1.txt": "b2d2004a7de2123c7b554034719a18ae27d856163f0592b5764e1bc09c6c401a",
+      "/tmp/synaploom-host-eval-cpu-v3/operators-2.txt": "4fe620e58c60923ada7c91aa2350682b2b079d28eea24c2ab8d997b0b0819076",
+      "/tmp/synaploom-host-eval-cpu-v3/operators-3.txt": "49bcd1e83c8c6af24102704c8b3c7fabecf1244ea93d3c7cbee32998b984d5e1",
+      "/tmp/synaploom-host-eval-cpu-v3/operators-4.txt": "68d3f53064bfd39e4765833dc44ebd8d82d9a880bd4d01b8626ed6143b834b59",
+      "/tmp/synaploom-host-eval-cpu-v3/results.json": "63be8d1c3884384d26b687e913ef853391d830a5e55cf5cf93d8d866f651366b",
+      "/tmp/synaploom-host-eval-cpu-v3/trace-0.json": "037da4df8e1aa0d1f1cba9fea7ba503984d2f18a3a29e44f0bad47c857425d84",
+      "/tmp/synaploom-host-eval-cpu-v3/trace-1.json": "e18d34f1334600581290108170d6fc76eebb87ce86f3376244ab7f25587551db",
+      "/tmp/synaploom-host-eval-cpu-v3/trace-2.json": "90e180dec144942880a679c72826198d23b5ebd5b148552120308eea45cf9e1b",
+      "/tmp/synaploom-host-eval-cpu-v3/trace-3.json": "cb727741f4ed490ac131fec7bd0921876230b92e902d185a72ee3110b22a1afa",
+      "/tmp/synaploom-host-eval-cpu-v3/trace-4.json": "a813987441a0763863c79c4b049208874a0de898728b17b8fca4dd6f47790713"
+    }
+  },
+  "cuda": {
+    "metadata": {
+      "platform": "Linux-6.11.0-29-generic-x86_64-with-glibc2.39",
+      "python": "3.11.15",
+      "torch": "2.14.1+cu130",
+      "cuda": "13.0",
+      "device": "cuda",
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "threads": 1,
+      "interop": 16,
+      "env": {
+        "OMP_NUM_THREADS": null,
+        "MKL_NUM_THREADS": null
+      },
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "parameters": 4323428,
+      "shape": {
+        "batch": 128,
+        "width": 256,
+        "hidden": 512,
+        "nodes": 16,
+        "recruited": 4,
+        "top_k": 4,
+        "classes": 100
+      },
+      "per_example_expert_calls": 4,
+      "batch_expert_row_evaluations": 512,
+      "state_sha256": "71d3e236c5e5b89420a1dc45d21a6a7db5bb20c45271e360bf7ec3b903e61fc8"
+    },
+    "median_forward_ms": {
+      "batch": 0.4771109997818712,
+      "sample": 44.27644899988081
+    },
+    "artifacts": {
+      "/tmp/synaploom-host-eval-cuda-v3/operators-0.txt": "d14514fe49206944ea243ab79dad38d9cd4cc597141b9418a31ada51c9124472",
+      "/tmp/synaploom-host-eval-cuda-v3/operators-1.txt": "db813de5ab9177981a162aa0caba8df18e4dfb1714ae18888c351f5b503f7e2b",
+      "/tmp/synaploom-host-eval-cuda-v3/operators-2.txt": "60a533c096854a5889a5f93bfa7f0fca889fafd1165e29d5f506ce9c0ed6f5da",
+      "/tmp/synaploom-host-eval-cuda-v3/operators-3.txt": "ad0b1b7d73ca953f61866a9020364ab61e712a06e7375ccdbc41083018ab3fe5",
+      "/tmp/synaploom-host-eval-cuda-v3/operators-4.txt": "6640524d75275e035e659a3e65bb69d08f9a6dc0137318c7a85383660110afc1",
+      "/tmp/synaploom-host-eval-cuda-v3/results.json": "356c86249d989102da9d4bc2eedbc020c4b03dc911b2a48823685341e559bf8f",
+      "/tmp/synaploom-host-eval-cuda-v3/trace-0.json": "8a9b7eede0ce663f622e385e658bb9e59e0a8508b304adea9251644c5cac0c5c",
+      "/tmp/synaploom-host-eval-cuda-v3/trace-1.json": "4a0bcaa85bd19cfa12ea8789559b0057a921a17804ea83267cb9a3588bedc5fd",
+      "/tmp/synaploom-host-eval-cuda-v3/trace-2.json": "fe4e75f164d4d6045e12969fec263094517bb49b96ecef438bf0d4fde449a86d",
+      "/tmp/synaploom-host-eval-cuda-v3/trace-3.json": "187334e0e74280c395dd1568942e1398f6dc46a521e6c9e85b948c2333c0024a",
+      "/tmp/synaploom-host-eval-cuda-v3/trace-4.json": "3acffba1ac1d8d0022a5fe6fdbfe048c2cbf90bc865b50242f529d28fe899084"
+    },
+    "trace0_runtime_counts": {
+      "cudaMemcpyAsync": 3245,
+      "cudaStreamSynchronize": 3230,
+      "cudaDeviceSynchronize": 2
+    }
+  }
+}

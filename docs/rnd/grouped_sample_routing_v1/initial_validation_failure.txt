@@ -1,0 +1,48 @@
+.......F................................................................ [ 78%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_isolated_profiling_and_output_protection[cuda] ______________
+
+device = 'cuda'
+tmp_path = PosixPath('/tmp/pytest-of-ai/pytest-8/test_isolated_profiling_and_ou1')
+
+    @pytest.mark.parametrize('device', ['cpu', pytest.param('cuda', marks=pytest.mark.skipif(
+        not torch.cuda.is_available(), reason='CUDA unavailable'))])
+    def test_isolated_profiling_and_output_protection(device, tmp_path):
+        root = tmp_path/'fresh'
+        run(root, device=device, batches=(2,), ratios=((2, 1),), repeats=1)
+        result = json.loads((root/'results.json').read_text())
+        cell = result['cells'][0]
+        assert all(cell['parity'][key] for key in ('state_unchanged', 'predictions_equal', 'selected_ids_equal'))
+        for name, entry in cell['forward'].items():
+            assert entry['work']['effective_expert_rows'] == 2
+            assert len(entry['wall_seconds']) == 1
+            if device == 'cuda':
+>               assert entry['trace']['kernel_count'] > 0
+E               assert 0 > 0
+
+tests/integration/test_grouped_performance.py:21: AssertionError
+----------------------------- Captured stderr call -----------------------------
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:46] profiler_stop
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:46] profiler_stop
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:46] profiler_stop
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:46] profiler_stop
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:46] profiler_stop
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:46] profiler_stop
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-10-25 13:17:52 80198:80198 SyncActivityProfilerHandler.cpp:46] profiler_stop
+=============================== warnings summary ===============================
+tests/unit/test_state_digest.py::test_state_digest_rejects_unsupported_sparse_state
+  /home/ai/project/My/synaploom/tests/unit/test_state_digest.py:45: UserWarning: Sparse invariant checks are implicitly disabled. Memory errors (e.g. SEGFAULT) will occur when operating on a sparse tensor which violates the invariants, but checks incur performance overhead. To silence this warning, explicitly opt in or out. See `torch.sparse.check_sparse_tensor_invariants.__doc__` for guidance.  (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/Context.cpp:848.)
+    torch.sparse_coo_tensor(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_grouped_performance.py::test_isolated_profiling_and_output_protection[cuda]
+1 failed, 91 passed, 1 warning in 9.21s

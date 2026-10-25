@@ -1,0 +1,2 @@
+torch 2.14.1+cu130 gpu NVIDIA GeForce RTX 4090
+RuntimeError: Expected all tensors to be on the same device, but got index is on cpu, different from other tensors on cuda:0 (when checking argument in method wrapper_CUDA__index_select)

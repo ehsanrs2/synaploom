@@ -1,0 +1,54 @@
+{
+  "exact_regeneration": true,
+  "total_comparisons": 1728,
+  "cells": [
+    {
+      "seed": 7,
+      "variant": "progressive_reserve_early",
+      "rows": 216,
+      "state_sha256": "90bc6fe1502c7bba0ab456b8129b1edcca64043a992b5172053a7b8b041684e9"
+    },
+    {
+      "seed": 7,
+      "variant": "progressive_reserve_later",
+      "rows": 216,
+      "state_sha256": "8b266cb5d3c99d9651178fce6af3fd5706caa71667657bff45067b1d672a0a95"
+    },
+    {
+      "seed": 7,
+      "variant": "all_recruited",
+      "rows": 216,
+      "state_sha256": "dd857b3b9dc4b3edfef051aa18907af762563fa91e16996b15a386345fa9ef5a"
+    },
+    {
+      "seed": 7,
+      "variant": "dense",
+      "rows": 216,
+      "state_sha256": "879010f306257b98edcd9e87da4925bb973b451a7e9d8ccd9071b10b8e18098d"
+    },
+    {
+      "seed": 19,
+      "variant": "progressive_reserve_early",
+      "rows": 216,
+      "state_sha256": "0ab7daeeb88d027429ab12eb74c7ae677a520282e761138e11795ca563e9fa46"
+    },
+    {
+      "seed": 19,
+      "variant": "progressive_reserve_later",
+      "rows": 216,
+      "state_sha256": "1b0b2e2e2aeb6b525cbacac3f22d1ac2b9ed67e9c367d5493fd041c24077a67c"
+    },
+    {
+      "seed": 19,
+      "variant": "all_recruited",
+      "rows": 216,
+      "state_sha256": "fa0eefea75920e7caf4c1c3ddcd78271db12e0927394601e3c866698e8525d60"
+    },
+    {
+      "seed": 19,
+      "variant": "dense",
+      "rows": 216,
+      "state_sha256": "3f274399b5a9ac90af74a469590085fe3736ed81fd554f54471a4e83b517a01f"
+    }
+  ]
+}

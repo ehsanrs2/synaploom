@@ -1,0 +1,177 @@
+{
+  "metadata": {
+    "platform": "Linux-6.11.0-29-generic-x86_64-with-glibc2.39",
+    "python": "3.11.15",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "device": "cpu",
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "threads": 1,
+    "interop": 16,
+    "env": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null
+    },
+    "gpu": null,
+    "parameters": 2043,
+    "shape": {
+      "batch": 4,
+      "width": 8,
+      "hidden": 16,
+      "nodes": 4,
+      "recruited": 2,
+      "top_k": 2,
+      "classes": 3
+    },
+    "per_example_expert_calls": 2,
+    "batch_expert_row_evaluations": 8,
+    "state_sha256": "fcca9626b268e5462f5a79df0cbb971eafbfd8dd4bb361e62b56126c7d781082"
+  },
+  "timings": [
+    {
+      "ordinary": {
+        "label": "EXPLORATORY_SYNTHETIC",
+        "instrumented": false,
+        "wall_seconds": 0.002268356000058702,
+        "process_cpu_seconds": 0.002267688000000323,
+        "steps": 1,
+        "threads": 1,
+        "shape": {
+          "batch": 4,
+          "width": 8,
+          "hidden": 16,
+          "nodes": 4,
+          "recruited": 2,
+          "top_k": 2,
+          "classes": 3
+        },
+        "interop_threads": 16,
+        "device": "cpu",
+        "torch": "2.14.1+cu130",
+        "final_state_sha256": "89b88ecf8fcf73ef5bd4278d828deb8a11deb4684a48ca2597f60e33e0caa52a"
+      },
+      "profiled": {
+        "label": "EXPLORATORY_SYNTHETIC",
+        "instrumented": true,
+        "wall_seconds": 0.14961860299990803,
+        "process_cpu_seconds": 0.14975256400000037,
+        "steps": 1,
+        "threads": 1,
+        "shape": {
+          "batch": 4,
+          "width": 8,
+          "hidden": 16,
+          "nodes": 4,
+          "recruited": 2,
+          "top_k": 2,
+          "classes": 3
+        },
+        "interop_threads": 16,
+        "device": "cpu",
+        "torch": "2.14.1+cu130",
+        "final_state_sha256": "89b88ecf8fcf73ef5bd4278d828deb8a11deb4684a48ca2597f60e33e0caa52a"
+      },
+      "instrumentation_extra_wall_seconds": 0.14735024699984933
+    },
+    {
+      "ordinary": {
+        "label": "EXPLORATORY_SYNTHETIC",
+        "instrumented": false,
+        "wall_seconds": 0.002358274000471283,
+        "process_cpu_seconds": 0.0023578469999998575,
+        "steps": 1,
+        "threads": 1,
+        "shape": {
+          "batch": 4,
+          "width": 8,
+          "hidden": 16,
+          "nodes": 4,
+          "recruited": 2,
+          "top_k": 2,
+          "classes": 3
+        },
+        "interop_threads": 16,
+        "device": "cpu",
+        "torch": "2.14.1+cu130",
+        "final_state_sha256": "89b88ecf8fcf73ef5bd4278d828deb8a11deb4684a48ca2597f60e33e0caa52a"
+      },
+      "profiled": {
+        "label": "EXPLORATORY_SYNTHETIC",
+        "instrumented": true,
+        "wall_seconds": 0.16357718699964607,
+        "process_cpu_seconds": 0.16353993000000022,
+        "steps": 1,
+        "threads": 1,
+        "shape": {
+          "batch": 4,
+          "width": 8,
+          "hidden": 16,
+          "nodes": 4,
+          "recruited": 2,
+          "top_k": 2,
+          "classes": 3
+        },
+        "interop_threads": 16,
+        "device": "cpu",
+        "torch": "2.14.1+cu130",
+        "final_state_sha256": "89b88ecf8fcf73ef5bd4278d828deb8a11deb4684a48ca2597f60e33e0caa52a"
+      },
+      "instrumentation_extra_wall_seconds": 0.1612189129991748
+    }
+  ],
+  "costs": {
+    "batch": {
+      "wall_seconds": [
+        9.44579996939865e-05,
+        8.970099952421151e-05
+      ],
+      "cuda_stream_elapsed_ms": []
+    },
+    "sample": {
+      "wall_seconds": [
+        0.0003639819997260929,
+        0.00035607299923867686
+      ],
+      "cuda_stream_elapsed_ms": []
+    },
+    "transfer_to_cpu": {
+      "wall_seconds": [
+        6.659993232460693e-07,
+        4.120001904084347e-07
+      ],
+      "cuda_stream_elapsed_ms": []
+    },
+    "idle_sync": {
+      "wall_seconds": [
+        2.7599980967352167e-07,
+        2.430006134090945e-07
+      ],
+      "cuda_stream_elapsed_ms": []
+    }
+  }
+}

@@ -1,0 +1,2621 @@
+{
+  "metadata": {
+    "label": "SYNTHETIC_RND_NO_TRAINING",
+    "device": "cpu",
+    "torch": "2.14.1+cu130",
+    "python": "3.11.15",
+    "platform": "Linux-6.11.0-29-generic-x86_64-with-glibc2.39",
+    "cuda": "13.0",
+    "gpu": null,
+    "threads": 1,
+    "interop": 16,
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "tf32": false,
+    "env": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null
+    },
+    "residency": "resident forwards; H2D setup excluded; D2H dispatch/guards/hash included",
+    "warmups": 2,
+    "repeats": 3
+  },
+  "cells": [
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 1,
+        "recruited": 2,
+        "top_k": 1,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "864ea20b5aeb219904b6da233402fa8fc34c95b0aad5fd8297fdf023d040327d",
+      "input_sha256": "c171bb5f2d620ef5e6dbcb031f1f8ab2327e03dd07c1cf5e29a41cea471f60f8",
+      "parity": {
+        "logit_linf": 0.0,
+        "weight_linf": 0.0,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 1,
+            "expert_calls": 1,
+            "effective_expert_rows": 1,
+            "calls": [
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            7.501200161641464e-05,
+            7.288699998753145e-05,
+            6.952799958526157e-05
+          ],
+          "process_cpu_seconds": [
+            7.454399999984318e-05,
+            7.305199999985135e-05,
+            6.966499999983e-05
+          ],
+          "median_wall_seconds": 7.288699998753145e-05,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.27558632000000216,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 1,
+            "expert_calls": 1,
+            "effective_expert_rows": 1,
+            "calls": [
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00012078700092388317,
+            0.00010015100269811228,
+            9.347599916509353e-05
+          ],
+          "process_cpu_seconds": [
+            0.00012001999999977642,
+            0.00010025199999974532,
+            9.356499999979562e-05
+          ],
+          "median_wall_seconds": 0.00010015100269811228,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0014204299986886326,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 1,
+            "expert_calls": 1,
+            "effective_expert_rows": 1,
+            "calls": [
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.0001229150002473034,
+            0.0001163990018540062,
+            0.00011068000094383024
+          ],
+          "process_cpu_seconds": [
+            0.00012268999999998087,
+            0.00011652600000022773,
+            0.0001107819999996984
+          ],
+          "median_wall_seconds": 0.0001163990018540062,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0015332570001191925,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            8.162001904565841e-06,
+            5.042002158006653e-06,
+            4.665998858399689e-06
+          ],
+          "process_cpu_seconds": [
+            8.012999999973403e-06,
+            5.100999999729794e-06,
+            4.709999999796821e-06
+          ],
+          "median_wall_seconds": 5.042002158006653e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0005602240016742144,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.00012196299940114841,
+            0.00012000999777228571,
+            0.0001173310010926798
+          ],
+          "process_cpu_seconds": [
+            0.00012166399999991029,
+            0.00012010599999978666,
+            0.00011736799999972902
+          ],
+          "median_wall_seconds": 0.00012000999777228571,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0018180160004703794,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.0003026869999303017,
+            0.0003024220022780355,
+            0.00030465199961327016
+          ],
+          "process_cpu_seconds": [
+            0.0003024560000000065,
+            0.0003024850000001855,
+            0.0003047280000001429
+          ],
+          "median_wall_seconds": 0.0003026869999303017,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.005227267000009306,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.0003075360000366345,
+            0.0002877789993362967,
+            0.00028110199855291285
+          ],
+          "process_cpu_seconds": [
+            0.00032165700000019726,
+            0.0002878389999998454,
+            0.0002811659999997218
+          ],
+          "median_wall_seconds": 0.0002877789993362967,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0031787669977347832,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 1,
+        "recruited": 4,
+        "top_k": 2,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "f4668e4e35d9d6c01b75b28003d9e95a85e61215b3a0dd5283db5672c22010be",
+      "input_sha256": "c171bb5f2d620ef5e6dbcb031f1f8ab2327e03dd07c1cf5e29a41cea471f60f8",
+      "parity": {
+        "logit_linf": 0.0,
+        "weight_linf": 0.0,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 2,
+            "effective_expert_rows": 2,
+            "calls": [
+              [
+                1,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            9.27459986996837e-05,
+            8.601700028521009e-05,
+            8.719199831830338e-05
+          ],
+          "process_cpu_seconds": [
+            9.190000000014464e-05,
+            8.615000000000705e-05,
+            8.729500000015378e-05
+          ],
+          "median_wall_seconds": 8.719199831830338e-05,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0012230889988131821,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 2,
+            "effective_expert_rows": 2,
+            "calls": [
+              [
+                1,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00011572999937925488,
+            0.00011003400140907615,
+            0.00011440899834269658
+          ],
+          "process_cpu_seconds": [
+            0.00011548299999963874,
+            0.00011011800000026994,
+            0.0001145169999996476
+          ],
+          "median_wall_seconds": 0.00011440899834269658,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0014644000002590474,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 2,
+            "effective_expert_rows": 2,
+            "calls": [
+              [
+                1,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.0001449980009056162,
+            0.00016633199993520975,
+            0.00013415899957180955
+          ],
+          "process_cpu_seconds": [
+            0.00014490000000000336,
+            0.00016650799999995414,
+            0.00013428900000000965
+          ],
+          "median_wall_seconds": 0.0001449980009056162,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.001841441000578925,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            7.483999070245773e-06,
+            4.842997441301122e-06,
+            4.679997800849378e-06
+          ],
+          "process_cpu_seconds": [
+            7.0619999998911e-06,
+            4.8979999998088886e-06,
+            4.725000000149748e-06
+          ],
+          "median_wall_seconds": 4.842997441301122e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0004918120030197315,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.00016843699995661154,
+            0.00017104400103562512,
+            0.0001644710027903784
+          ],
+          "process_cpu_seconds": [
+            0.00016826400000002906,
+            0.00017109800000003617,
+            0.0001645719999996409
+          ],
+          "median_wall_seconds": 0.00016843699995661154,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.002728315997956088,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.0003098979977949057,
+            0.0003036359994439408,
+            0.0003042169992113486
+          ],
+          "process_cpu_seconds": [
+            0.0003096910000000008,
+            0.00030370999999984605,
+            0.00030429499999984344
+          ],
+          "median_wall_seconds": 0.0003042169992113486,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.005211848998442292,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.000294671997835394,
+            0.00029277499925228767,
+            0.00028503900102805346
+          ],
+          "process_cpu_seconds": [
+            0.00029367300000027186,
+            0.0002928709999996393,
+            0.0002851090000000056
+          ],
+          "median_wall_seconds": 0.00029277499925228767,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0030741329974262044,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 1,
+        "recruited": 6,
+        "top_k": 4,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "3e1229c2d5cd76ac0bb0eae03cd8c04eb5701665e999883767f3c619aca2217d",
+      "input_sha256": "c171bb5f2d620ef5e6dbcb031f1f8ab2327e03dd07c1cf5e29a41cea471f60f8",
+      "parity": {
+        "logit_linf": 0.0,
+        "weight_linf": 0.0,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 4,
+            "expert_calls": 4,
+            "effective_expert_rows": 4,
+            "calls": [
+              [
+                4,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.0001253119989996776,
+            0.00012551899999380112,
+            0.00012397200043778867
+          ],
+          "process_cpu_seconds": [
+            0.00012907500000025607,
+            0.00012563700000001177,
+            0.0001240899999999101
+          ],
+          "median_wall_seconds": 0.0001253119989996776,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0013957379997009411,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 4,
+            "expert_calls": 4,
+            "effective_expert_rows": 4,
+            "calls": [
+              [
+                4,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00015655599781894125,
+            0.00014917700173100457,
+            0.0001504460014984943
+          ],
+          "process_cpu_seconds": [
+            0.0001563850000003697,
+            0.00014928399999991626,
+            0.00015056199999996522
+          ],
+          "median_wall_seconds": 0.0001504460014984943,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0015448480007762555,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 4,
+            "expert_calls": 4,
+            "effective_expert_rows": 4,
+            "calls": [
+              [
+                1,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.0002046549998340197,
+            0.00019376600175746717,
+            0.0001830039982451126
+          ],
+          "process_cpu_seconds": [
+            0.00020456099999988098,
+            0.00019391500000009998,
+            0.0001831230000002293
+          ],
+          "median_wall_seconds": 0.00019376600175746717,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0018247340012749191,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            7.037000614218414e-06,
+            4.841000190936029e-06,
+            4.773002729052678e-06
+          ],
+          "process_cpu_seconds": [
+            6.626000000231613e-06,
+            4.91999999985282e-06,
+            4.805999999746291e-06
+          ],
+          "median_wall_seconds": 4.841000190936029e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0004860620028921403,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.00027358700026525185,
+            0.00027224199948250316,
+            0.0002604280016385019
+          ],
+          "process_cpu_seconds": [
+            0.00027329400000031256,
+            0.0002723099999997203,
+            0.00026046699999993095
+          ],
+          "median_wall_seconds": 0.00027224199948250316,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.003741937001905171,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.0003048350008612033,
+            0.00030525500187650323,
+            0.00030477700056508183
+          ],
+          "process_cpu_seconds": [
+            0.0003046239999999756,
+            0.00030535899999994953,
+            0.0003048390000000012
+          ],
+          "median_wall_seconds": 0.0003048350008612033,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004576411000016378,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.000290810003207298,
+            0.00028954699882888235,
+            0.00029144099971745163
+          ],
+          "process_cpu_seconds": [
+            0.0002897659999998581,
+            0.00028956000000013304,
+            0.00029149499999991946
+          ],
+          "median_wall_seconds": 0.000290810003207298,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.003054970999073703,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 4,
+        "recruited": 2,
+        "top_k": 1,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "864ea20b5aeb219904b6da233402fa8fc34c95b0aad5fd8297fdf023d040327d",
+      "input_sha256": "85c53706c5c173be521c9e15a9bdbb7e568ae8a30a2f8dad031a184509b2011b",
+      "parity": {
+        "logit_linf": 5.960464477539063e-08,
+        "weight_linf": 0.0,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 1,
+            "expert_calls": 1,
+            "effective_expert_rows": 4,
+            "calls": [
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          "wall_seconds": [
+            6.890700024086982e-05,
+            6.927899812581018e-05,
+            6.462500095949508e-05
+          ],
+          "process_cpu_seconds": [
+            6.836199999993298e-05,
+            6.934499999999844e-05,
+            6.473100000015108e-05
+          ],
+          "median_wall_seconds": 6.890700024086982e-05,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.001044183001795318,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 1,
+            "expert_calls": 4,
+            "effective_expert_rows": 4,
+            "calls": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00026050199812743813,
+            0.00025847199867712334,
+            0.00025148600252578035
+          ],
+          "process_cpu_seconds": [
+            0.000260275000000032,
+            0.00025860099999963637,
+            0.00025163299999997335
+          ],
+          "median_wall_seconds": 0.00025847199867712334,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.002572958001110237,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 1,
+            "expert_calls": 1,
+            "effective_expert_rows": 4,
+            "calls": [
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00011597400225582533,
+            0.00011876500138896517,
+            0.00011749899931601249
+          ],
+          "process_cpu_seconds": [
+            0.00011568400000028234,
+            0.00011889100000006536,
+            0.0001176269999998425
+          ],
+          "median_wall_seconds": 0.00011749899931601249,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0013692930006072856,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            6.825001037213951e-06,
+            4.770001396536827e-06,
+            4.516001354204491e-06
+          ],
+          "process_cpu_seconds": [
+            6.634999999644009e-06,
+            4.826000000068831e-06,
+            4.560000000264353e-06
+          ],
+          "median_wall_seconds": 4.770001396536827e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.00047569099842803553,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.00012591300037456676,
+            0.00012070299999322742,
+            0.00011850899682031013
+          ],
+          "process_cpu_seconds": [
+            0.00012558199999990194,
+            0.00012076100000024681,
+            0.00011853399999983694
+          ],
+          "median_wall_seconds": 0.00012070299999322742,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0016084580020105932,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.00031190100344247185,
+            0.0003101379988947883,
+            0.00030503699963446707
+          ],
+          "process_cpu_seconds": [
+            0.0003116720000000406,
+            0.0003101880000002666,
+            0.00030512600000021095
+          ],
+          "median_wall_seconds": 0.0003101379988947883,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004305277001549257,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.00028472099802456796,
+            0.00027557900102692656,
+            0.0002849529992090538
+          ],
+          "process_cpu_seconds": [
+            0.0002842589999998424,
+            0.00027565800000006746,
+            0.00028503500000010007
+          ],
+          "median_wall_seconds": 0.00028472099802456796,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0030186939984560013,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 4,
+        "recruited": 4,
+        "top_k": 2,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "f4668e4e35d9d6c01b75b28003d9e95a85e61215b3a0dd5283db5672c22010be",
+      "input_sha256": "85c53706c5c173be521c9e15a9bdbb7e568ae8a30a2f8dad031a184509b2011b",
+      "parity": {
+        "logit_linf": 5.960464477539063e-08,
+        "weight_linf": 0.0,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 2,
+            "effective_expert_rows": 8,
+            "calls": [
+              [
+                2,
+                4
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          "wall_seconds": [
+            9.311200119554996e-05,
+            8.772900037001818e-05,
+            9.597800089977682e-05
+          ],
+          "process_cpu_seconds": [
+            9.201499999988982e-05,
+            8.786600000032507e-05,
+            9.609899999984961e-05
+          ],
+          "median_wall_seconds": 9.311200119554996e-05,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0014407579983526375,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 8,
+            "effective_expert_rows": 8,
+            "calls": [
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.000344354997650953,
+            0.00033044800147763453,
+            0.0003346429984958377
+          ],
+          "process_cpu_seconds": [
+            0.0003442510000000176,
+            0.00033048100000021563,
+            0.0003347599999998785
+          ],
+          "median_wall_seconds": 0.0003346429984958377,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.003140299999358831,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 2,
+            "effective_expert_rows": 8,
+            "calls": [
+              [
+                0,
+                4
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00014414000179385766,
+            0.00014163000014377758,
+            0.00013800000306218863
+          ],
+          "process_cpu_seconds": [
+            0.0001436879999996421,
+            0.00014181400000001787,
+            0.0001381169999996601
+          ],
+          "median_wall_seconds": 0.00014163000014377758,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.001523974999145139,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            7.509999704780057e-06,
+            4.741999873658642e-06,
+            4.590001481119543e-06
+          ],
+          "process_cpu_seconds": [
+            7.147000000262693e-06,
+            4.820999999655129e-06,
+            4.628000000117538e-06
+          ],
+          "median_wall_seconds": 4.741999873658642e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0004814380008610897,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.000169980001373915,
+            0.00017562399807502516,
+            0.00016690099801053293
+          ],
+          "process_cpu_seconds": [
+            0.00016961300000017943,
+            0.00017569900000014016,
+            0.00016695399999999694
+          ],
+          "median_wall_seconds": 0.000169980001373915,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0022332019980240148,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.0003065710006922018,
+            0.00030089500069152564,
+            0.00029777300005662255
+          ],
+          "process_cpu_seconds": [
+            0.0003064300000001907,
+            0.00030098300000025446,
+            0.00029781099999981464
+          ],
+          "median_wall_seconds": 0.00030089500069152564,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004461641998204868,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.000282769000477856,
+            0.0002982620026159566,
+            0.0002860979984689038
+          ],
+          "process_cpu_seconds": [
+            0.0002820479999998682,
+            0.0002983649999999116,
+            0.00028615999999992425
+          ],
+          "median_wall_seconds": 0.0002860979984689038,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.002895343001000583,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 4,
+        "recruited": 6,
+        "top_k": 4,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "3e1229c2d5cd76ac0bb0eae03cd8c04eb5701665e999883767f3c619aca2217d",
+      "input_sha256": "85c53706c5c173be521c9e15a9bdbb7e568ae8a30a2f8dad031a184509b2011b",
+      "parity": {
+        "logit_linf": 5.960464477539063e-08,
+        "weight_linf": 1.4901161193847656e-08,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 4,
+            "expert_calls": 4,
+            "effective_expert_rows": 16,
+            "calls": [
+              [
+                5,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                0,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00012849600170738995,
+            0.00012301500100875273,
+            0.00012220499775139615
+          ],
+          "process_cpu_seconds": [
+            0.0001280399999998849,
+            0.00012310900000001013,
+            0.00012231500000003948
+          ],
+          "median_wall_seconds": 0.00012301500100875273,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0013765879994025454,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 5,
+            "expert_calls": 16,
+            "effective_expert_rows": 16,
+            "calls": [
+              [
+                5,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.0004884580012003426,
+            0.0005051930020272266,
+            0.00047507300041615963
+          ],
+          "process_cpu_seconds": [
+            0.0004884010000001382,
+            0.0005053460000001841,
+            0.0004751659999997493
+          ],
+          "median_wall_seconds": 0.0004884580012003426,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004449940999620594,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 5,
+            "expert_calls": 5,
+            "effective_expert_rows": 16,
+            "calls": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                5,
+                4
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00021265299801598303,
+            0.0002064199979940895,
+            0.0002063490028376691
+          ],
+          "process_cpu_seconds": [
+            0.0002117959999998753,
+            0.00020656600000013015,
+            0.00020652499999984641
+          ],
+          "median_wall_seconds": 0.0002064199979940895,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.002329655999346869,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            8.741997589822859e-06,
+            5.189001967664808e-06,
+            4.708999767899513e-06
+          ],
+          "process_cpu_seconds": [
+            8.138000000101897e-06,
+            5.2620000001724065e-06,
+            4.7379999998931055e-06
+          ],
+          "median_wall_seconds": 5.189001967664808e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0005402010028774384,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.0003124680006294511,
+            0.0003087289987888653,
+            0.0003071059982175939
+          ],
+          "process_cpu_seconds": [
+            0.000312176999999636,
+            0.0003087910000001415,
+            0.00030714599999992487
+          ],
+          "median_wall_seconds": 0.0003087289987888653,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004325097001128597,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.0003082229995925445,
+            0.0003080749993387144,
+            0.0003028389983228408
+          ],
+          "process_cpu_seconds": [
+            0.0003077979999996927,
+            0.0003081169999998856,
+            0.000302914000000154
+          ],
+          "median_wall_seconds": 0.0003080749993387144,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004383210998639697,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.00028931800261489116,
+            0.00040493100095773116,
+            0.0002853980004147161
+          ],
+          "process_cpu_seconds": [
+            0.0002882660000000925,
+            0.00029601600000006556,
+            0.00028547099999975956
+          ],
+          "median_wall_seconds": 0.00028931800261489116,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0030489150012726896,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 8,
+        "recruited": 2,
+        "top_k": 1,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "864ea20b5aeb219904b6da233402fa8fc34c95b0aad5fd8297fdf023d040327d",
+      "input_sha256": "79eeafceaddbb8f95ba4417b2e513aed31542f93b9528b43e22297c405fb767d",
+      "parity": {
+        "logit_linf": 1.1920928955078125e-07,
+        "weight_linf": 0.0,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 1,
+            "expert_calls": 1,
+            "effective_expert_rows": 8,
+            "calls": [
+              [
+                0,
+                8
+              ]
+            ]
+          },
+          "wall_seconds": [
+            7.25009995221626e-05,
+            7.597099829581566e-05,
+            6.63639984850306e-05
+          ],
+          "process_cpu_seconds": [
+            7.180199999989867e-05,
+            7.60779999997574e-05,
+            6.646200000037794e-05
+          ],
+          "median_wall_seconds": 7.25009995221626e-05,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.001071449001756264,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 8,
+            "effective_expert_rows": 8,
+            "calls": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00047674899906269275,
+            0.00048746299944468774,
+            0.0004716680014098529
+          ],
+          "process_cpu_seconds": [
+            0.00047668699999992015,
+            0.00048755300000014046,
+            0.0004717990000000505
+          ],
+          "median_wall_seconds": 0.00047674899906269275,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004356692999863299,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 2,
+            "effective_expert_rows": 8,
+            "calls": [
+              [
+                0,
+                5
+              ],
+              [
+                1,
+                3
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00014497099982690997,
+            0.00013553499957197346,
+            0.00013947399929747917
+          ],
+          "process_cpu_seconds": [
+            0.00014457700000036766,
+            0.00013563399999938497,
+            0.0001396199999996739
+          ],
+          "median_wall_seconds": 0.00013947399929747917,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0015482839989999775,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            7.624999852851033e-06,
+            4.785000783158466e-06,
+            4.5960005081724375e-06
+          ],
+          "process_cpu_seconds": [
+            7.216000000198619e-06,
+            4.838999999812188e-06,
+            4.62999999939484e-06
+          ],
+          "median_wall_seconds": 4.785000783158466e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0004980909980076831,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.00016596500063315034,
+            0.00016849199892021716,
+            0.00016644900097162463
+          ],
+          "process_cpu_seconds": [
+            0.00016577400000006293,
+            0.00016855899999956847,
+            0.00016652299999986298
+          ],
+          "median_wall_seconds": 0.00016644900097162463,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0023574260012537707,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.0002983129998028744,
+            0.0002963129991258029,
+            0.00029326499861781485
+          ],
+          "process_cpu_seconds": [
+            0.00029797400000042273,
+            0.00029641000000069084,
+            0.0002933169999996821
+          ],
+          "median_wall_seconds": 0.0002963129991258029,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004396789001475554,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.00030419999893638305,
+            0.00028687400117632933,
+            0.00028929000109201297
+          ],
+          "process_cpu_seconds": [
+            0.00030332299999979995,
+            0.00028696399999983413,
+            0.00028935499999960257
+          ],
+          "median_wall_seconds": 0.00028929000109201297,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0032034940013545565,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 8,
+        "recruited": 4,
+        "top_k": 2,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "f4668e4e35d9d6c01b75b28003d9e95a85e61215b3a0dd5283db5672c22010be",
+      "input_sha256": "79eeafceaddbb8f95ba4417b2e513aed31542f93b9528b43e22297c405fb767d",
+      "parity": {
+        "logit_linf": 5.960464477539063e-08,
+        "weight_linf": 0.0,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 2,
+            "expert_calls": 2,
+            "effective_expert_rows": 16,
+            "calls": [
+              [
+                0,
+                8
+              ],
+              [
+                2,
+                8
+              ]
+            ]
+          },
+          "wall_seconds": [
+            8.928200259106234e-05,
+            9.478900028625503e-05,
+            8.410199734498747e-05
+          ],
+          "process_cpu_seconds": [
+            8.851599999992743e-05,
+            9.489699999942758e-05,
+            8.417799999982378e-05
+          ],
+          "median_wall_seconds": 8.928200259106234e-05,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0012372970013529994,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 4,
+            "expert_calls": 16,
+            "effective_expert_rows": 16,
+            "calls": [
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.000631958002486499,
+            0.0006335580001177732,
+            0.0006236599983822089
+          ],
+          "process_cpu_seconds": [
+            0.0006318539999998762,
+            0.0006337169999994785,
+            0.0006238139999998893
+          ],
+          "median_wall_seconds": 0.000631958002486499,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.005272229998809053,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 4,
+            "expert_calls": 4,
+            "effective_expert_rows": 16,
+            "calls": [
+              [
+                0,
+                6
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                3
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00020304599820519798,
+            0.00019737399998120964,
+            0.00018539200027589686
+          ],
+          "process_cpu_seconds": [
+            0.00020233499999999793,
+            0.0001975490000001301,
+            0.0001855079999995013
+          ],
+          "median_wall_seconds": 0.00019737399998120964,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0019281570021121297,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            7.86300006438978e-06,
+            4.9959999159909785e-06,
+            4.6860004658810794e-06
+          ],
+          "process_cpu_seconds": [
+            7.571999999456125e-06,
+            5.0449999999813144e-06,
+            4.706000000354038e-06
+          ],
+          "median_wall_seconds": 4.9959999159909785e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0005349370003386866,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.0002739429983193986,
+            0.00025788899802137166,
+            0.00025913299759849906
+          ],
+          "process_cpu_seconds": [
+            0.0002735969999996257,
+            0.00025798399999921173,
+            0.00025920000000034804
+          ],
+          "median_wall_seconds": 0.00025913299759849906,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0035900479997508228,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.00031177599885268137,
+            0.00030018599863979034,
+            0.0003010260006703902
+          ],
+          "process_cpu_seconds": [
+            0.00031058799999961195,
+            0.00030024900000036325,
+            0.00030107699999959436
+          ],
+          "median_wall_seconds": 0.0003010260006703902,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004770878000272205,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.0002931769995484501,
+            0.000276708000455983,
+            0.0002757620022748597
+          ],
+          "process_cpu_seconds": [
+            0.00029231400000018226,
+            0.00027679000000002674,
+            0.00027580199999999166
+          ],
+          "median_wall_seconds": 0.000276708000455983,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.00285902199902921,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "shape": {
+        "batch": 8,
+        "recruited": 6,
+        "top_k": 4,
+        "nodes": 6,
+        "width": 8,
+        "hidden": 16,
+        "router_dim": 8,
+        "classes": 3
+      },
+      "parameters": 1979,
+      "state_sha256": "3e1229c2d5cd76ac0bb0eae03cd8c04eb5701665e999883767f3c619aca2217d",
+      "input_sha256": "79eeafceaddbb8f95ba4417b2e513aed31542f93b9528b43e22297c405fb767d",
+      "parity": {
+        "logit_linf": 1.1920928955078125e-07,
+        "weight_linf": 1.4901161193847656e-08,
+        "selected_ids_equal": true,
+        "predictions_equal": true,
+        "singleton_allclose": true,
+        "state_unchanged": true
+      },
+      "forward": {
+        "production_batch": {
+          "work": {
+            "executed_expert_count": 4,
+            "expert_calls": 4,
+            "effective_expert_rows": 32,
+            "calls": [
+              [
+                5,
+                8
+              ],
+              [
+                4,
+                8
+              ],
+              [
+                0,
+                8
+              ],
+              [
+                2,
+                8
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00012699099897872657,
+            0.00012565500219352543,
+            0.00012106700160074979
+          ],
+          "process_cpu_seconds": [
+            0.0001266099999996939,
+            0.0001257700000003581,
+            0.00012114600000057152
+          ],
+          "median_wall_seconds": 0.00012565500219352543,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0014500260003842413,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "row_reference": {
+          "work": {
+            "executed_expert_count": 6,
+            "expert_calls": 32,
+            "effective_expert_rows": 32,
+            "calls": [
+              [
+                5,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.0009334269998362288,
+            0.000933571998757543,
+            0.0009334370006399695
+          ],
+          "process_cpu_seconds": [
+            0.0009333410000005316,
+            0.0009337169999996675,
+            0.0009335230000004913
+          ],
+          "median_wall_seconds": 0.0009334370006399695,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.00741277999986778,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "grouped": {
+          "work": {
+            "executed_expert_count": 6,
+            "expert_calls": 6,
+            "effective_expert_rows": 32,
+            "calls": [
+              [
+                0,
+                6
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                6
+              ],
+              [
+                4,
+                4
+              ],
+              [
+                5,
+                7
+              ]
+            ]
+          },
+          "wall_seconds": [
+            0.00026354800138506107,
+            0.0002351340008317493,
+            0.00022589999935007654
+          ],
+          "process_cpu_seconds": [
+            0.0002624789999998711,
+            0.000235260999999376,
+            0.00022600399999994636
+          ],
+          "median_wall_seconds": 0.0002351340008317493,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.002449380001053214,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      },
+      "independent_checks": {
+        "finite_tensor": {
+          "wall_seconds": [
+            7.602000550832599e-06,
+            4.8860019887797534e-06,
+            4.626999725587666e-06
+          ],
+          "process_cpu_seconds": [
+            7.136999999879379e-06,
+            4.9459999997836235e-06,
+            4.673000000288141e-06
+          ],
+          "median_wall_seconds": 4.8860019887797534e-06,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.000507622000441188,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "gradient_diagnostics": {
+          "wall_seconds": [
+            0.0003643750023911707,
+            0.00035711999953491613,
+            0.00035595300141721964
+          ],
+          "process_cpu_seconds": [
+            0.0003640109999993868,
+            0.0003572109999998574,
+            0.0003560189999998187
+          ],
+          "median_wall_seconds": 0.00035711999953491613,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004977191998477792,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "parameter_diagnostics": {
+          "wall_seconds": [
+            0.000311028998112306,
+            0.0003008519997820258,
+            0.00029920999804744497
+          ],
+          "process_cpu_seconds": [
+            0.0003104169999996742,
+            0.00030092599999953507,
+            0.00029924999999941804
+          ],
+          "median_wall_seconds": 0.0003008519997820258,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.004473592001886573,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        },
+        "model_state_sha256": {
+          "wall_seconds": [
+            0.0002932660026999656,
+            0.000285557998722652,
+            0.0002891469994210638
+          ],
+          "process_cpu_seconds": [
+            0.00029227599999970266,
+            0.00028566000000029845,
+            0.0002892380000005801
+          ],
+          "median_wall_seconds": 0.0002891469994210638,
+          "cuda_stream_elapsed_ms": [],
+          "instrumented_wall_with_export_seconds": 0.0032143349999387283,
+          "trace": {
+            "kernel_count": 0,
+            "kernel_duration_us": 0,
+            "launch_api_count": 0,
+            "launch_api_duration_us": 0,
+            "synchronization_api_count": 0,
+            "synchronization_api_duration_us": 0,
+            "copy_api_count": 0,
+            "copy_api_duration_us": 0
+          }
+        }
+      }
+    }
+  ]
+}

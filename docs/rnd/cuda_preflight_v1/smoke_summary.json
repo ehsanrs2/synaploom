@@ -1,0 +1,22 @@
+{
+  "cpu": {
+    "schema_matches_baseline": true,
+    "instrumentation_state_parity": true,
+    "final_state_sha256": "89b88ecf8fcf73ef5bd4278d828deb8a11deb4684a48ca2597f60e33e0caa52a",
+    "artifacts": {
+      "/tmp/synaploom-cuda-preflight-20261025-cpu/operators-0.txt": "6c4b5e9c6854535f625df6a587bb7d667c1caf0551083d7471b9212e2a7c3dd0",
+      "/tmp/synaploom-cuda-preflight-20261025-cpu/results.json": "bcde7eb081a27b8089a9eda22a3f84bf3caeb2d043ac02d934c09dd084efdb76",
+      "/tmp/synaploom-cuda-preflight-20261025-cpu/trace-0.json": "13fb925d951d7fe28163371a282cbe8c5b1a1a9df4949aa938005a192a726414"
+    }
+  },
+  "cuda": {
+    "schema_matches_baseline": true,
+    "instrumentation_state_parity": true,
+    "final_state_sha256": "2df63d5e95543c4c5897362d7da06a7b98a483a8a16c5b3495a7cf746a037c4d",
+    "artifacts": {
+      "/tmp/synaploom-cuda-preflight-20261025-cuda/operators-0.txt": "09fdb603d4d22243344ae27c6ed25d3fc0a70dba04db1e313b2bda92737c1cab",
+      "/tmp/synaploom-cuda-preflight-20261025-cuda/results.json": "a5e453f50409aeb3d856ff690c672cfebd5e71125338d52bb8e573407a2801a3",
+      "/tmp/synaploom-cuda-preflight-20261025-cuda/trace-0.json": "a2e8aa5819f238095a9d773696b6dae4295fa336a6a306cd57564c85852f7722"
+    }
+  }
+}

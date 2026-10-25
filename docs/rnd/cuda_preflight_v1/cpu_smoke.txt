@@ -1,0 +1,3 @@
+USDT:2026-10-25 12:58:52 75601:75601 SyncActivityProfilerHandler.cpp:39] profiler_start
+[W1025 12:58:52.322206826 CPUAllocator.cpp:245] Memory block of unknown size was allocated before the profiling started, profiler results will not include the deallocation event
+USDT:2026-10-25 12:58:52 75601:75601 SyncActivityProfilerHandler.cpp:46] profiler_stop
