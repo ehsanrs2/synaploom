@@ -84,6 +84,32 @@ def _check_optimizer_links(model: SynapLoomModel, optimizer: torch.optim.Optimiz
         raise ValueError("optimizer parameter is repeated in groups")
 
 
+
+def _assert_optimizer_tree_equal(saved: Any, restored: Any, path: str = "optimizer") -> None:
+    """Require exact CPU-normalized optimizer state *values*, not just counts."""
+    if isinstance(saved, torch.Tensor):
+        if not isinstance(restored, torch.Tensor) or (
+            saved.shape != restored.shape or saved.dtype != restored.dtype
+            or not torch.equal(saved.detach().cpu(), restored.detach().cpu())
+        ):
+            raise ValueError("optimizer state value mismatch: " + path)
+        return
+    if isinstance(saved, Mapping):
+        if not isinstance(restored, Mapping) or set(saved) != set(restored):
+            raise ValueError("optimizer state keys mismatch: " + path)
+        for key in saved:
+            _assert_optimizer_tree_equal(saved[key], restored[key], path + "." + str(key))
+        return
+    if isinstance(saved, (list, tuple)):
+        if not isinstance(restored, type(saved)) or len(saved) != len(restored):
+            raise ValueError("optimizer state sequence mismatch: " + path)
+        for i, (a, b) in enumerate(zip(saved, restored)):
+            _assert_optimizer_tree_equal(a, b, path + "[" + str(i) + "]")
+        return
+    if type(saved) is not type(restored) or saved != restored:
+        raise ValueError("optimizer state scalar mismatch: " + path)
+
+
 def audit_trusted_routing_envelope(
     path: str | Path,
     model: SynapLoomModel,
@@ -164,8 +190,7 @@ def audit_trusted_routing_envelope(
         raise ValueError("controller shadow state does not roundtrip")
     if len(shadow_optimizer.param_groups) != len(optimizer.param_groups):
         raise ValueError("optimizer param-group count changed")
-    if len(shadow_optimizer.state_dict()["state"]) != len(envelope["optimizer"]["state"]):
-        raise ValueError("optimizer state count changed")
+    _assert_optimizer_tree_equal(envelope["optimizer"], shadow_optimizer.state_dict())
     _check_optimizer_links(shadow_model, shadow_optimizer)
 
     return EnvelopeAuditV1(
