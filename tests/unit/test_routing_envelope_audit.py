@@ -11,6 +11,7 @@ import torch
 from synaploom.config import GraphConfig, ModelConfig
 from synaploom.model import SynapLoomModel
 from synaploom.plasticity.controller import StructuralController
+from synaploom.plasticity.policies import FixedScheduleRecruitment
 from synaploom.research.routing_envelope_audit import audit_trusted_routing_envelope
 from synaploom.research.routing_provenance import make_routing_metadata
 from synaploom.research.routing_session import RoutingSpec
@@ -171,3 +172,21 @@ def test_optimizer_link_mismatch_rejected_before_unpickling(tmp_path):
     bad = (target[0], other[1], target[2])
     with pytest.raises(ValueError, match="exactly the model"):
         audit(path, digest, bad)
+
+
+def test_controller_policy_mismatch_is_not_serialized_and_cannot_approve_resume(tmp_path):
+    source = make_bundle()
+    source[2].recruitment_policy = FixedScheduleRecruitment([4])
+    source[2].load_state_dict({"last_applied_step": 3})
+    path, digest = write_checkpoint(tmp_path, source)
+    target = make_bundle(200)
+    target[2].recruitment_policy = FixedScheduleRecruitment([999])
+    target[2].load_state_dict({"last_applied_step": -1})
+
+    # The existing production state_dict does not capture policy identity.
+    assert source[2].state_dict() == {"last_applied_step": 3}
+    result = audit(path, digest, target)
+    assert result.controller_last_applied_step == 3
+    assert result.resume_authorized is False
+    assert target[2].state_dict() == {"last_applied_step": -1}
+    assert source[2].recruitment_policy.steps != target[2].recruitment_policy.steps
