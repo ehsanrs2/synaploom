@@ -211,12 +211,12 @@ def test_recruitment_and_consolidation_rechecked_between_calls(device):
 def test_fail_closed_spec_topology_purpose_and_statistics():
     model = make_model()
     for invalid in (
-        RoutingSpec("batch", "grouped", "legacy_topk"),
-        RoutingSpec("sample", "legacy", "node_id_ascending_v1"),
-        RoutingSpec("sample", "grouped", "legacy_topk"),
+        ("batch", "grouped", "legacy_topk"),
+        ("sample", "legacy", "node_id_ascending_v1"),
+        ("sample", "grouped", "legacy_topk"),
     ):
         with pytest.raises(ValueError, match="unsupported routing spec"):
-            RoutingSession(model, invalid)
+            RoutingSpec(*invalid)
     for q_max, rounds in ((1, 0), (0, 1)):
         with pytest.raises(ValueError, match="requires q_max=0"):
             sample_session(make_model(q_max=q_max, rounds=rounds), "grouped")
