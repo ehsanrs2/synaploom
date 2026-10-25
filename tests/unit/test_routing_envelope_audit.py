@@ -120,7 +120,7 @@ def test_sgd_momentum_shadow_preserves_optimizer_param_links(tmp_path):
     (lambda p: p.pop("controller"), "requires optimizer"),
     (lambda p: p["controller"].update(last_applied_step="bad"), "controller state schema"),
     (lambda p: p["controller"].update(last_applied_step=30), "controller step"),
-    (lambda p: p["optimizer"]["param_groups"][0].update(lr=0.2), "optimizer state scalar"),
+    (lambda p: p["optimizer"]["param_groups"][0].update(lr=0.2), "optimizer hyperparameters"),
     (lambda p: p["optimizer"]["param_groups"][0]["params"].pop(), "parameter group"),
     (lambda p: p["rng_state"].update(torch_cpu="bad"), "CPU torch RNG"),
     (lambda p: p["rng_state"].pop("python"), "RNG state keys"),
