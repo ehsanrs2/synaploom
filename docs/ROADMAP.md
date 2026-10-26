@@ -105,8 +105,8 @@ Implemented/preregistered:
 - [x] implement the multi-batch evaluation runner, protocol helpers, canonical state digest, and tests — PR #18 merged
 - [x] fix generic Tensor output trace handling, merge PR #19, and rerun post-merge local validation — 54/54 tests passed; dry-run and three smoke checks passed
 - [x] execute EXP-H1A-EVALBATCH-001 — 20 trajectories, 120 size summaries, 4,200 verified state-hash sweeps; `DIRECTION_FLIP_OBSERVED` (descriptive); EXP-H1A-002 stays `INCONCLUSIVE`
-- [ ] preregister independent batch-composition invariance / sample-level routing R&D; do not reuse the completed sensitivity study for new mechanism claims
-- [ ] profile performance separately, identify CPU/GPU synchronization costs, and require frozen-output parity checks before runtime optimizations
+- [x] preregister independent batch-composition invariance / sample-level routing R&D; preserve frozen scientific verdicts
+- [x] profile performance separately, identify CPU/GPU synchronization costs, and qualify research-only grouped executor parity; representative performance-promotion gates still unpassed
 
 #### M1.3b — external sparse/continual controls
 
@@ -189,3 +189,14 @@ Each extension requires its own ablation and may be rejected.
 A milestone should not automatically lead to the next mechanism.
 
 If the core structural hypotheses fail against strong baselines under fair budgets, document the negative result and revise or stop that line before adding complexity.
+
+
+### M1.3 routing-provenance research — after PR #27
+
+- [x] research-only sample routing / grouped executor and opt-in inference-diagnostic session (no training integration)
+- [x] read-only routing metadata check, trusted model-only loader, and isolated full-envelope shadow audit; do not call this complete resume
+- [ ] freeze controller-policy identity record, independent digest and mismatch test (draft PR pending)
+- [ ] freeze experiment/config/feature/source/data-order/stream-offset/structural-event cursor provenance
+- [ ] qualify full checkpoint resume in disposable CPU/CUDA sessions with optimizer/controller/RNG transaction gates
+- [ ] qualify representative GPU memory, numerical, exact-tie and performance gates before any optimization promotion
+- [ ] return to stronger sparse/continual baselines and scientific hypothesis tests; no H1a benefit claim yet
