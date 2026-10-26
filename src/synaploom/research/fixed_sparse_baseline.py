@@ -84,6 +84,9 @@ class FixedSparseMLP(nn.Module):
         self.activation = nn.GELU()
         self.second = FixedMaskedLinear(d_hidden, d_model, active_weights=active_second, mask_seed=mask_seed + 1)
         self.head = nn.Linear(d_model, num_classes)
+        # A persistent mask buffer loaded from an unrelated checkpoint is NOT
+        # automatically the frozen mask associated with this declared seed.
+        self._expected_mask_sha256 = self.mask_digest()
 
     def forward(self, x: Tensor) -> DenseOutput:
         z = self.encoder(x)
@@ -99,6 +102,8 @@ class FixedSparseMLP(nn.Module):
             layer.project_(optimizer)
 
     def assert_masks(self, optimizer: torch.optim.Optimizer | None = None) -> None:
+        if self.mask_digest() != self._expected_mask_sha256:
+            raise ValueError("frozen mask identity differs from construction seed")
         for layer in self.masked_layers():
             layer.verify_masked_zeros(optimizer)
 
