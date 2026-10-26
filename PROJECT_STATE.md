@@ -2,9 +2,9 @@
 
 > This file is the authoritative project memory. Update it in every PR that changes architecture, experiment status, accepted assumptions, or the next milestone.
 
-**Last updated:** 2026-10-21  
+**Last updated:** 2026-10-26  
 **Repository:** ehsanrs2/synaploom  
-**Current stage:** M1.3a sensitivity study `EXP-H1A-EVALBATCH-001` completed on 2026-10-21 at merged PR #19 commit `ab6b1d8477451bc2a3d0c12c3f29a488c8357bd4`; 54/54 local tests passed. Documentation/result registration in progress.  
+**Current stage:** M1.3a scientific results remain frozen/inconclusive; follow-up batch-composition R&D, grouped sample routing and research-only checkpoint audit were merged through PR #27 on 2026-10-26. Controller-policy provenance v1 is proposed in a separate draft PR, not yet merged. Training/default-router replacement and full resume remain NO-GO.  
 **Research status:** EXP-H1A-002 = INCONCLUSIVE; EXP-H1A-ORDER-001 = ORDER_SENSITIVE; EXP-H1A-EVALBATCH-001 = COMPLETE_NUMERICALLY_VALID / DIRECTION_FLIP_OBSERVED. The latter is descriptive measurement sensitivity, not proof of a batch-size interaction or benefit of progressive growth. The historical checkpoints were not saved; evaluation used a fresh paired cohort.
 
 ## 1. Project objective
@@ -376,3 +376,15 @@ For every merged milestone PR:
 5. State the next action explicitly.
 
 The repository, not chat history, is the source of truth.
+
+
+## 2026-10-26 — Routing R&D / provenance engineering status
+
+- M0 and M1.0–M1.2 engineering machinery is implemented. EXP-H1A-002 remains **INCONCLUSIVE**, EXP-H1A-ORDER-001 **ORDER_SENSITIVE**, EXP-H1A-EVALBATCH-001 **DIRECTION_FLIP_OBSERVED**. No learning/forgetting improvement claim has been established.
+- Investigated batch-composition dependence, built per-sample row-wise correctness reference and grouped sample-expert executor. In a representative CUDA B128/R4/K4 cell, grouped sample forward was approximately **0.737 ms** vs row-wise **42.179 ms**, but legacy batch forward remained faster at **0.401 ms**; numbers are synthetic/representative routing timing, not scientific training benefit.
+- Merged research/evidence PR #22, opt-in diagnostic/inference RoutingSession PR #24, read-only routing checkpoint metadata preflight PR #25, trusted SHA-pinned research model-only loader PR #26, and read-only full-envelope shadow-audit PR #27. PR #23 merged into the research branch, then PR #24 moved the three opt-in files into main.
+- PR #27 GitHub CPU CI: 144 passed / 26 skipped, three smoke scripts passed. The GPU/CUDA and representative promotion gates are still **unpassed**. 26 skipped tests must never be counted as CUDA evidence.
+- The existing StructuralController checkpoint state only stores last_applied_step, **not** the configured recruitment/edge/consolidation policy identity, observation or event logger. Thus successful model/optimizer/controller shadow validation **does not authorize full scientific resume**.
+- Current additive draft R&D work: allowlisted, canonical controller-policy identity and read-only pinned-digest comparison, with explicit resume_authorized=False. This is not a production save/load change; its CI must be qualified on its own commit before merge.
+- Immediate priorities after controller policy provenance: immutable run/config/feature/source/stream/event-cursor manifest, full checkpoint envelope compatibility and disposable CPU/CUDA resume experiment. M1.3b strong external controls and M2 adaptive growth remain future research, not achievements already claimed.
+- Hosted GitHub Actions uses CPU-only PyTorch; hardware-specific CUDA parity and performance gates require separate qualified GPU execution. Continue GitHub-first and manual expensive runs only when a concrete acceptance decision requires them.
