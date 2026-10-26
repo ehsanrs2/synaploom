@@ -200,3 +200,25 @@ def test_tiny_mask_invalid_settings_rejected():
             input_dim=8, d_model=8, d_hidden=12, num_classes=6,
             active_first=3, active_second=4, mask_seed=-10
         )
+
+
+def test_checkpoint_cannot_silently_replace_predeclared_seeded_mask():
+    original, report = make_tiny(seed=13, mask_seed=17)
+    incompatible, other_report = make_tiny(seed=13, mask_seed=18)
+    assert other_report.mask_sha256 != report.mask_sha256
+    incompatible.load_state_dict(original.state_dict(), strict=True)
+    assert incompatible.mask_digest() == report.mask_sha256
+    with pytest.raises(ValueError, match="frozen mask identity"):
+        incompatible.assert_masks()
+    optimizer = torch.optim.SGD(incompatible.parameters(), lr=0.01)
+    with pytest.raises(ValueError, match="frozen mask identity"):
+        install_fixed_mask_guard(incompatible, optimizer)
+
+
+def test_modified_mask_buffer_fails_identity_check_without_rewiring():
+    model, report = make_tiny()
+    with torch.no_grad():
+        model.second.mask[0, 0] = ~model.second.mask[0, 0]
+    assert model.mask_digest() != report.mask_sha256
+    with pytest.raises(ValueError, match="frozen mask identity"):
+        model.assert_masks()
