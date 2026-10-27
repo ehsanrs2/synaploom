@@ -25,7 +25,7 @@ from synaploom.research.fixed_sparse_baseline import build_h1a_fixed_sparse_feas
 TRAIN_PER_CLASS = 500
 AUDIT_KIND = "M13B_STAGEWISE_IDEAL_MAC_AUDIT_V1"
 MASK_SEED = 20261026
-CANDIDATE_INIT_SEED = 501  # Used only to instantiate candidate weights; no training.
+CANDIDATE_INIT_SEED = 13  # Engineering seed only, not a reserved confirmatory seed.
 RUN_AUTHORIZED = False
 
 
