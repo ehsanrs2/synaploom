@@ -80,7 +80,7 @@ Review scripts load **no scientific output**, models, protected features or GPU;
 
 ### Mathematical background (for review, not a substitute for peer signoff)
 
-- Hoeffding-type independent bounded-sum concentration: D. A. McAllester, *Simplified PAC-Bayesian Margin Bounds*, JMLR (see discussion of the classical Hoeffding inequality in the related concentration literature), https://jmlr.csail.mit.edu/papers/volume4/mcallester03a/mcallester03a.pdf
+- Hoeffding's inequality for independent bounded variables (mathematical reference): https://mathworld.wolfram.com/HoeffdingInequality.html . A related JMLR discussion is McAllester and Ortiz, *Concentration Inequalities for the Missing Mass and for Histogram Rule Error* (2003), https://jmlr.csail.mit.edu/papers/v4/mcallester03a.html
 - NIST, *Sign Test* (classical nonparametric paired sign procedure and binomial exact framework): https://www.itl.nist.gov/div898/software/dataplot/refman1/auxillar/signtest.htm — note this packet **does not drop zeros**, because it targets a positive-sign probability with a fixed ten-seed denominator.
 - U.S. FDA, *Multiple Endpoints in Clinical Trials* (conceptual reference regarding preplanned multiplicity distinctions; clinical-trial guidance is **not directly an ML benchmark standard**): https://www.fda.gov/regulatory-information/search-fda-guidance-documents/multiple-endpoints-clinical-trials
 
