@@ -57,6 +57,7 @@ def fixed_betting_log_evalue(deltas: Sequence[float]) -> float:
     if not isinstance(deltas, (list, tuple)) or not deltas:
         raise ValueError("requires a nonempty sequence of paired differences")
     logs: list[float] = []
+    seen_minus_one = False
     for item in deltas:
         if type(item) not in (int, float):
             raise ValueError("paired differences must be numeric and not boolean")
@@ -64,9 +65,10 @@ def fixed_betting_log_evalue(deltas: Sequence[float]) -> float:
         if not isfinite(d) or not -1 <= d <= 1:
             raise ValueError("paired differences must be finite fractions in [-1,1]")
         if d == -1:
-            return float("-inf")
-        logs.append(log1p(d))
-    return fsum(logs)
+            seen_minus_one = True
+        else:
+            logs.append(log1p(d))
+    return float("-inf") if seen_minus_one else fsum(logs)
 
 
 def one_sided_betting_rejects(log_evalue: float) -> bool:
@@ -82,10 +84,10 @@ def joint_both_needed_rejects(first: Sequence[float], second: Sequence[float]) -
     """IUT conjunctive positive claim, without assuming endpoint independence."""
     if len(first) != len(second):
         raise ValueError("co-primary endpoints require the same paired seed count")
-    return (
-        one_sided_betting_rejects(fixed_betting_log_evalue(first))
-        and one_sided_betting_rejects(fixed_betting_log_evalue(second))
-    )
+    # Validate both endpoint inputs even when the first cannot reject.
+    first_log = fixed_betting_log_evalue(first)
+    second_log = fixed_betting_log_evalue(second)
+    return one_sided_betting_rejects(first_log) and one_sided_betting_rejects(second_log)
 
 
 def _two_point_distribution(
