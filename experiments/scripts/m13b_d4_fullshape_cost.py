@@ -128,6 +128,10 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("evidence parent directory must exist")
     if not opts.features.is_file():
         parser.error("trusted pinned feature file must exist")
+    # The parent may be launched outside the repository. The worker runs with
+    # cwd=repository root, so pass a canonical absolute path to prevent
+    # silently reading a different relative feature file in the child.
+    opts.features = opts.features.resolve(strict=True)
     try:
         head = _verified_git_head(opts.expected_head)
     except (OSError, ValueError, subprocess.CalledProcessError) as exc:
