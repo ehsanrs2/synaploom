@@ -6,8 +6,10 @@ diagnostic evaluation subset is selected from the SAME 500/class training
 examples. Overlap is intentional and MUST NEVER be interpreted as accuracy.
 
 Only a cost record (time, optimizer steps, model/cost provenance, CUDA memory)
-may leave the worker. No original protected evaluation tensors are accessed.
-A separately authorized owner invocation of the CLI is required for GPU use.
+may leave the worker. The existing trusted-file loader deserializes the
+entire pinned bundle (which contains eval tensors), but the worker receives
+ONLY training tensors and never uses original protected evaluation examples
+for calibration. A separately authorized owner CLI invocation is needed.
 """
 from __future__ import annotations
 
