@@ -1,0 +1,239 @@
+{
+  "schema": 1,
+  "kind": "M13B_D1_D4_INTEGRATED_RESEARCH_DECISION_REGISTER_V1",
+  "report": "docs/research/m13b_external_baselines/D1_D4_INTEGRATED_RESEARCH_EVIDENCE_REVIEW_V1.md",
+  "source_main_commit_for_review": "148c35aa2feaa62ac7125ca88996f7a96044a2ff",
+  "status": "RESEARCH_EVIDENCE_REVIEW__NOT_PROTOCOL_APPROVAL",
+  "science_executable": false,
+  "gpu_used_by_this_review": false,
+  "protected_outcomes_read_by_this_review": false,
+  "final_protocol_frozen": false,
+  "selected_statistical_method": null,
+  "selected_number_of_paired_seeds": null,
+  "approved_total_gpu_hours": null,
+  "owner_separate_science_authorization": false,
+  "owner_prior_decisions": {
+    "estimand": "MEAN_OF_PAIRED_SEED_ACCURACY_DIFFERENCES",
+    "proposed_primary_order": "O0",
+    "primary_comparison": [
+      "progressive_reserve",
+      "fixed_sparse_mlp"
+    ],
+    "two_coprimary_accuracy_metrics": [
+      "final_average_accuracy",
+      "late_task_within_task_mean_accuracy"
+    ],
+    "important_mean_gain_fraction_for_planning_only": {
+      "final_average_accuracy": 0.02,
+      "late_task_within_task_mean_accuracy": 0.02
+    },
+    "positive_null_per_endpoint": "POPULATION_PAIRED_MEAN_LE_ZERO",
+    "human_specialist_signature_mandatory_for_internal_gate": false
+  },
+  "local_owner_verified_engineering_evidence": {
+    "provenance_level": "OWNER_REPORTED_LOCAL_CANONICAL_SHA_AND_EXPECTED_SOURCE_FEATURE_CHECK_PASS__NOT_THIRD_PARTY_ATTESTED",
+    "feature_sha256": "c635bebdc5c67b231b4ff97ab09e01572e0cd5bf843a427091e518113a2b8a47",
+    "head_sha256_commit": "148c35aa2feaa62ac7125ca88996f7a96044a2ff",
+    "protected_evaluation_batch_used": false,
+    "diagnostic_evaluation_is_training_derived_and_overlapping": true,
+    "progressive_reserve": {
+      "observed_engineering_wall_seconds": 130.52830013199127,
+      "optimizer_steps": 8000,
+      "canonical_result_sha256": "01d908f8a8395689d2df1470759da2c1ef8cca1a64b128d42ef3f8770531b410"
+    },
+    "fixed_sparse_mlp": {
+      "observed_engineering_wall_seconds": 35.31436062100693,
+      "optimizer_steps": 8000,
+      "canonical_result_sha256": "d4f7c98ea08d556395f0be01a01861a5c53bb8831468beddf4e6e90c942105c2"
+    },
+    "sum_two_arms_one_observed_engineering_pair_seconds": 165.8426607529982,
+    "repeated_run_runtime_distribution_established": false,
+    "exact_full_science_runtime_guaranteed": false
+  },
+  "design_options": [
+    {
+      "id": "A",
+      "name": "O0_TWO_ARMS",
+      "trajectories_per_paired_seed": 2,
+      "owner_approval": "PENDING_OWNER_DECISION",
+      "limits": [
+        "O0_ONLY",
+        "NO_ORDER_ROBUSTNESS",
+        "NO_RECRUITMENT_TIMING_CAUSAL_CLAIM"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "O0_O1_O2_THREE_ARMS",
+      "trajectories_per_paired_seed": 9,
+      "owner_approval": "PENDING_OWNER_DECISION",
+      "limits": [
+        "O0_ONLY_INFERENTIAL",
+        "ALL_RECRUITED_FULLSHAPE_RUNTIME_UNMEASURED"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "O0_TWO_ARMS_PLUS_FIXED_DESCRIPTIVE_BLOCK",
+      "trajectories_per_paired_seed": null,
+      "secondary_slots": "MUST_BE_FIXED_BEFORE_OUTCOMES",
+      "owner_approval": "PENDING_OWNER_DECISION",
+      "limits": [
+        "NO_OUTCOME_CONDITIONED_SECONDARY_RUNS"
+      ]
+    }
+  ],
+  "budget_scenarios": {
+    "label": "ILLUSTRATIVE_ENGINEERING_WALL_RATE_NOT_A_BUDGET_GUARANTEE",
+    "one_arm_pair_seconds": 165.8426607529982,
+    "unverified_contingency_factor": 1.5,
+    "assumes_owner_approves_O0_two_arm_scope": false,
+    "example_paired_seed_counts": [
+      {
+        "n": 10,
+        "trajectories": 20,
+        "observed_rate_gpu_hours": 0.461,
+        "with_hypothetical_1_5_contingency_hours": 0.691
+      },
+      {
+        "n": 20,
+        "trajectories": 40,
+        "observed_rate_gpu_hours": 0.921,
+        "with_hypothetical_1_5_contingency_hours": 1.382
+      },
+      {
+        "n": 40,
+        "trajectories": 80,
+        "observed_rate_gpu_hours": 1.843,
+        "with_hypothetical_1_5_contingency_hours": 2.764
+      },
+      {
+        "n": 54,
+        "trajectories": 108,
+        "observed_rate_gpu_hours": 2.488,
+        "with_hypothetical_1_5_contingency_hours": 3.731
+      },
+      {
+        "n": 152,
+        "trajectories": 304,
+        "observed_rate_gpu_hours": 7.002,
+        "with_hypothetical_1_5_contingency_hours": 10.503
+      },
+      {
+        "n": 210,
+        "trajectories": 420,
+        "observed_rate_gpu_hours": 9.674,
+        "with_hypothetical_1_5_contingency_hours": 14.511
+      }
+    ],
+    "unmeasured_overheads": [
+      "RETRIES",
+      "HOST_VARIABILITY",
+      "PROTECTED_EVAL_CONTENT_DIFFERENCE",
+      "STARTUP",
+      "DIVERGENT_CONVERGENCE"
+    ]
+  },
+  "gates": [
+    {
+      "id": "D1_SCOPE",
+      "status": "PENDING_OWNER_DECISION",
+      "required": [
+        "A_OR_B_OR_PREDECLARED_C",
+        "SEED_AND_ORDER_MATRIX",
+        "CLAIM_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D2_BATCH_AND_COMPARATOR",
+      "status": "RESEARCH_PENDING",
+      "verified": [
+        "B256_EVAL_CANDIDATE",
+        "STANDALONE_FAILCLOSED_ENDPOINT_GUARD",
+        "FIXED_MASK_GUARD_AVAILABLE"
+      ],
+      "required": [
+        "FROZEN_ORDER_AND_BATCH_MEMBERSHIP",
+        "TRAIN_ONLY_COMPANION_STRESS",
+        "MASK_OPTIMIZER_IN_RUN_PATH",
+        "GUARD_RUNNER_INTEGRATION"
+      ]
+    },
+    {
+      "id": "D3_INFERENCE",
+      "status": "RESEARCH_PENDING",
+      "verified": [
+        "MEAN_ESTIMAND",
+        "BOTH_ENDPOINT_IUT_STRUCTURE",
+        "2PP_MEAN_GAIN_ALTERNATIVE_FOR_PLANNING",
+        "ORIGINAL_PERCENTILE_BOOTSTRAP_INVALID_UNDER_CONSTRUCTED_SKEW",
+        "FIXED_E_BET_CONDITIONAL_SIZE_PROOF"
+      ],
+      "required": [
+        "SEED_GENERATION_POPULATION",
+        "REVIEW_FIXED_TIME_VARIANCE_ADAPTIVE_BOUNDED_TEST",
+        "CPU_ADVERSARIAL_NULL_AND_JOINT_POWER",
+        "FINAL_METHOD",
+        "NUMBER_OF_SEEDS",
+        "FAILURE_RULE"
+      ]
+    },
+    {
+      "id": "D4_TWO_ARM_LOCAL_INTEGRITY",
+      "status": "OWNER_LOCAL_VERIFIED_PASS",
+      "verified": [
+        "PROGRESSIVE_SHA256",
+        "FIXED_SPARSE_SHA256",
+        "8000_STEPS_EACH",
+        "SOURCE_AND_FEATURE_MATCH"
+      ],
+      "limits": [
+        "ONE_OBSERVATION_PER_ARM",
+        "NOT_PROTECTED_EVAL_RUNTIME_GUARANTEE"
+      ]
+    },
+    {
+      "id": "D4_FINAL_TOTAL_BUDGET",
+      "status": "PENDING_OWNER_DECISION",
+      "required": [
+        "MAX_TOTAL_GPU_HOURS",
+        "RETRY_POLICY",
+        "HOST_TIMING_VARIABILITY",
+        "SCOPE_APPROVED"
+      ]
+    },
+    {
+      "id": "SCIENCE_RUN",
+      "status": "NO_GO",
+      "required": [
+        "FULL_PROSPECTIVE_PROTOCOL",
+        "FINAL_RUNNER_CPU_QUALIFIED",
+        "SOURCE_AND_DATA_PINS",
+        "EXPLICIT_DISTINCT_OWNER_GPU_AUTHORIZATION"
+      ]
+    }
+  ],
+  "external_method_references": [
+    {
+      "kind": "bounded_mean",
+      "url": "https://doi.org/10.1093/jrsssb/qkad009"
+    },
+    {
+      "kind": "time_uniform",
+      "url": "https://doi.org/10.1214/20-AOS1991"
+    },
+    {
+      "kind": "joint_coprimary_IUT",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6135538/"
+    },
+    {
+      "kind": "task_order_continual_learning",
+      "url": "https://proceedings.mlr.press/v267/li25z.html"
+    },
+    {
+      "kind": "seed_variation_other_models",
+      "url": "https://doi.org/10.1038/s41598-026-49656-z"
+    }
+  ],
+  "next_work_policy": "NO_GPU_OR_PROTECTED_OUTCOME_OR_METHOD_SELECTION_IN_THIS_RESEARCH_REVIEW"
+}
