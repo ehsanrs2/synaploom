@@ -212,6 +212,5 @@ def main() -> int:
     print(json.dumps(build_review(),ensure_ascii=True,sort_keys=True,indent=2,allow_nan=False))
     return 0
 
-
 if __name__=='__main__':
     raise SystemExit(main())
