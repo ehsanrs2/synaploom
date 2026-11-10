@@ -51,7 +51,7 @@ def test_actual_evaluator_missing_partial_tail_is_detected(monkeypatch):
         yield from batches[:-1]
 
     monkeypatch.setattr(evaluation_module, "iter_tensor_batches", _drop_last)
-    with pytest.raises(ValueError, match="batch|missed"):
+    with pytest.raises(ValueError, match="grouped incorrect|missed"):
         audit_reference_cpu_evaluation()
 
 
