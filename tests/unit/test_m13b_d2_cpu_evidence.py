@@ -114,7 +114,7 @@ def test_missing_attempts_rejected_and_attempt_names_safe(tmp_path):
         with pytest.raises(ValueError, match="attempt"):
             write_synthetic_attempt(tmp_path, attempt_id=name)
     for step in (0, 13, True, "4"):
-        with pytest.raises(ValueError, match="fault"):
+        with pytest.raises(ValueError, match="invalid small-CPU-only injected failure step"):
             write_synthetic_attempt(tmp_path, attempt_id="valid-name",
                                     fault_after_step=step)
     with pytest.raises(ValueError, match="expected"):
