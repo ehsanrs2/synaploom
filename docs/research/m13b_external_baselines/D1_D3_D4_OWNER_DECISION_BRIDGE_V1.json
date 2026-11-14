@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "kind": "M13B_D1_D3_D4_OWNER_DECISION_BRIDGE_V1",
+  "source_main_commit": "efe30e41aea53addb27bf2e4eff54ce099f018f7",
+  "source_review": "docs/research/m13b_external_baselines/D1_D3_D4_OWNER_DECISION_BRIDGE_V1.md",
+  "status": "DECISION_SUPPORT_ONLY_UNFROZEN",
+  "science_executable": false,
+  "protected_outcomes_examined_by_this_artifact": false,
+  "gpu_execution_by_this_artifact": false,
+  "owner_separate_science_execution_authorization": false,
+  "final_protocol_frozen": false,
+  "preserve_historical_prereg_candidate_unchanged": true,
+  "scientific_owner_prior_direction": {
+    "estimand": "MEAN_OF_PAIRED_TRAINING_SEED_DIFFERENCES",
+    "comparison": [
+      "progressive_reserve",
+      "fixed_sparse_mlp"
+    ],
+    "primary_order": "O0",
+    "co_primary_metrics": [
+      "final_average_accuracy",
+      "late_task_within_task_mean_accuracy"
+    ],
+    "meaningful_alternative_for_planning_only_each_accuracy_fraction": 0.02,
+    "formal_positive_null_per_endpoint": "population_mean_difference <= 0",
+    "global_positive_rule": "BOTH_VALID_COMPONENT_REJECTIONS_IUT",
+    "external_named_sparse_comparators_qualified": false
+  },
+  "owner_open_decisions": {
+    "D1_scope": {
+      "status": "PENDING_OWNER_CHOICE",
+      "recommended_conditional_option": "A_O0_TWO_ARM",
+      "options": [
+        {
+          "id": "A_O0_TWO_ARM",
+          "trajectories_per_paired_seed": 2,
+          "claim_scope": "ONLY_O0_FIXED_B256_INHOUSE_FIXED_MASK"
+        },
+        {
+          "id": "B_THREE_ARM_THREE_ORDER",
+          "trajectories_per_paired_seed": 9,
+          "claim_scope": "O0_INFERENCE_AND_PREDECLARED_DESCRIPTIVE_O1_O2",
+          "complete_cost_measured": false
+        },
+        {
+          "id": "C_O0_PLUS_PREDECLARED_SECONDARY",
+          "trajectories_formula": "2n+K",
+          "K": null,
+          "claim_scope": "O0_INFERENCE_PREDECLARED_DESCRIPTIVE_K_SLOTS"
+        }
+      ],
+      "old_proposal_slot_count_at_n10": 90,
+      "original_proposal_amendment_if_A_or_C": "REQUIRED"
+    },
+    "D3_inference": {
+      "status": "PENDING_OWNER_CHOICE",
+      "chosen_method": null,
+      "chosen_paired_seed_count": null,
+      "desired_joint_power": null,
+      "paired_seed_population_justified": false,
+      "independent_seed_mechanism_frozen": false,
+      "failure_retry_policy_frozen": false,
+      "methods_reviewed": [
+        "FIXED_LAMBDA1_E_BET",
+        "FIXED_HEDGED_E_MIXTURE",
+        "MAURER_PONTIL_EMPIRICAL_BERNSTEIN",
+        "PREDICTABLE_PLUGIN_EMPIRICAL_BERNSTEIN",
+        "ASSUMPTION_DEPENDENT_PAIRED_T"
+      ],
+      "invalid_original_percentile_bootstrap_for_unrestricted_bounded_mean_null": true,
+      "pointwise_bound_n152": {
+        "meaning": "Necessary for a nonrandomized fixed-n size-5%-valid bounded-IID-mean test to reject the all-+.02 sample",
+        "not_universal_power_requirement": true
+      }
+    },
+    "D4_budget": {
+      "status": "PENDING_OWNER_CHOICE",
+      "approved_total_gpu_hours": null,
+      "approved_wall_time_cap": null,
+      "approved_retry_count": null,
+      "full_science_cost_measured": false,
+      "third_arm_cost_measured": false,
+      "engineering_one_arm_observations_seconds": {
+        "progressive_reserve": 130.52830013199127,
+        "fixed_sparse_mlp": 35.31436062100693
+      },
+      "engineering_pair_seconds": 165.8426607529982,
+      "engineering_provenance": "OWNER_LOCAL_CHECKS_PASS_NOT_INDEPENDENT_WITNESS",
+      "two_arm_O0_cost_scenarios": [
+        {
+          "paired_seeds_scenario_only": 10,
+          "trajectories": 20,
+          "arithmetic_gpu_hours": 0.461,
+          "illustrative_not_bound_1_5x_gpu_hours": 0.691
+        },
+        {
+          "paired_seeds_scenario_only": 40,
+          "trajectories": 80,
+          "arithmetic_gpu_hours": 1.843,
+          "illustrative_not_bound_1_5x_gpu_hours": 2.764
+        },
+        {
+          "paired_seeds_scenario_only": 54,
+          "trajectories": 108,
+          "arithmetic_gpu_hours": 2.488,
+          "illustrative_not_bound_1_5x_gpu_hours": 3.731
+        },
+        {
+          "paired_seeds_scenario_only": 152,
+          "trajectories": 304,
+          "arithmetic_gpu_hours": 7.002,
+          "illustrative_not_bound_1_5x_gpu_hours": 10.503
+        },
+        {
+          "paired_seeds_scenario_only": 210,
+          "trajectories": 420,
+          "arithmetic_gpu_hours": 9.674,
+          "illustrative_not_bound_1_5x_gpu_hours": 14.511
+        },
+        {
+          "paired_seeds_scenario_only": 358,
+          "trajectories": 716,
+          "arithmetic_gpu_hours": 16.492,
+          "illustrative_not_bound_1_5x_gpu_hours": 24.738
+        },
+        {
+          "paired_seeds_scenario_only": 1000,
+          "trajectories": 2000,
+          "arithmetic_gpu_hours": 46.067,
+          "illustrative_not_bound_1_5x_gpu_hours": 69.101
+        }
+      ]
+    },
+    "D2_actual_science_attestation": {
+      "status": "NOT_IMPLEMENTED",
+      "reference_sha_pinning_research_merged": true,
+      "actual_full_8000_optimizer_witness": false,
+      "verified_real_protected_sample_row_membership": false,
+      "independent_owner_or_external_custody": false
+    }
+  },
+  "admission_policy": {
+    "all_prior_decisions_required": true,
+    "signed_or_authentically_anchored_manifest_required": true,
+    "science_runner_built_and_qualified": false,
+    "owner_explicit_go_required": true,
+    "automatic_run_on_merge": false,
+    "exploratory_if_no_defensible_power_under_budget": "PROSPECTIVE_EXPLORATORY_ONLY"
+  }
+}
