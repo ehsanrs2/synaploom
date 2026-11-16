@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "kind": "M13B_D1_A_OWNER_SCOPE_SELECTION_AND_D3_D4_RESEARCH_V1",
+  "based_on_merged_main_commit": "bd3c17ed08b05b1dd41495160015d09cac59fb6c",
+  "status": "D1_A_OWNER_SELECTED_FOR_DESIGN_D3_D4_PENDING_NO_GPU",
+  "decision_source": "Owner direct affirmative message: option A for design; explicit GPU non-authorization",
+  "owner_scope_selection": {
+    "selected_option": "A_O0_TWO_ARM",
+    "selected_for": "PROSPECTIVE_STUDY_DESIGN_ONLY",
+    "specific_class_order": "O0",
+    "primary_arms": [
+      "progressive_reserve",
+      "fixed_sparse_mlp"
+    ],
+    "intended_population_estimand": "mean_of_paired_training_seed_accuracy_differences",
+    "co_primary_endpoints": [
+      "final_average_accuracy",
+      "late_task_within_task_mean_accuracy"
+    ],
+    "evaluation_batch_size": 256,
+    "last_partial_batch_size": 232,
+    "actual_real_eval_batch_membership_attested": false,
+    "trajectories_for_n": "2*n",
+    "selected_number_of_paired_seeds": null,
+    "order_robustness_claim_authorized": false,
+    "all_recruited_arm_in_selected_science_design": false,
+    "RigL_NISPA_as_faithful_controls": false,
+    "recruitment_timing_causality_claim_authorized": false,
+    "historical_90_slot_candidate_automatically_amended": false,
+    "prospectively_amended_final_preregistration_needed": true,
+    "owner_science_execution_authorized": false
+  },
+  "D3": {
+    "research_status": "CONDITIONAL_EXACT_POWER_RESEARCH_NOT_FINAL_METHOD",
+    "meaningful_effect_fraction_each_endpoint_for_planning_only": 0.02,
+    "formal_null_each_endpoint": "population_mean_paired_difference<=0",
+    "favorable_global_claim": "BOTH_VALID_ONE_SIDED_TESTS_REJECT_AT_ALPHA_0.05_IUT",
+    "alpha_per_endpoint_for_global_positive_claim": 0.05,
+    "formal_negative_claim_registered": false,
+    "fixed_bet_lambda_one_is_final_method": false,
+    "fixed_bet_evidence_threshold_for_scenarios": 20,
+    "synthetic_symmetric_sd5pp_at_n210": {
+      "marginal_power_approx": 0.905155,
+      "joint_frechet_lower_approx": 0.81031,
+      "under_actual_observed_seed_distribution": false
+    },
+    "synthetic_rare_severe_loss_at_n210": {
+      "marginal_power_approx": 0.02987967,
+      "same_mean_alt_fraction": 0.02,
+      "demonstrates_no_universal_n210_power": true
+    },
+    "method_chosen": null,
+    "paired_seed_count_chosen": null,
+    "illustrative_80_percent_joint_power_owner_ratified": false,
+    "seed_generating_population_fixed": false,
+    "actual_paired_seed_variance_known": false,
+    "actual_endpoint_dependence_known": false,
+    "failure_retry_policy_registered": false,
+    "original_bootstrap_acceptable_for_unrestricted_bounded_mean_null": false,
+    "science_results_used": false
+  },
+  "D4": {
+    "research_status": "SINGLE_MEASURED_PAIR_ONLY_FULL_SCIENCE_COST_UNKNOWN",
+    "historical_local_engineering_progressive_seconds": 130.52830013199127,
+    "historical_local_engineering_fixed_sparse_seconds": 35.31436062100693,
+    "historical_local_engineering_pair_seconds": 165.8426607529982,
+    "engineering_measurement_provenance": "OWNER_REPORTED_LOCAL_SHA_VERIFICATION_NOT_INDEPENDENT_ATTESTATION",
+    "full_protected_science_wall_time_distribution_measured": false,
+    "approved_total_gpu_hours": null,
+    "approved_per_trajectory_timeout": null,
+    "approved_retry_budget": null,
+    "illustrative_multiplier_1_5_is_measured_upper_bound": false,
+    "n210_rate_based_gpu_hours_only": 9.674155,
+    "n210_illustrative_1_5x_hours_only": 14.511233,
+    "n358_rate_based_gpu_hours_only": 16.492131,
+    "monitoring_or_execution_authorized": false
+  },
+  "research_files": [
+    "src/synaploom/research/m13b_d1a_d3d4_conditional_planning.py",
+    "tests/unit/test_m13b_d1a_d3d4_conditional_planning.py",
+    "docs/research/m13b_external_baselines/D1A_D3_D4_OWNER_SCOPE_AND_FEASIBILITY_V1.md"
+  ],
+  "report_hash_is_owner_signature": false,
+  "owner_signed_scientific_preregistration": false,
+  "independently_witnessed_evidence": false,
+  "final_protocol_frozen": false,
+  "protected_scientific_outcomes_accessed": false,
+  "GPU_used_in_this_work": false,
+  "science_executable": false,
+  "scientific_claim": "NONE",
+  "science_gpu_status": "SCIENCE_GPU_NO_GO"
+}
