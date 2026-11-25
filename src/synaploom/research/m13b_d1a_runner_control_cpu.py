@@ -158,6 +158,47 @@ def exact_endpoints(observation: dict[str, Any]) -> tuple[Fraction, Fraction]:
     return Fraction(sum(stages[-1]), 10_000), Fraction(sum(curves[-2]+curves[-1]), 40_000)
 
 
+def synthetic_observation_from_events(slot_id: str,
+                                      events: list[dict[str, Any]]) -> dict[str, Any]:
+    """Adapt the real observer's event *shape*, using synthetic fixtures only.
+
+    Must be called after an attempt finishes, inside a sealed result boundary.
+    Counts are not proof of actual optimizer steps, sample membership or GPU use.
+    """
+    if slot_id not in {x["slot_id"] for x in synthetic_registry()}:
+        raise ValueError("only registered synthetic slots are accepted")
+    if type(events) is not list or len(events) != 255:
+        raise ValueError("expected 200 epoch plus 55 stage count events")
+    stages, curves, steps = [], [], []
+    cursor = 0
+
+    def consume(phase: str, stage: int, task: int,
+                epoch: int, step: int) -> int:
+        nonlocal cursor
+        event = events[cursor]
+        cursor += 1
+        expected = {"phase": phase, "stage": stage, "task_index": task,
+                    "task_id": task, "epoch": epoch, "global_step": step,
+                    "batch_size": 256, "examples": 1000}
+        if (type(event) is not dict or set(event) != set(expected) | {"correct"}
+                or any(type(event[k]) is not type(v) or event[k] != v
+                       for k, v in expected.items())):
+            raise ValueError("count event order, geometry or step mismatch")
+        return _count(event["correct"])
+
+    for stage in range(10):
+        curve = []
+        for epoch in range(1, 21):
+            step = (stage*20+epoch)*40
+            curve.append(consume("epoch", stage, stage, epoch, step))
+            steps.append(step)
+        curves.append(curve)
+        stages.append([consume("stage", stage, task, 0, (stage+1)*800)
+                       for task in range(stage+1)])
+    return {"kind": KIND, "slot_id": slot_id, "stage_correct": stages,
+            "epoch_correct": curves, "epoch_steps": steps}
+
+
 def fixed_stake(deltas: list[Fraction]) -> dict[str, Any]:
     """Exact rational threshold; conservative lower bound on a 1e-6 grid.
 
