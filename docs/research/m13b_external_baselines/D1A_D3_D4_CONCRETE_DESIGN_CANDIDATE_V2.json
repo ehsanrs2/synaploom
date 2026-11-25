@@ -1,0 +1,116 @@
+{
+  "schema": 2,
+  "kind": "M13B_D1A_CONCRETE_DESIGN_CANDIDATE_V2",
+  "base_main": "9e707167fa76bb630efa1c6a2c5fc9fe2ea21bb4",
+  "status": "PROPOSED_NOT_FROZEN",
+  "owner_scope_A_approved_for_design": true,
+  "owner_agrees_close_D3_D4_strategy": true,
+  "owner_numeric_D3_D4_approved": false,
+  "final_protocol_frozen": false,
+  "science_executable": false,
+  "science_gpu_authorized": false,
+  "engineering_gpu_authorized_by_this_record": false,
+  "protected_outcomes_accessed": false,
+  "seed_draw_executed": false,
+  "proposal": {
+    "order": "O0",
+    "arms": [
+      "progressive_reserve",
+      "fixed_sparse_mlp"
+    ],
+    "n_paired_draws": 360,
+    "trajectory_count": 720,
+    "optimizer_steps_per_trajectory": 8000,
+    "total_optimizer_steps": 5760000,
+    "fixed_mask_seed": 20261026,
+    "train_batch": 128,
+    "eval_batch": 256,
+    "eval_last_batch": 232,
+    "endpoints": [
+      "final_average_accuracy",
+      "late_task_within_task_mean_accuracy"
+    ],
+    "estimand": "population_mean_paired_differences_under_frozen_seed_to_result_mapping",
+    "method": "FIXED_LAMBDA_ONE_E_TEST_IUT",
+    "alpha_each_component": 0.05,
+    "e_threshold": 20,
+    "meaningful_mean_alternative_each": 0.02,
+    "joint_power_target_scenario_only": 0.8,
+    "uniform_power_guarantee": false,
+    "seed_population": {
+      "min_proposed": 1000000,
+      "max_proposed": 4294867295,
+      "exclude_all_historical_and_engineering_ids": true,
+      "audit_not_complete": true,
+      "iid_uniform_with_replacement": true,
+      "preserve_repeated_values_with_distinct_draw_ids": true,
+      "draw_after_explicit_approval_and_precommit": true,
+      "seed_ids": null
+    },
+    "execution": {
+      "alternate_arm_order": true,
+      "per_arm_timeout_seconds_proposed": {
+        "progressive_reserve": 300,
+        "fixed_sparse_mlp": 120
+      },
+      "occupied_GPU_cap_hours_proposed": 30,
+      "shutdown_margin_seconds": null,
+      "retries": 0,
+      "stop_on_any_invalid_or_failed_attempt": true,
+      "partial_confirmatory_verdict": false,
+      "interim_efficacy_access": false
+    }
+  },
+  "planning_evidence": {
+    "engineering_pair_seconds": 165.8426607529982,
+    "engineering_rate_hours_n360": 16.58426607529982,
+    "illustrative_multiplier": 1.5,
+    "illustrative_hours_n360": 24.87639911294973,
+    "remaining_hours_under_proposed_cap": 5.12360088705027,
+    "actual_science_runtime_measured": false,
+    "scenarios": [
+      {
+        "label": "symmetric_sd2pp",
+        "high_count": 77,
+        "marginal_power_rounds_to": 1,
+        "joint_lower_rounds_to": 1
+      },
+      {
+        "label": "symmetric_sd5pp",
+        "high_count": 143,
+        "marginal_power": 0.9999635234411809,
+        "joint_lower": 0.9999270468823618
+      },
+      {
+        "label": "symmetric_sd10pp",
+        "high_count": 168,
+        "marginal_power": 0.9062213206437076,
+        "joint_lower": 0.8124426412874153
+      },
+      {
+        "label": "rare_large_loss",
+        "high_count": 354,
+        "marginal_power": 0.009986343515735688,
+        "joint_lower": 0
+      }
+    ],
+    "actual_seed_outcome_distribution_measured": false
+  },
+  "approved_values": {
+    "method": null,
+    "n": null,
+    "joint_power_target": null,
+    "gpu_hours": null,
+    "per_attempt_timeouts": null,
+    "retries": null
+  },
+  "remaining_gates": [
+    "OWNER_NUMERIC_D3_D4_APPROVAL",
+    "SEED_POPULATION_AND_RNG_AUDIT",
+    "REAL_RUNNER_FAIL_CLOSED_QUALIFICATION",
+    "INDEPENDENT_PROVENANCE_AND_BUDGET_WATCHDOG",
+    "OWNER_FINAL_PROTOCOL_APPROVAL",
+    "SEPARATE_EXPLICIT_MANUAL_SCIENCE_GO"
+  ],
+  "science_gpu_status": "SCIENCE_GPU_NO_GO"
+}
