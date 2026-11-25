@@ -7,7 +7,7 @@ import time
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import torch
 import torch.nn.functional as F
@@ -30,7 +30,7 @@ from synaploom.training.continual_metrics import (
     matrix_to_jsonable,
 )
 from synaploom.training.engine import TrainingEngine
-from synaploom.training.evaluation import evaluate_task, logits_from_output
+from synaploom.training.evaluation import TaskEvaluation, evaluate_task, logits_from_output
 from synaploom.training.state_digest import model_state_sha256
 from synaploom.training.numerics import (
     NumericalContext,
@@ -249,6 +249,35 @@ def _snapshot(
     )
 
 
+def _observe_evaluation_count(
+    observer: Callable[[dict[str, int | str]], None] | None,
+    result: TaskEvaluation,
+    *,
+    phase: str,
+    stage: int,
+    task_index: int,
+    task_id: int,
+    epoch: int,
+    global_step: int,
+    batch_size: int,
+) -> None:
+    if observer is None:
+        return
+    correct = result.correct
+    examples = result.examples
+    if (type(correct) is not int or type(examples) is not int
+            or examples <= 0 or not 0 <= correct <= examples
+            or result.accuracy != correct / examples):
+        raise RuntimeError("evaluation exact count missing or inconsistent")
+    # Fresh dict of primitives, no model/tensor references. Trusted caller
+    # must keep counts sealed from design decisions until registry closure.
+    observer({
+        "phase": phase, "stage": stage, "task_index": task_index,
+        "task_id": task_id, "epoch": epoch, "global_step": global_step,
+        "batch_size": batch_size, "correct": correct, "examples": examples,
+    })
+
+
 def run_continual_experiment(
     model: nn.Module,
     stream: ContinualStream,
@@ -258,8 +287,14 @@ def run_continual_experiment(
     engine: TrainingEngine | None = None,
     metadata: dict[str, Any] | None = None,
     evaluation_batch_sizes: tuple[int, ...] | None = None,
+    evaluation_count_observer: Callable[[dict[str, int | str]], None] | None = None,
 ) -> ContinualRunResult:
-    """Train once and optionally evaluate each checkpoint at several batch sizes."""
+    """Train once and optionally evaluate each checkpoint at several batch sizes.
+
+    An optional trusted count sink receives exact integer evaluation counts.
+    It is not a scientific attestation or an execution authorization. Default
+    result serialization and evaluation policy are unchanged.
+    """
     config = config or ContinualConfig()
     multi_eval = evaluation_batch_sizes is not None
     if multi_eval:
@@ -485,6 +520,12 @@ def run_continual_experiment(
                             global_step=global_step,
                         ),
                     )
+                    _observe_evaluation_count(
+                        evaluation_count_observer, curve_eval,
+                        phase="epoch", stage=stage, task_index=stage,
+                        task_id=task.task_id, epoch=epoch+1,
+                        global_step=global_step, batch_size=batch_size,
+                    )
                     task_curves_by_size[batch_size].append(
                         {
                             "epoch": int(epoch + 1),
@@ -550,6 +591,12 @@ def run_continual_experiment(
                         task_id=stream[eval_task_index].task_id,
                         global_step=global_step,
                     ),
+                )
+                _observe_evaluation_count(
+                    evaluation_count_observer, result,
+                    phase="stage", stage=stage, task_index=eval_task_index,
+                    task_id=stream[eval_task_index].task_id, epoch=0,
+                    global_step=global_step, batch_size=batch_size,
                 )
                 accuracy_by_eval_size[batch_size][stage, eval_task_index] = result.accuracy
                 eval_loss_by_eval_size[batch_size][stage, eval_task_index] = result.loss

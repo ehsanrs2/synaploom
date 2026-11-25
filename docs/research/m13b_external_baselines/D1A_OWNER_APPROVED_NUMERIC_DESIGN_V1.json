@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "kind": "M13B_D1A_OWNER_APPROVED_NUMERIC_DESIGN_V1",
+  "base_main_commit": "b3de8b22d23a24e8b5f959f25dc2ec9c41562925",
+  "prior_candidate": "D1A_D3_D4_CONCRETE_DESIGN_CANDIDATE_V2.json",
+  "owner_decision": "Explicit affirmative message approves D3/D4 numeric design, runner preparation/validation, explicitly not GPU execution.",
+  "design_approved": {
+    "order": "O0",
+    "arms": [
+      "progressive_reserve",
+      "fixed_sparse_mlp"
+    ],
+    "paired_draws": 360,
+    "trajectory_count": 720,
+    "optimizer_steps_per_trajectory": 8000,
+    "optimizer_steps_total": 5760000,
+    "method": "FIXED_LAMBDA_ONE_BOUNDED_MEAN_E_TEST_IUT",
+    "threshold": 20,
+    "alpha_per_endpoint": 0.05,
+    "planning_mean_alternative_each": 0.02,
+    "joint_power_target_conditional_scenarios": 0.8,
+    "uniform_power_guarantee": false,
+    "occupied_GPU_cap_seconds": 108000,
+    "per_attempt_worker_timeout_seconds": {
+      "progressive_reserve": 300,
+      "fixed_sparse_mlp": 120
+    },
+    "automatic_retries": 0
+  },
+  "owner_approved_design_only": true,
+  "final_protocol_frozen": false,
+  "science_gpu_authorized": false,
+  "engineering_gpu_authorized": false,
+  "real_seed_draw_executed": false,
+  "real_seed_registry": null,
+  "actual_shutdown_margin_seconds": null,
+  "synthetic_replay_margin_seconds": 10,
+  "actual_runtime_bound_measured": false,
+  "actual_paired_outcome_distribution_measured": false,
+  "protected_data_accessed": false,
+  "runner_components": {
+    "offline_full_shape_replay": "IMPLEMENTED_AWAITING_CI",
+    "exact_count_observer": "IMPLEMENTED_AWAITING_CI",
+    "exact_iut_on_closed_synthetic_fixture": "IMPLEMENTED_AWAITING_CI",
+    "real_seed_population_audit": "PENDING",
+    "trusted_source_and_data_and_mask_attestation": "PENDING",
+    "actual_8000_step_optimizer_witness": "PENDING",
+    "actual_monotonic_watchdog_and_gpu_release": "PENDING",
+    "durable_exclusive_attempt_journal_and_interruption_recovery": "PENDING",
+    "outcome_sealing_and_independent_custody": "PENDING",
+    "real_worker_and_scientific_runner": "NOT_ENABLED"
+  },
+  "science_executable": false,
+  "science_gpu_status": "SCIENCE_GPU_NO_GO"
+}

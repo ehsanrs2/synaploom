@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import torch
 import torch.nn.functional as F
@@ -16,6 +16,8 @@ class TaskEvaluation:
     loss: float
     accuracy: float
     examples: int
+    # Exact count for opt-in audit; legacy constructors/equality remain valid.
+    correct: int | None = field(default=None, compare=False, repr=False)
 
 
 def logits_from_output(output: object) -> Tensor:
@@ -86,4 +88,5 @@ def evaluate_task(
         loss=total_loss / total_examples,
         accuracy=total_correct / total_examples,
         examples=total_examples,
+        correct=total_correct,
     )
