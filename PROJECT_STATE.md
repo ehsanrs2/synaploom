@@ -410,3 +410,10 @@ The repository, not chat history, is the source of truth.
 - Added Linux-only fixed CPU fixture process supervisor and exclusive fsync journal; actual direct-child timeout/reap path, advisory lock, chained local records, no reopening/repair/retry, conservative unknown-release and unclosed-state blocking. Unit tests for real CPU process lifecycle, supervisor SIGKILL after durable START before spawn, malformed evidence and budget admission await hosted CI. Report: docs/research/m13b_external_baselines/D1A_CPU_SUPERVISOR_JOURNAL_V1.md.
 - This two-slot qualification is not the integrated 720-slot scientific runner, a hard GPU wall-clock watchdog, an authenticated witness or proof of resource release. Next: independent review, full registry composition and live-worker-parent-death isolation/independent watchdog, trusted manifest/custody and sealed output; RNG/source/data/mask/sample/optimizer audit. No real seeds, protected outcomes or GPU.
 - Status: OWNER_NUMERIC_DESIGN_APPROVED / RUNNER_PHASE2_IMPLEMENTED_AWAITING_CI / SCIENCE_GPU_NO_GO.
+
+## 2026-11-28 — D1-A Runner phase 3: integrated CPU registry and lifecycle
+
+- Verified PR #66 merged at 3b5a3a3c4a90a4330c531c71c09ac9896d91cf8d and exact-head CI #46111964963 SUCCESS. Approved D1/D3/D4 design unchanged.
+- Integrated full 720-slot artificial CPU subprocess fixture, durable exclusive linked journal, exact count validation and closure-gated IUT with caller-detached head. Added Linux direct-child parent-death signal and pidfd-observed live-worker crash test; no actual training or scientific result. Qualification tests authored; exact-head hosted CI pending. Report: docs/research/m13b_external_baselines/D1A_INTEGRATED_CPU_RUNNER_V1.md.
+- Next prioritize actual source/RNG/seed population/mask/sample/optimizer/evaluator evidence contract and independent custody; real process tree and GPU resource watchdog, sealed result access, final protocol and separate manual GO still unqualified. Do not equate complete synthetic fixture with science readiness.
+- Status: OWNER_NUMERIC_DESIGN_APPROVED / RUNNER_PHASE3_INTEGRATED_CPU_IMPLEMENTED_AWAITING_CI / SCIENCE_GPU_NO_GO.
