@@ -157,9 +157,13 @@ def run_fixture(root: Path, cases: tuple[str, str] = ("ok", "ok")) -> dict[str, 
                         state = "TIMEOUT"
             except KeyboardInterrupt:
                 state = "INTERRUPTED"
+                # Interruption during Popen may leave no returned handle.
+                if proc is None:
+                    released = False
             except OSError:
-                # Spawn failure; Popen itself normally reaps failed exec.
                 state = "FAILED"
+                if proc is None:
+                    released = False
             finally:
                 if proc is not None:
                     released = _reap(proc, cleanup_deadline)
