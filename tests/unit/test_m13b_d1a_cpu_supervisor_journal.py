@@ -146,3 +146,16 @@ def test_invalid_cases_do_not_create_session(tmp_path):
         with pytest.raises(ValueError):
             s.run_fixture(tmp_path / "bad", cases)
     assert not (tmp_path / "bad").exists()
+
+
+@pytest.mark.parametrize("error", [OSError("fixture spawn failure"), KeyboardInterrupt()])
+def test_spawn_without_handle_is_unknown_release(tmp_path, monkeypatch, error):
+    root = tmp_path / "session"
+    def fail(case):
+        raise error
+    monkeypatch.setattr(s, "_child", fail)
+    r = s.run_fixture(root)
+    assert r["status"] == "UNKNOWN_RELEASE"
+    assert r["direct_child_release_unknown"]
+    assert r["not_started"] == ["toy-1"]
+    assert not r["retry_allowed"]
