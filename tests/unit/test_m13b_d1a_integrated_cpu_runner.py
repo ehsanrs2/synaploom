@@ -137,6 +137,7 @@ def test_live_worker_parent_death_and_no_retry(tmp_path):
         result = runner.inspect_fixture(root)
         assert result["status"] == "UNCLOSED_BLOCKED"
         assert result["dangling_start"] and result["started"] == 1
+        assert result["direct_child_release_unknown"] and not result["retry_allowed"]
         assert result["analysis"] is None
         with pytest.raises(FileExistsError):
             runner.run_fixture(root)
