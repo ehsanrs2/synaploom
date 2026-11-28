@@ -1,6 +1,5 @@
 """Real Linux CPU process tests; no training, datasets, GPU or science seeds."""
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
@@ -58,35 +57,36 @@ def test_real_supervisor_sigkill_after_durable_start(tmp_path):
     # a worker. No orphan child is created by this fault-injection test.
     root = tmp_path / "crashed"
     source = str(Path(s.__file__).resolve().parents[2])
+    marker = tmp_path / "entered-child-function"
     script = (
         "import sys,time\n"
         "sys.path.insert(0,sys.argv[1])\n"
         "from pathlib import Path\n"
         "from synaploom.research import m13b_d1a_cpu_supervisor_journal as s\n"
         "def pause_before_spawn(case):\n"
+        "    Path(sys.argv[3]).touch()\n"
         "    time.sleep(60)\n"
         "s._child=pause_before_spawn\n"
         "s.run_fixture(Path(sys.argv[2]))\n"
     )
-    proc = subprocess.Popen([sys.executable, "-I", "-c", script, source, str(root)],
+    proc = subprocess.Popen([sys.executable, "-I", "-c", script, source, str(root), str(marker)],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         deadline = time.monotonic() + 8
-        while not (root / "0.start.json").exists():
+        while not marker.exists():
             if proc.poll() is not None or time.monotonic() > deadline:
                 pytest.fail("fault-injection supervisor did not reach START")
             time.sleep(.01)
-        # Test waits until contents are visible; actual fsync is done in
-        # production before _child. Lock is still held by the live parent.
+        # Marker is created only after durable START and directory fsync.
+        # The live supervisor still holds the lock.
         assert s.inspect_fixture(root)["status"] == "BUSY_BLOCKED"
         proc.kill()
         proc.wait(timeout=5)
         r = s.inspect_fixture(root)
-        assert r["status"] in ("UNCLOSED_BLOCKED", "CORRUPT_BLOCKED")
-        if r["status"] == "UNCLOSED_BLOCKED":
-            assert r["dangling_start"]
-            assert r["direct_child_release_unknown"]
-            assert r["not_started"] == ["toy-1"]
+        assert r["status"] == "UNCLOSED_BLOCKED"
+        assert r["dangling_start"]
+        assert r["direct_child_release_unknown"]
+        assert r["not_started"] == ["toy-1"]
         assert not r["retry_allowed"]
         with pytest.raises(FileExistsError):
             s.run_fixture(root)
