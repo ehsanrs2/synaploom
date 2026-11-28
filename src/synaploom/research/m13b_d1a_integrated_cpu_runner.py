@@ -259,6 +259,8 @@ def _scan(root: Path, expected_head: str | None) -> dict[str, Any]:
     result = {"kind": KIND, "status": reason, "started": started,
               "completed": len(observations), "not_started": 720-started,
               "dangling_start": dangling, "local_head_sha256": head,
+              "direct_child_release_unknown": dangling or failed == "UNKNOWN_RELEASE",
+              "retry_allowed": False,
               "caller_detached_head_matched": expected_head is not None,
               "external_custody_verified": False, "science_executable": False,
               "gpu_release_verified": False, "analysis": None}
@@ -286,4 +288,5 @@ def inspect_fixture(root: Path, *, expected_head: str | None = None) -> dict[str
     except (OSError, ValueError, TypeError, KeyError):
         status = "CORRUPT_BLOCKED"
     return {"kind": KIND, "status": status, "science_executable": False,
+            "retry_allowed": False, "direct_child_release_unknown": True,
             "analysis": None}
